@@ -588,7 +588,6 @@
 // ---------------------------------------------------------------------------
 const SUPABASE_URL = 'https://aranzjtwsxaqtczswoiz.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFyYW56anR3c3hhcXRjenN3b2l6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE5NDYwMzYsImV4cCI6MjA4NzUyMjAzNn0.8ZKA0ZvZE6VJHQXTZRECDJTjtm5RUQNsSpw9dGO37Do';
-const N8N_WEBHOOK_URL = 'https://n8n.srv1236164.hstgr.cloud/webhook/hodge-vote';
 
 // ---------------------------------------------------------------------------
 // Supabase client
@@ -790,30 +789,20 @@ async function handleSubmit(e) {
   const phone = normalizePhone($('phone').value.trim());
   const consentChecked = $('consent').checked;
 
-  const payload = {
-    first_name: firstName,
-    last_name: lastName,
-    email: email,
-    phone: phone,
-    candidate_id: candidate.id,
-    candidate_name: candidate.name,
-    candidate_school: candidate.school || '',
-    consent_texts: consentChecked,
-    consent_emails: consentChecked,
-  };
-
   setLoading(true);
 
   try {
-    const response = await fetch(N8N_WEBHOOK_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
+    const { error } = await sb.from('votes').insert({
+      candidate_id: candidate.id,
+      first_name: firstName,
+      last_name: lastName,
+      email: email,
+      phone: phone,
+      consent_texts: consentChecked,
+      consent_emails: consentChecked,
     });
 
-    if (!response.ok) {
-      throw new Error(`Server error (${response.status})`);
-    }
+    if (error) throw error;
 
     showThankYou(firstName);
   } catch (err) {
