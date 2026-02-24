@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>Dan Hodge Trophy Vote | WIN Magazine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after {
     box-sizing: border-box;
@@ -12,14 +15,15 @@
   }
 
   :root {
-    --bg: #0d0d1a;
-    --bg-card: #161628;
-    --bg-input: #1a1a2e;
-    --gold: #FFD700;
+    --bg: #dce0e8;
+    --bg-card: #ffffff;
+    --bg-input: #ffffff;
+    --navy: #1a1a2e;
+    --gold: #D4A843;
     --gold-dim: #b89b00;
-    --text: #f0f0f0;
-    --text-muted: #8888aa;
-    --error: #ff4d6a;
+    --text: #1a1a2e;
+    --text-muted: #8b8fa0;
+    --error: #dc2626;
     --success: #22c55e;
     --radius: 12px;
   }
@@ -29,7 +33,7 @@
   }
 
   body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    font-family: 'Barlow Condensed', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     background: var(--bg);
     color: var(--text);
     min-height: 100dvh;
@@ -38,68 +42,77 @@
     overflow-x: hidden;
   }
 
-  /* --- Background texture --- */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background:
-      radial-gradient(ellipse 80% 60% at 50% 0%, rgba(255,215,0,0.06) 0%, transparent 60%),
-      radial-gradient(ellipse 60% 50% at 50% 100%, rgba(255,215,0,0.03) 0%, transparent 50%);
-    pointer-events: none;
-    z-index: 0;
-  }
-
   .page-wrapper {
     position: relative;
     z-index: 1;
     max-width: 800px;
     margin: 0 auto;
-    padding: 24px 16px 48px;
+    padding: 0 16px 48px;
   }
 
   /* --- Header --- */
   .header {
     text-align: center;
-    margin-bottom: 32px;
+    margin: 0 -16px 32px;
+    padding: 20px 16px;
+    background: var(--navy);
+  }
+
+  .header-brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .header-win-box {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 14px;
+    border: 2px solid var(--gold);
+    border-radius: 4px;
   }
 
   .header-win {
-    font-size: 3.2rem;
+    font-size: 2.4rem;
     font-weight: 900;
-    letter-spacing: 0.25em;
+    letter-spacing: 0.2em;
     color: var(--gold);
-    text-shadow: 0 0 30px rgba(255,215,0,0.3), 0 2px 4px rgba(0,0,0,0.5);
-    line-height: 1.1;
+    line-height: 1;
   }
 
   .header-magazine {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     font-weight: 600;
-    letter-spacing: 0.45em;
+    letter-spacing: 0.25em;
     text-transform: uppercase;
-    color: var(--text-muted);
-    margin-top: 2px;
+    color: rgba(255,255,255,0.5);
   }
 
   .header-divider {
     width: 80px;
     height: 3px;
-    background: linear-gradient(90deg, transparent, var(--gold), transparent);
-    margin: 16px auto;
+    background: var(--gold);
+    margin: 12px auto;
     border-radius: 2px;
   }
 
   .header-title {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     font-weight: 700;
-    color: var(--text);
-    letter-spacing: 0.02em;
+    color: rgba(255,255,255,0.9);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .header-title .accent {
+    color: var(--gold);
   }
 
   .header-subtitle {
     font-size: 0.9rem;
-    color: var(--text-muted);
+    color: rgba(255,255,255,0.45);
     margin-top: 4px;
   }
 
@@ -120,26 +133,28 @@
   .candidate-card {
     position: relative;
     background: var(--bg-card);
-    border: 2px solid transparent;
-    border-left: 5px solid var(--card-accent, #666);
+    border: 2px solid rgba(0,0,0,0.06);
+    border-left: 5px solid var(--card-accent, #999);
     border-radius: var(--radius);
     padding: 16px 16px 16px 18px;
     cursor: pointer;
     transition: all 0.2s ease;
     -webkit-tap-highlight-color: transparent;
     user-select: none;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
   }
 
   .candidate-card:hover {
-    background: #1c1c36;
+    background: #f7f8fa;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
   }
 
   .candidate-card.selected {
     border-color: var(--gold);
     border-left-color: var(--gold);
-    background: #1e1e38;
+    background: #fffdf5;
     transform: scale(1.02);
-    box-shadow: 0 0 20px rgba(255,215,0,0.12), 0 4px 16px rgba(0,0,0,0.3);
+    box-shadow: 0 0 0 1px var(--gold), 0 4px 16px rgba(212,168,67,0.15);
   }
 
   .candidate-card input[type="radio"] {
@@ -182,7 +197,7 @@
     width: 24px;
     height: 24px;
     border-radius: 50%;
-    border: 2px solid #444;
+    border: 2px solid #ccc;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -217,6 +232,7 @@
 
   .section-label.candidates-label {
     margin-bottom: 14px;
+    margin-top: 24px;
   }
 
   /* --- Form Fields --- */
@@ -247,22 +263,24 @@
     width: 100%;
     padding: 14px 16px;
     font-size: 1rem;
+    font-family: 'Barlow Condensed', sans-serif;
     color: var(--text);
     background: var(--bg-input);
-    border: 2px solid #2a2a44;
+    border: 2px solid #d1d5db;
     border-radius: var(--radius);
     outline: none;
-    transition: border-color 0.2s ease;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
     -webkit-appearance: none;
     appearance: none;
   }
 
   .field-group input::placeholder {
-    color: #555570;
+    color: #b0b4c0;
   }
 
   .field-group input:focus {
     border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(212,168,67,0.15);
   }
 
   .field-group input.input-error {
@@ -312,11 +330,12 @@
     width: 100%;
     padding: 18px 24px;
     font-size: 1.1rem;
+    font-family: 'Barlow Condensed', sans-serif;
     font-weight: 800;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: #0d0d1a;
-    background: linear-gradient(135deg, var(--gold) 0%, #e6c200 100%);
+    color: #fff;
+    background: var(--navy);
     border: none;
     border-radius: var(--radius);
     cursor: pointer;
@@ -328,7 +347,7 @@
 
   .submit-btn:hover:not(:disabled) {
     transform: translateY(-1px);
-    box-shadow: 0 6px 24px rgba(255,215,0,0.3);
+    box-shadow: 0 6px 24px rgba(26,26,46,0.25);
   }
 
   .submit-btn:active:not(:disabled) {
@@ -345,8 +364,8 @@
     display: inline-block;
     width: 22px;
     height: 22px;
-    border: 3px solid rgba(13,13,26,0.3);
-    border-top-color: #0d0d1a;
+    border: 3px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
     border-radius: 50%;
     animation: spin 0.7s linear infinite;
   }
@@ -357,8 +376,8 @@
 
   /* --- Global Error --- */
   .global-error {
-    background: rgba(255,77,106,0.1);
-    border: 1px solid rgba(255,77,106,0.3);
+    background: rgba(220,38,38,0.08);
+    border: 1px solid rgba(220,38,38,0.25);
     border-radius: var(--radius);
     padding: 12px 16px;
     margin-bottom: 20px;
@@ -390,19 +409,19 @@
     width: 100px;
     height: 100px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--gold) 0%, #e6c200 100%);
+    background: var(--navy);
     display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: 28px;
     animation: scaleIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    box-shadow: 0 0 40px rgba(255,215,0,0.25);
+    box-shadow: 0 4px 20px rgba(26,26,46,0.25);
   }
 
   .checkmark-circle svg {
     width: 52px;
     height: 52px;
-    stroke: #0d0d1a;
+    stroke: var(--gold);
     stroke-width: 3;
     fill: none;
     stroke-linecap: round;
@@ -452,7 +471,7 @@
     display: inline-block;
     width: 32px;
     height: 32px;
-    border: 3px solid #2a2a44;
+    border: 3px solid #c0c4cc;
     border-top-color: var(--gold);
     border-radius: 50%;
     animation: spin 0.7s linear infinite;
@@ -467,7 +486,7 @@
     text-align: center;
     padding: 32px 0 8px;
     font-size: 0.75rem;
-    color: #444460;
+    color: #999;
   }
 </style>
 </head>
@@ -476,10 +495,14 @@
 <div class="page-wrapper">
   <!-- Header -->
   <header class="header">
-    <div class="header-win">WIN</div>
-    <div class="header-magazine">Magazine</div>
+    <div class="header-brand">
+      <div class="header-win-box">
+        <span class="header-win">WIN</span>
+      </div>
+      <span class="header-magazine">Magazine</span>
+    </div>
     <div class="header-divider"></div>
-    <h1 class="header-title">Dan Hodge Trophy Fan Vote</h1>
+    <h1 class="header-title">Dan Hodge Trophy &mdash; <span class="accent">Fan Vote</span></h1>
     <p class="header-subtitle">Select your pick for college wrestling's most outstanding wrestler</p>
   </header>
 
@@ -626,7 +649,7 @@ function renderCandidates() {
     card.innerHTML = `
       <input type="radio" name="candidate" value="${c.id}">
       <div class="candidate-check">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#0d0d1a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="6,13 10,17 18,8" />
         </svg>
       </div>
@@ -660,23 +683,17 @@ function selectCandidate(id) {
 // Phone normalization
 // ---------------------------------------------------------------------------
 function normalizePhone(raw) {
-  // Strip everything except digits and leading +
   const digits = raw.replace(/[^\d]/g, '');
-
-  // If already has country code
   if (digits.length === 11 && digits.startsWith('1')) {
     return '+' + digits;
   }
-  // US 10-digit
   if (digits.length === 10) {
     return '+1' + digits;
   }
-  // If they typed +1 plus 10 digits
   if (raw.startsWith('+') && digits.length === 11) {
     return '+' + digits;
   }
-
-  return null; // invalid
+  return null;
 }
 
 // ---------------------------------------------------------------------------
@@ -686,13 +703,11 @@ function validateForm() {
   let valid = true;
   clearAllErrors();
 
-  // Candidate
   if (!selectedCandidateId) {
     showError('candidateError', 'Please select a candidate');
     valid = false;
   }
 
-  // First name
   const firstName = $('firstName').value.trim();
   if (!firstName) {
     showError('firstNameError', 'First name is required');
@@ -700,7 +715,6 @@ function validateForm() {
     valid = false;
   }
 
-  // Last name
   const lastName = $('lastName').value.trim();
   if (!lastName) {
     showError('lastNameError', 'Last name is required');
@@ -708,7 +722,6 @@ function validateForm() {
     valid = false;
   }
 
-  // Email
   const email = $('email').value.trim();
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!email) {
@@ -721,7 +734,6 @@ function validateForm() {
     valid = false;
   }
 
-  // Phone
   const phoneRaw = $('phone').value.trim();
   if (!phoneRaw) {
     showError('phoneError', 'Phone number is required');
@@ -841,15 +853,12 @@ function resetForm() {
   selectedCandidateId = null;
   clearAllErrors();
 
-  // Unselect all candidate cards
   document.querySelectorAll('.candidate-card').forEach((card) => {
     card.classList.remove('selected');
     card.querySelector('input[type="radio"]').checked = false;
   });
 
-  // Re-check consent by default
   $('consent').checked = true;
-
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -867,7 +876,6 @@ function esc(str) {
 // ---------------------------------------------------------------------------
 $('phone').addEventListener('input', function () {
   let digits = this.value.replace(/[^\d]/g, '');
-  // Remove leading 1 for formatting purposes
   if (digits.length > 10 && digits.startsWith('1')) {
     digits = digits.substring(1);
   }
@@ -880,7 +888,6 @@ $('phone').addEventListener('input', function () {
   if (digits.length >= 6) formatted += '-';
   if (digits.length > 6) formatted += digits.substring(6, 10);
 
-  // Only apply formatting if user has typed enough
   if (digits.length >= 1) {
     this.value = formatted;
   }
