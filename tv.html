@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Dan Hodge Trophy Live Vote | WIN Magazine</title>
+<style>
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  :root {
+    --bg: #0d0d1a;
+    --gold: #FFD700;
+    --gold-dim: #b89b00;
+    --text: #f0f0f0;
+    --text-muted: #8888aa;
+  }
+
+  html, body {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Subtle radial glow */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 50% at 50% 0%, rgba(255,215,0,0.07) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 50% 100%, rgba(255,215,0,0.03) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .page {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    width: 100vw;
+    height: 100vh;
+    padding: 2vh 3vw;
+  }
+
+  /* ==================== HEADER ==================== */
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    height: 8vh;
+  }
+
+  .header-brand {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6vw;
+  }
+
+  .brand-win {
+    font-size: 4.5vh;
+    font-weight: 900;
+    letter-spacing: 0.2em;
+    color: var(--gold);
+    text-shadow: 0 0 30px rgba(255,215,0,0.3);
+    line-height: 1;
+  }
+
+  .brand-magazine {
+    font-size: 1.8vh;
+    font-weight: 700;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .header-total {
+    display: flex;
+    align-items: baseline;
+    gap: 1vw;
+  }
+
+  .total-label {
+    font-size: 2vh;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .total-number {
+    font-size: 5vh;
+    font-weight: 900;
+    color: var(--gold);
+    text-shadow: 0 0 20px rgba(255,215,0,0.25);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    transition: transform 0.3s ease;
+  }
+
+  .total-number.bump {
+    transform: scale(1.15);
+  }
+
+  /* ==================== TITLE ==================== */
+  .title-bar {
+    text-align: center;
+    flex-shrink: 0;
+    padding: 1vh 0 1.5vh;
+  }
+
+  .title-text {
+    font-size: 3.8vh;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    color: var(--text);
+  }
+
+  .title-text span {
+    color: var(--gold);
+  }
+
+  .title-divider {
+    width: 10vw;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 1vh auto 0;
+    border-radius: 2px;
+  }
+
+  /* ==================== BARS SECTION ==================== */
+  .bars-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1.8vh;
+    padding: 1vh 0;
+    min-height: 0;
+  }
+
+  .bar-row {
+    display: flex;
+    align-items: center;
+    gap: 1.5vw;
+    height: calc((60vh - 10.8vh) / 6);
+  }
+
+  .bar-label {
+    flex-shrink: 0;
+    width: 20vw;
+    text-align: right;
+    padding-right: 1vw;
+  }
+
+  .bar-candidate-name {
+    font-size: 2.8vh;
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1.2;
+  }
+
+  .bar-candidate-school {
+    font-size: 1.8vh;
+    font-weight: 600;
+    color: var(--text-muted);
+  }
+
+  .bar-track {
+    flex: 1;
+    height: 100%;
+    background: rgba(255,255,255,0.04);
+    border-radius: 0.6vh;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: 0.6vh;
+    transition: width 0.8s ease-out;
+    min-width: 5%;
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .bar-fill-inner {
+    width: 100%;
+    height: 100%;
+    border-radius: 0.6vh;
+    opacity: 0.85;
+  }
+
+  .bar-fill.flash .bar-fill-inner {
+    animation: barFlash 0.6s ease;
+  }
+
+  @keyframes barFlash {
+    0% { opacity: 0.85; }
+    30% { opacity: 1; filter: brightness(1.4); }
+    100% { opacity: 0.85; filter: brightness(1); }
+  }
+
+  .bar-count {
+    flex-shrink: 0;
+    width: 8vw;
+    text-align: center;
+    font-size: 3.5vh;
+    font-weight: 900;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+    transition: transform 0.3s ease;
+  }
+
+  .bar-count.bump {
+    transform: scale(1.2);
+  }
+
+  /* ==================== RECENT VOTES TICKER ==================== */
+  .ticker-section {
+    flex-shrink: 0;
+    padding: 1.5vh 0 0.5vh;
+  }
+
+  .ticker-label {
+    font-size: 1.6vh;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 1vh;
+  }
+
+  .ticker-track {
+    display: flex;
+    gap: 1vw;
+    overflow: hidden;
+    height: 5vh;
+    align-items: center;
+  }
+
+  .ticker-pill {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5vw;
+    padding: 0.8vh 1.5vw;
+    border-radius: 3vh;
+    font-size: 1.8vh;
+    font-weight: 700;
+    color: var(--text);
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    white-space: nowrap;
+    animation: slideIn 0.5s ease-out;
+  }
+
+  .ticker-pill .pill-dot {
+    width: 1vh;
+    height: 1vh;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  @keyframes slideIn {
+    from {
+      transform: translateX(5vw);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideOut {
+    from {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    to {
+      transform: translateX(-5vw);
+      opacity: 0;
+    }
+  }
+
+  .ticker-pill.removing {
+    animation: slideOut 0.4s ease-in forwards;
+  }
+
+  .ticker-empty {
+    font-size: 1.6vh;
+    color: #444466;
+    font-style: italic;
+  }
+
+  /* ==================== CONNECTION DOT ==================== */
+  .connection-dot {
+    position: fixed;
+    bottom: 1.5vh;
+    right: 1.5vw;
+    width: 1.2vh;
+    height: 1.2vh;
+    border-radius: 50%;
+    background: #22c55e;
+    box-shadow: 0 0 6px rgba(34,197,94,0.6);
+    z-index: 100;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .connection-dot.disconnected {
+    background: #ef4444;
+    box-shadow: 0 0 6px rgba(239,68,68,0.6);
+    animation: pulse-red 1.5s ease-in-out infinite;
+  }
+
+  @keyframes pulse-red {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* ==================== CELEBRATION OVERLAY ==================== */
+  .celebration-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(13,13,26,0.75);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+  }
+
+  .celebration-overlay.active {
+    opacity: 1;
+  }
+
+  .celebration-overlay.fade-out {
+    opacity: 0;
+  }
+
+  .celebration-name {
+    font-size: 8vh;
+    font-weight: 900;
+    color: var(--gold);
+    text-shadow:
+      0 0 40px rgba(255,215,0,0.5),
+      0 0 80px rgba(255,215,0,0.2),
+      0 4px 8px rgba(0,0,0,0.6);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    text-align: center;
+    line-height: 1.1;
+    animation: celebPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  .celebration-candidate {
+    font-size: 3.5vh;
+    font-weight: 700;
+    color: var(--text);
+    margin-top: 1.5vh;
+    text-align: center;
+    opacity: 0.9;
+    animation: celebFadeUp 0.6s ease 0.2s both;
+  }
+
+  @keyframes celebPop {
+    0% { transform: scale(0.3); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  @keyframes celebFadeUp {
+    0% { transform: translateY(2vh); opacity: 0; }
+    100% { transform: translateY(0); opacity: 0.9; }
+  }
+
+  .confetti-canvas {
+    position: fixed;
+    inset: 0;
+    z-index: 199;
+    pointer-events: none;
+  }
+
+  /* ==================== LOADING STATE ==================== */
+  .bars-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    color: var(--text-muted);
+    font-size: 2.5vh;
+  }
+
+  .bars-loading .loader-spinner {
+    display: inline-block;
+    width: 4vh;
+    height: 4vh;
+    border: 3px solid #2a2a44;
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    margin-right: 1.5vw;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <!-- Header -->
+  <div class="header">
+    <div class="header-brand">
+      <div class="brand-win">WIN</div>
+      <div class="brand-magazine">Magazine</div>
+    </div>
+    <div class="header-total">
+      <span class="total-label">Total Votes:</span>
+      <span class="total-number" id="totalVotes">0</span>
+    </div>
+  </div>
+
+  <!-- Title -->
+  <div class="title-bar">
+    <h1 class="title-text">Dan Hodge Trophy &mdash; <span>Live Fan Vote</span></h1>
+    <div class="title-divider"></div>
+  </div>
+
+  <!-- Vote Bars -->
+  <div class="bars-section" id="barsSection">
+    <div class="bars-loading" id="barsLoading">
+      <div class="loader-spinner"></div>
+      Loading candidates...
+    </div>
+  </div>
+
+  <!-- Recent Votes Ticker -->
+  <div class="ticker-section">
+    <div class="ticker-label">Recent Votes</div>
+    <div class="ticker-track" id="tickerTrack">
+      <span class="ticker-empty">Waiting for votes...</span>
+    </div>
+  </div>
+</div>
+
+<!-- Connection indicator -->
+<div class="connection-dot" id="connectionDot" title="Realtime connection status"></div>
+
+<!-- Celebration overlay -->
+<div class="celebration-overlay" id="celebrationOverlay">
+  <div class="celebration-name" id="celebrationName"></div>
+  <div class="celebration-candidate" id="celebrationCandidate"></div>
+</div>
+
+<!-- Confetti canvas -->
+<canvas class="confetti-canvas" id="confettiCanvas"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+// ===========================================================================
+// Configuration
+// ===========================================================================
+const SUPABASE_URL = 'https://aranzjtwsxaqtczswoiz.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFyYW56anR3c3hhcXRjenN3b2l6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE5NDYwMzYsImV4cCI6MjA4NzUyMjAzNn0.8ZKA0ZvZE6VJHQXTZRECDJTjtm5RUQNsSpw9dGO37Do';
+
+// ===========================================================================
+// Supabase Client
+// ===========================================================================
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ===========================================================================
+// State
+// ===========================================================================
+let candidates = [];          // from vote_counts view: { id, name, school, color, vote_count, ... }
+let candidateMap = {};        // id -> candidate object
+let totalVotes = 0;
+let recentVotes = [];         // last 5 vote pill objects
+let celebrationQueue = [];    // queued celebration events
+let isCelebrating = false;
+let realtimeChannel = null;
+
+// ===========================================================================
+// DOM References
+// ===========================================================================
+const barsSection = document.getElementById('barsSection');
+const barsLoading = document.getElementById('barsLoading');
+const totalVotesEl = document.getElementById('totalVotes');
+const tickerTrack = document.getElementById('tickerTrack');
+const connectionDot = document.getElementById('connectionDot');
+const celebrationOverlay = document.getElementById('celebrationOverlay');
+const celebrationNameEl = document.getElementById('celebrationName');
+const celebrationCandidateEl = document.getElementById('celebrationCandidate');
+const confettiCanvas = document.getElementById('confettiCanvas');
+const confettiCtx = confettiCanvas.getContext('2d');
+
+// ===========================================================================
+// Utility
+// ===========================================================================
+function esc(str) {
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+function animateBump(el) {
+  el.classList.add('bump');
+  setTimeout(() => el.classList.remove('bump'), 300);
+}
+
+// ===========================================================================
+// Initial Data Load
+// ===========================================================================
+async function loadVoteCounts() {
+  try {
+    const { data, error } = await sb
+      .from('vote_counts')
+      .select('*')
+      .order('display_order', { ascending: true });
+
+    if (error) throw error;
+    if (!data || data.length === 0) {
+      barsLoading.textContent = 'No candidates available.';
+      return;
+    }
+
+    candidates = data;
+    candidateMap = {};
+    totalVotes = 0;
+    candidates.forEach(c => {
+      candidateMap[c.id] = c;
+      totalVotes += c.vote_count || 0;
+    });
+
+    renderBars();
+    updateTotalDisplay();
+  } catch (err) {
+    console.error('Failed to load vote counts:', err);
+    barsLoading.textContent = 'Error loading data. Retrying...';
+    setTimeout(loadVoteCounts, 5000);
+  }
+}
+
+// ===========================================================================
+// Render Vote Bars
+// ===========================================================================
+function renderBars() {
+  // Remove loading indicator
+  if (barsLoading) barsLoading.remove();
+
+  // Find max vote count for proportional scaling
+  const maxVotes = Math.max(...candidates.map(c => c.vote_count || 0), 1);
+
+  // Check if bars already exist (update) or need creating
+  const existingBars = barsSection.querySelectorAll('.bar-row');
+
+  if (existingBars.length === 0) {
+    // First render: create all bar rows
+    candidates.forEach(c => {
+      const pct = c.vote_count > 0 ? Math.max((c.vote_count / maxVotes) * 100, 5) : 5;
+
+      const row = document.createElement('div');
+      row.className = 'bar-row';
+      row.setAttribute('data-candidate-id', c.id);
+
+      row.innerHTML = `
+        <div class="bar-label">
+          <div class="bar-candidate-name">${esc(c.name)}</div>
+          <div class="bar-candidate-school">${esc(c.school)}</div>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill" style="width: ${pct}%;">
+            <div class="bar-fill-inner" style="background: ${esc(c.color)};"></div>
+          </div>
+        </div>
+        <div class="bar-count" data-count-id="${c.id}">${c.vote_count || 0}</div>
+      `;
+
+      barsSection.appendChild(row);
+    });
+  } else {
+    // Update existing bars
+    updateBars();
+  }
+}
+
+function updateBars(flashCandidateId) {
+  const maxVotes = Math.max(...candidates.map(c => c.vote_count || 0), 1);
+
+  candidates.forEach(c => {
+    const row = barsSection.querySelector(`.bar-row[data-candidate-id="${c.id}"]`);
+    if (!row) return;
+
+    const pct = c.vote_count > 0 ? Math.max((c.vote_count / maxVotes) * 100, 5) : 5;
+    const fill = row.querySelector('.bar-fill');
+    const countEl = row.querySelector('.bar-count');
+
+    fill.style.width = pct + '%';
+    countEl.textContent = c.vote_count || 0;
+
+    // Flash animation on the candidate that just received a vote
+    if (flashCandidateId && c.id === flashCandidateId) {
+      fill.classList.remove('flash');
+      void fill.offsetWidth; // force reflow
+      fill.classList.add('flash');
+      animateBump(countEl);
+    }
+  });
+}
+
+function updateTotalDisplay() {
+  totalVotesEl.textContent = totalVotes.toLocaleString();
+}
+
+// ===========================================================================
+// Recent Votes Ticker
+// ===========================================================================
+function addTickerVote(firstName, candidateName, candidateColor) {
+  // Remove "waiting" message if present
+  const empty = tickerTrack.querySelector('.ticker-empty');
+  if (empty) empty.remove();
+
+  // Create pill
+  const pill = document.createElement('div');
+  pill.className = 'ticker-pill';
+  pill.innerHTML = `
+    <span class="pill-dot" style="background: ${esc(candidateColor)};"></span>
+    ${esc(firstName)} voted for ${esc(candidateName)}
+  `;
+
+  // Insert at beginning
+  tickerTrack.insertBefore(pill, tickerTrack.firstChild);
+
+  recentVotes.unshift(pill);
+
+  // Keep only 5
+  while (recentVotes.length > 5) {
+    const oldest = recentVotes.pop();
+    oldest.classList.add('removing');
+    setTimeout(() => {
+      if (oldest.parentNode) oldest.parentNode.removeChild(oldest);
+    }, 400);
+  }
+}
+
+// ===========================================================================
+// Celebration Overlay
+// ===========================================================================
+function queueCelebration(firstName, candidateName, candidateSchool, candidateColor) {
+  // Cap queue at 5
+  if (celebrationQueue.length >= 5) return;
+
+  celebrationQueue.push({ firstName, candidateName, candidateSchool, candidateColor });
+
+  if (!isCelebrating) {
+    playCelebration();
+  }
+}
+
+function playCelebration() {
+  if (celebrationQueue.length === 0) {
+    isCelebrating = false;
+    return;
+  }
+
+  isCelebrating = true;
+  const { firstName, candidateName, candidateSchool, candidateColor } = celebrationQueue.shift();
+
+  celebrationNameEl.textContent = `THANK YOU ${firstName.toUpperCase()}!`;
+  celebrationCandidateEl.textContent = `${candidateName} \u2014 ${candidateSchool}`;
+
+  // Reset animations by removing/re-adding elements
+  celebrationNameEl.style.animation = 'none';
+  celebrationCandidateEl.style.animation = 'none';
+  void celebrationNameEl.offsetWidth;
+  celebrationNameEl.style.animation = '';
+  celebrationCandidateEl.style.animation = '';
+
+  celebrationOverlay.classList.remove('fade-out');
+  celebrationOverlay.classList.add('active');
+
+  // Fire confetti
+  fireConfetti(candidateColor);
+
+  // Hold for 3.5 seconds then fade out
+  setTimeout(() => {
+    celebrationOverlay.classList.add('fade-out');
+    setTimeout(() => {
+      celebrationOverlay.classList.remove('active', 'fade-out');
+      // Play next in queue
+      playCelebration();
+    }, 400);
+  }, 3500);
+}
+
+// ===========================================================================
+// Confetti Animation
+// ===========================================================================
+function fireConfetti(candidateColor) {
+  // Size canvas
+  confettiCanvas.width = window.innerWidth;
+  confettiCanvas.height = window.innerHeight;
+
+  const colors = ['#FFD700', '#FFFFFF', candidateColor || '#FFD700'];
+  const particles = [];
+
+  // Spawn particles
+  for (let i = 0; i < 60; i++) {
+    particles.push({
+      x: Math.random() * confettiCanvas.width,
+      y: -10 - Math.random() * 100,
+      w: 6 + Math.random() * 8,
+      h: 4 + Math.random() * 6,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      vx: (Math.random() - 0.5) * 4,
+      vy: 2 + Math.random() * 5,
+      rotation: Math.random() * 360,
+      rotSpeed: (Math.random() - 0.5) * 10,
+      gravity: 0.12 + Math.random() * 0.08,
+    });
+  }
+
+  let animId;
+  const startTime = performance.now();
+  const duration = 3500;
+
+  function draw(now) {
+    const elapsed = now - startTime;
+    if (elapsed > duration) {
+      confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+      cancelAnimationFrame(animId);
+      return;
+    }
+
+    confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+
+    // Fade out in last 800ms
+    const fadeStart = duration - 800;
+    const globalAlpha = elapsed > fadeStart ? 1 - ((elapsed - fadeStart) / 800) : 1;
+    confettiCtx.globalAlpha = Math.max(0, globalAlpha);
+
+    particles.forEach(p => {
+      p.vy += p.gravity;
+      p.x += p.vx;
+      p.y += p.vy;
+      p.rotation += p.rotSpeed;
+
+      confettiCtx.save();
+      confettiCtx.translate(p.x, p.y);
+      confettiCtx.rotate((p.rotation * Math.PI) / 180);
+      confettiCtx.fillStyle = p.color;
+      confettiCtx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      confettiCtx.restore();
+    });
+
+    confettiCtx.globalAlpha = 1;
+    animId = requestAnimationFrame(draw);
+  }
+
+  animId = requestAnimationFrame(draw);
+}
+
+// ===========================================================================
+// Supabase Realtime Subscription
+// ===========================================================================
+function subscribeToVotes() {
+  realtimeChannel = sb
+    .channel('tv-votes')
+    .on(
+      'postgres_changes',
+      { event: 'INSERT', schema: 'public', table: 'votes' },
+      handleNewVote
+    )
+    .subscribe((status) => {
+      if (status === 'SUBSCRIBED') {
+        connectionDot.classList.remove('disconnected');
+        console.log('Realtime: connected');
+      } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
+        connectionDot.classList.add('disconnected');
+        console.warn('Realtime: disconnected, status =', status);
+        // Attempt reconnection after delay
+        setTimeout(() => {
+          if (realtimeChannel) {
+            sb.removeChannel(realtimeChannel);
+          }
+          subscribeToVotes();
+        }, 5000);
+      }
+    });
+}
+
+async function handleNewVote(payload) {
+  const vote = payload.new;
+  if (!vote) return;
+
+  const candidateId = vote.candidate_id;
+  const firstName = vote.first_name || 'Fan';
+
+  // Optimistic increment: update local counts immediately
+  const candidate = candidateMap[candidateId];
+  if (candidate) {
+    candidate.vote_count = (candidate.vote_count || 0) + 1;
+    totalVotes++;
+    updateBars(candidateId);
+    updateTotalDisplay();
+    animateBump(totalVotesEl);
+
+    // Add to ticker
+    addTickerVote(firstName, candidate.name, candidate.color);
+
+    // Trigger celebration
+    queueCelebration(firstName, candidate.name, candidate.school, candidate.color);
+  }
+
+  // Re-fetch accurate counts (in case of race conditions)
+  try {
+    const { data, error } = await sb
+      .from('vote_counts')
+      .select('*')
+      .order('display_order', { ascending: true });
+
+    if (!error && data) {
+      totalVotes = 0;
+      data.forEach(c => {
+        if (candidateMap[c.id]) {
+          candidateMap[c.id].vote_count = c.vote_count || 0;
+        }
+        totalVotes += c.vote_count || 0;
+      });
+      candidates = data;
+      updateBars();
+      updateTotalDisplay();
+    }
+  } catch (err) {
+    console.warn('Re-fetch vote counts failed:', err);
+  }
+}
+
+// ===========================================================================
+// Window resize handler for confetti canvas
+// ===========================================================================
+window.addEventListener('resize', () => {
+  confettiCanvas.width = window.innerWidth;
+  confettiCanvas.height = window.innerHeight;
+});
+
+// ===========================================================================
+// Init
+// ===========================================================================
+(async function init() {
+  await loadVoteCounts();
+  subscribeToVotes();
+})();
+</script>
+</body>
+</html>
