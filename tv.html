@@ -17,10 +17,10 @@
   :root {
     --gold: #D4A843;
     --gold-light: #E8C96A;
+    --navy: #1a1a2e;
     --text-dark: #1a1a2e;
-    --text-muted: #6b7280;
-    --bg-start: #f0f2f5;
-    --bg-end: #e4e7ec;
+    --text-muted: #8b8fa0;
+    --bg: #dce0e8;
   }
 
   html, body {
@@ -28,7 +28,7 @@
     height: 100vh;
     overflow: hidden;
     font-family: 'Barlow Condensed', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: linear-gradient(180deg, var(--bg-start) 0%, var(--bg-end) 100%);
+    background: var(--bg);
     color: var(--text-dark);
     -webkit-font-smoothing: antialiased;
   }
@@ -40,35 +40,13 @@
     height: 100vh;
   }
 
-  /* ==================== VOTE SCROLL TICKER ==================== */
+  /* ==================== TICKER BAR ==================== */
   #voteScroll {
     flex-shrink: 0;
-    height: 48px;
-    background: rgba(255,255,255,0.7);
-    border-bottom: 3px solid var(--gold);
+    height: 40px;
+    background: var(--gold);
     overflow: hidden;
     position: relative;
-  }
-
-  #voteScroll::before,
-  #voteScroll::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 80px;
-    z-index: 2;
-    pointer-events: none;
-  }
-
-  #voteScroll::before {
-    left: 0;
-    background: linear-gradient(90deg, rgba(240,242,245,1) 0%, transparent 100%);
-  }
-
-  #voteScroll::after {
-    right: 0;
-    background: linear-gradient(270deg, rgba(240,242,245,1) 0%, transparent 100%);
   }
 
   .ticker-track {
@@ -83,42 +61,37 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 0 24px;
-    font-size: 16px;
+    padding: 0 28px;
+    font-size: 14px;
     font-weight: 600;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--navy);
     flex-shrink: 0;
   }
 
   .ticker-voter {
-    color: var(--gold);
-    font-weight: 700;
+    font-weight: 800;
   }
 
   .ticker-arrow {
-    color: var(--text-muted);
-    font-size: 14px;
+    font-size: 12px;
+    opacity: 0.6;
   }
 
   .ticker-candidate {
-    font-weight: 600;
-    padding: 2px 10px;
-    border-radius: 4px;
+    font-weight: 700;
   }
 
   .ticker-empty-msg {
     display: inline-flex;
     align-items: center;
-    padding: 0 40px;
-    font-size: 16px;
+    padding: 0 60px;
+    font-size: 14px;
     font-weight: 600;
-    letter-spacing: 0.04em;
-    background: linear-gradient(90deg, var(--gold), #c0392b, var(--gold-light), var(--gold));
-    background-size: 300% 100%;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    animation: gradientShift 4s ease infinite;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(26,26,46,0.5);
     flex-shrink: 0;
   }
 
@@ -127,97 +100,109 @@
     100% { transform: translateX(-33.333%); }
   }
 
-  @keyframes gradientShift {
-    0%, 100% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-  }
-
-  /* ==================== HEADER ==================== */
+  /* ==================== HEADER BAR ==================== */
   #header {
     flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 20px 40px 12px;
+    padding: 0 32px;
+    height: 60px;
+    background: var(--navy);
   }
 
   .header-left {
     display: flex;
     align-items: center;
-    gap: 24px;
+    gap: 12px;
+  }
+
+  .brand-box {
+    display: flex;
+    align-items: center;
+    padding: 4px 14px;
+    border: 2px solid var(--gold);
+    border-radius: 4px;
   }
 
   .brand-win {
-    font-size: 42px;
+    font-size: 24px;
     font-weight: 900;
-    letter-spacing: 0.15em;
+    letter-spacing: 0.2em;
     color: var(--gold);
+    line-height: 1;
   }
 
-  .header-title {
-    font-size: 22px;
+  .brand-magazine {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+  }
+
+  .header-center {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 18px;
     font-weight: 700;
-    color: var(--text-dark);
-    letter-spacing: 0.02em;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.9);
   }
 
-  .header-title span {
-    color: var(--text-muted);
-    font-weight: 500;
+  .header-center .accent {
+    color: var(--gold);
+    font-weight: 800;
   }
 
   .header-right {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 16px;
   }
 
-  .live-badge {
+  .live-indicator {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 6px 16px;
-    background: #dc2626;
-    border-radius: 20px;
-    color: #fff;
-    font-size: 13px;
-    font-weight: 800;
-    letter-spacing: 0.12em;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
     text-transform: uppercase;
+    color: rgba(255,255,255,0.6);
   }
 
   .live-dot {
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: #fff;
+    background: #ef4444;
     animation: pulse 1.5s ease-in-out infinite;
   }
 
   @keyframes pulse {
     0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.5; transform: scale(0.8); }
+    50% { opacity: 0.4; transform: scale(0.85); }
   }
 
-  .total-votes {
+  .total-box {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     gap: 8px;
-  }
-
-  .total-label {
-    font-size: 14px;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--text-muted);
+    padding: 6px 16px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 6px;
   }
 
   .total-number {
-    font-size: 36px;
+    font-size: 22px;
     font-weight: 900;
-    color: var(--text-dark);
+    color: #fff;
     font-variant-numeric: tabular-nums;
+    line-height: 1;
     transition: transform 0.3s ease;
   }
 
@@ -225,40 +210,59 @@
     transform: scale(1.15);
   }
 
-  /* ==================== JARS GRID ==================== */
-  #jarsGrid {
+  .total-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+    line-height: 1;
+  }
+
+  /* ==================== MAIN CONTENT ==================== */
+  #mainContent {
     flex: 1;
     display: flex;
-    align-items: stretch;
+    align-items: center;
     justify-content: center;
-    gap: 24px;
-    padding: 12px 40px 20px;
     min-height: 0;
   }
 
+  #jarsGrid {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 32px;
+    padding: 0 48px;
+  }
+
+  /* ==================== JAR CONTAINER ==================== */
   .jar-container {
-    flex: 1;
-    max-width: 200px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 6px;
+    width: 150px;
   }
 
   .jar-color-bar {
-    width: 60%;
+    width: 80%;
     height: 4px;
     border-radius: 2px;
+    margin-bottom: 8px;
   }
 
   .jar-name {
-    font-size: 16px;
-    font-weight: 800;
+    font-size: 17px;
+    font-weight: 900;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.04em;
     color: var(--text-dark);
     text-align: center;
-    line-height: 1.1;
+    line-height: 1.15;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .jar-school {
@@ -266,20 +270,21 @@
     font-weight: 500;
     color: var(--text-muted);
     text-align: center;
-    margin-top: -2px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 8px;
   }
 
+  /* ==================== JAR BODY ==================== */
   .jar-body {
     position: relative;
-    flex: 1;
     width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
-    min-height: 0;
   }
 
-  /* Jar Lid */
+  /* Lid */
   .jar-lid {
     position: relative;
     z-index: 5;
@@ -291,39 +296,39 @@
   }
 
   .jar-lid.open {
-    transform: translateY(-16px) rotate(-25deg);
+    transform: translateY(-14px) rotate(-25deg);
   }
 
   .lid-knob {
-    width: 14px;
-    height: 10px;
-    background: linear-gradient(180deg, #d1d5db, #9ca3af);
-    border-radius: 4px 4px 0 0;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 40% 35%, #e8e8e8, #c0c0c0, #a0a0a0);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
   }
 
   .lid-cap {
-    width: 64px;
-    height: 10px;
-    background: linear-gradient(180deg, #c0c4cc, #9ca3af);
-    border-radius: 3px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    width: 60px;
+    height: 8px;
+    background: linear-gradient(180deg, #d4d4d4, #b0b0b0);
+    border-radius: 3px 3px 0 0;
+    margin-top: -2px;
   }
 
-  .lid-neck {
-    width: 58px;
-    height: 6px;
-    background: linear-gradient(180deg, #b0b4bc, #8b8f97);
-    border-radius: 0 0 2px 2px;
+  .lid-ring {
+    width: 54px;
+    height: 5px;
+    background: linear-gradient(180deg, #c0c0c0, #a0a0a0);
   }
 
-  /* Drop Zone (marble dropping animation area) */
+  /* Drop zone */
   .jar-drop-zone {
     position: absolute;
     top: 30px;
     left: 50%;
     transform: translateX(-50%);
-    width: 22px;
-    height: 22px;
+    width: 24px;
+    height: 24px;
     z-index: 4;
     pointer-events: none;
     opacity: 0;
@@ -335,30 +340,35 @@
   }
 
   @keyframes ballFall {
-    0% { top: 0px; opacity: 1; }
+    0% { top: 30px; opacity: 1; }
     70% { opacity: 1; }
-    85% { top: calc(100% - 40px); }
-    92% { top: calc(100% - 52px); }
-    100% { top: calc(100% - 44px); opacity: 0; }
+    85% { top: 230px; }
+    92% { top: 218px; }
+    100% { top: 224px; opacity: 0; }
   }
 
-  /* Jar Neck (glass top) */
+  /* Neck */
   .jar-neck {
-    width: 56px;
-    height: 14px;
-    background: linear-gradient(90deg, rgba(255,255,255,0.3), rgba(255,255,255,0.6), rgba(255,255,255,0.3));
-    border: 2px solid rgba(180,190,200,0.5);
-    border-bottom: none;
-    border-radius: 4px 4px 0 0;
+    width: 52px;
+    height: 20px;
+    background: linear-gradient(90deg,
+      rgba(200,205,215,0.4) 0%,
+      rgba(240,242,248,0.7) 30%,
+      rgba(255,255,255,0.8) 50%,
+      rgba(240,242,248,0.7) 70%,
+      rgba(200,205,215,0.4) 100%
+    );
+    border-left: 2px solid rgba(180,185,195,0.5);
+    border-right: 2px solid rgba(180,185,195,0.5);
     position: relative;
     z-index: 3;
-    margin-top: -2px;
+    margin-top: -1px;
   }
 
-  /* Jar Shoulder (curved transition) */
+  /* Shoulder — flares from neck to body */
   .jar-shoulder {
-    width: 56px;
-    height: 20px;
+    width: 52px;
+    height: 24px;
     position: relative;
     z-index: 2;
   }
@@ -367,37 +377,59 @@
     content: '';
     position: absolute;
     top: 0;
-    left: -22px;
-    right: -22px;
-    bottom: 0;
-    border: 2px solid rgba(180,190,200,0.5);
-    border-top: none;
-    border-bottom: none;
-    border-radius: 0 0 20px 20px / 0 0 40px 40px;
-    background: linear-gradient(90deg, rgba(255,255,255,0.15), rgba(255,255,255,0.4), rgba(255,255,255,0.15));
+    left: -37px;
+    right: -37px;
+    height: 100%;
+    background: linear-gradient(90deg,
+      rgba(200,205,215,0.35) 0%,
+      rgba(235,238,245,0.6) 25%,
+      rgba(255,255,255,0.7) 50%,
+      rgba(235,238,245,0.6) 75%,
+      rgba(200,205,215,0.35) 100%
+    );
+    border-left: 2px solid rgba(180,185,195,0.5);
+    border-right: 2px solid rgba(180,185,195,0.5);
+    border-radius: 0 0 50% 50% / 0 0 100% 100%;
   }
 
-  /* Jar Glass (main body) */
+  /* Glass body */
   .jar-glass {
-    flex: 1;
-    width: 100px;
+    width: 128px;
+    height: 200px;
     position: relative;
-    background: linear-gradient(90deg, rgba(255,255,255,0.15), rgba(255,255,255,0.35), rgba(255,255,255,0.15));
-    border: 2px solid rgba(180,190,200,0.5);
+    background: linear-gradient(90deg,
+      rgba(200,205,215,0.3) 0%,
+      rgba(235,240,248,0.5) 20%,
+      rgba(255,255,255,0.6) 45%,
+      rgba(235,240,248,0.5) 80%,
+      rgba(200,205,215,0.3) 100%
+    );
+    border: 2px solid rgba(180,185,195,0.5);
     border-top: none;
-    border-radius: 0 0 12px 12px;
+    border-radius: 0 0 16px 16px;
     overflow: hidden;
-    min-height: 0;
   }
 
   .glass-highlight {
     position: absolute;
-    top: 0;
-    left: 16px;
-    width: 6px;
-    height: 100%;
-    background: linear-gradient(180deg, rgba(255,255,255,0.5), rgba(255,255,255,0.1));
+    top: 8px;
+    left: 14px;
+    width: 5px;
+    bottom: 8px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.15));
     border-radius: 3px;
+    pointer-events: none;
+    z-index: 3;
+  }
+
+  .glass-highlight-right {
+    position: absolute;
+    top: 20px;
+    right: 18px;
+    width: 3px;
+    bottom: 20px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.3), rgba(255,255,255,0.05));
+    border-radius: 2px;
     pointer-events: none;
     z-index: 3;
   }
@@ -408,51 +440,64 @@
     left: 0;
     right: 0;
     transition: height 0.8s ease-out;
-    border-radius: 0 0 10px 10px;
+    border-radius: 0 0 14px 14px;
     z-index: 1;
   }
 
   .marbles-container {
     position: absolute;
-    bottom: 4px;
-    left: 4px;
-    right: 4px;
+    bottom: 6px;
+    left: 6px;
+    right: 6px;
     z-index: 2;
   }
 
   .marble {
     position: absolute;
-    width: 22px;
-    height: 22px;
+    width: 24px;
+    height: 24px;
     border-radius: 50%;
-    box-shadow: inset 0 -2px 4px rgba(0,0,0,0.2), 0 1px 3px rgba(0,0,0,0.15);
+    box-shadow:
+      inset -3px -3px 6px rgba(0,0,0,0.25),
+      inset 2px 2px 4px rgba(255,255,255,0.3),
+      0 1px 3px rgba(0,0,0,0.2);
   }
 
   .marble-highlight {
     position: absolute;
-    top: 3px;
-    left: 5px;
-    width: 6px;
-    height: 6px;
+    top: 4px;
+    left: 6px;
+    width: 7px;
+    height: 7px;
     border-radius: 50%;
-    background: rgba(255,255,255,0.7);
+    background: rgba(255,255,255,0.8);
   }
 
-  /* Vote Counter (metal plate) */
+  /* ==================== VOTE COUNTER PLATE ==================== */
   .vote-counter {
-    flex-shrink: 0;
-    margin-top: 8px;
-    padding: 6px 20px;
-    background: linear-gradient(180deg, #e8e8e8, #d0d0d0);
-    border: 1px solid #bbb;
+    margin-top: 10px;
+    padding: 6px 16px;
+    background: linear-gradient(180deg, #eaeaea, #d5d5d5);
+    border: 1px solid #c0c0c0;
     border-radius: 6px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.8);
-    font-size: 22px;
-    font-weight: 900;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.9);
+    font-size: 14px;
+    font-weight: 800;
     color: var(--text-dark);
     font-variant-numeric: tabular-nums;
     text-align: center;
-    min-width: 60px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .counter-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: #b0b0b0;
   }
 
   /* ==================== CELEBRATION OVERLAY ==================== */
@@ -612,12 +657,12 @@
     50% { opacity: 0.4; }
   }
 
-  /* ==================== LOADING STATE ==================== */
+  /* ==================== LOADING ==================== */
   #loadingState {
     display: flex;
     align-items: center;
     justify-content: center;
-    flex: 1;
+    padding: 80px;
     color: var(--text-muted);
     font-size: 20px;
     font-weight: 600;
@@ -626,9 +671,9 @@
 
   .loader-spinner {
     display: inline-block;
-    width: 32px;
-    height: 32px;
-    border: 3px solid #d1d5db;
+    width: 28px;
+    height: 28px;
+    border: 3px solid #c0c4cc;
     border-top-color: var(--gold);
     border-radius: 50%;
     animation: spin 0.7s linear infinite;
@@ -642,34 +687,41 @@
 <body>
 
 <div class="page">
-  <!-- Vote Scroll Ticker -->
+  <!-- Gold Ticker Bar -->
   <div id="voteScroll">
     <div class="ticker-track" id="tickerTrack"></div>
   </div>
 
-  <!-- Header -->
+  <!-- Dark Header Bar -->
   <div id="header">
     <div class="header-left">
-      <div class="brand-win">WIN</div>
-      <div class="header-title">Dan Hodge Trophy <span>&mdash; Live Fan Vote</span></div>
+      <div class="brand-box">
+        <span class="brand-win">WIN</span>
+      </div>
+      <span class="brand-magazine">Magazine</span>
+    </div>
+    <div class="header-center">
+      Dan Hodge Trophy &mdash; <span class="accent">Live Fan Vote</span>
     </div>
     <div class="header-right">
-      <div class="live-badge">
+      <div class="live-indicator">
         <div class="live-dot"></div>
         LIVE
       </div>
-      <div class="total-votes">
-        <span class="total-label">Total Votes</span>
+      <div class="total-box">
         <span class="total-number" id="totalVotes">0</span>
+        <span class="total-label">Total Votes</span>
       </div>
     </div>
   </div>
 
-  <!-- Jars Grid -->
-  <div id="jarsGrid">
-    <div id="loadingState">
-      <div class="loader-spinner"></div>
-      Loading candidates...
+  <!-- Main Content — Jars Centered -->
+  <div id="mainContent">
+    <div id="jarsGrid">
+      <div id="loadingState">
+        <div class="loader-spinner"></div>
+        Loading candidates...
+      </div>
     </div>
   </div>
 </div>
@@ -717,9 +769,7 @@ let celebrationQueue = [];
 let isCelebrating = false;
 let realtimeChannel = null;
 
-// Jar element refs for O(1) updates
 let jarElements = {};
-// Jar animation state machines
 let jarAnims = {};
 
 // ===========================================================================
@@ -762,10 +812,8 @@ function hexToHsl(hex) {
   const r = parseInt(hex.substring(0, 2), 16) / 255;
   const g = parseInt(hex.substring(2, 4), 16) / 255;
   const b = parseInt(hex.substring(4, 6), 16) / 255;
-
   const max = Math.max(r, g, b), min = Math.min(r, g, b);
   let h, s, l = (max + min) / 2;
-
   if (max === min) {
     h = s = 0;
   } else {
@@ -777,7 +825,6 @@ function hexToHsl(hex) {
       case b: h = ((r - g) / d + 4) / 6; break;
     }
   }
-
   return { h: h * 360, s: s * 100, l: l * 100 };
 }
 
@@ -788,8 +835,7 @@ function hslToHex(h, s, l) {
     r = g = b = l;
   } else {
     const hue2rgb = (p, q, t) => {
-      if (t < 0) t += 1;
-      if (t > 1) t -= 1;
+      if (t < 0) t += 1; if (t > 1) t -= 1;
       if (t < 1/6) return p + (q - p) * 6 * t;
       if (t < 1/2) return q;
       if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
@@ -890,7 +936,7 @@ function renderJars() {
     // Lid
     const lid = document.createElement('div');
     lid.className = 'jar-lid';
-    lid.innerHTML = '<div class="lid-knob"></div><div class="lid-cap"></div><div class="lid-neck"></div>';
+    lid.innerHTML = '<div class="lid-knob"></div><div class="lid-cap"></div><div class="lid-ring"></div>';
     body.appendChild(lid);
 
     // Drop zone
@@ -916,11 +962,15 @@ function renderJars() {
     highlight.className = 'glass-highlight';
     glass.appendChild(highlight);
 
+    const highlightR = document.createElement('div');
+    highlightR.className = 'glass-highlight-right';
+    glass.appendChild(highlightR);
+
     const colorFill = document.createElement('div');
     colorFill.className = 'color-fill';
     colorFill.style.background = c.light;
-    colorFill.style.opacity = '0.4';
-    const fillPct = maxVotes > 0 ? ((c.vote_count || 0) / maxVotes) * 70 : 0;
+    colorFill.style.opacity = '0.35';
+    const fillPct = maxVotes > 0 ? ((c.vote_count || 0) / maxVotes) * 65 : 0;
     colorFill.style.height = fillPct + '%';
     glass.appendChild(colorFill);
 
@@ -934,27 +984,14 @@ function renderJars() {
     // Vote counter plate
     const counter = document.createElement('div');
     counter.className = 'vote-counter';
-    counter.textContent = c.vote_count || 0;
+    counter.innerHTML = `<span class="counter-dot"></span><span class="counter-text">${c.vote_count || 0} VOTES</span><span class="counter-dot"></span>`;
     container.appendChild(counter);
 
     jarsGrid.appendChild(container);
 
     // Cache refs
-    jarElements[c.id] = {
-      container,
-      lid,
-      dropZone,
-      glass,
-      colorFill,
-      marblesContainer,
-      counter
-    };
-
-    // Init animation state
-    jarAnims[c.id] = {
-      state: 'idle',
-      pendingVotes: 0
-    };
+    jarElements[c.id] = { container, lid, dropZone, glass, colorFill, marblesContainer, counter };
+    jarAnims[c.id] = { state: 'idle', pendingVotes: 0 };
 
     // Render initial marbles
     renderMarbles(c.id, c.vote_count || 0, maxVotes);
@@ -969,21 +1006,19 @@ function renderMarbles(candidateId, voteCount, maxVotes) {
   if (!els) return;
   const c = candidateMap[candidateId];
 
-  // Clear existing marbles
   els.marblesContainer.innerHTML = '';
 
-  // Proportional marble count: max 30
-  const marbleCount = maxVotes > 0 ? Math.min(Math.ceil((voteCount / maxVotes) * 30), 30) : 0;
+  const marbleCount = maxVotes > 0 ? Math.min(Math.ceil((voteCount / maxVotes) * 24), 24) : 0;
   if (marbleCount === 0) return;
 
-  const containerWidth = 92; // jar glass inner width minus padding
-  const marbleSize = 22;
-  const marblesPerRow = 3;
-  const spacing = (containerWidth - marblesPerRow * marbleSize) / (marblesPerRow + 1);
+  const containerWidth = 116;
+  const marbleSize = 24;
+  const cols = 4;
+  const spacing = (containerWidth - cols * marbleSize) / (cols + 1);
 
   for (let i = 0; i < marbleCount; i++) {
-    const row = Math.floor(i / marblesPerRow);
-    const col = i % marblesPerRow;
+    const row = Math.floor(i / cols);
+    const col = i % cols;
     const isOddRow = row % 2 === 1;
 
     const marble = document.createElement('div');
@@ -991,15 +1026,13 @@ function renderMarbles(candidateId, voteCount, maxVotes) {
 
     let xPos = spacing + col * (marbleSize + spacing);
     if (isOddRow) xPos += (marbleSize + spacing) / 2;
-
-    // Clamp to container
     if (xPos + marbleSize > containerWidth) xPos = containerWidth - marbleSize - 2;
 
-    const yPos = row * (marbleSize - 2);
+    const yPos = row * (marbleSize - 1);
 
     marble.style.left = xPos + 'px';
     marble.style.bottom = yPos + 'px';
-    marble.style.background = `radial-gradient(circle at 35% 35%, ${c.light}, ${c.accent}, ${c.color})`;
+    marble.style.background = `radial-gradient(circle at 35% 30%, ${c.accent}, ${c.color} 60%, ${darkenHex(c.color, 25)})`;
 
     const hl = document.createElement('div');
     hl.className = 'marble-highlight';
@@ -1009,21 +1042,24 @@ function renderMarbles(candidateId, voteCount, maxVotes) {
   }
 }
 
-function updateAllJars(flashCandidateId) {
+function darkenHex(hex, amount) {
+  const hsl = hexToHsl(hex);
+  return hslToHex(hsl.h, hsl.s, Math.max(hsl.l - amount, 5));
+}
+
+function updateAllJars() {
   const maxVotes = Math.max(...candidates.map(c => c.vote_count || 0), 1);
 
   candidates.forEach(c => {
     const els = jarElements[c.id];
     if (!els) return;
 
-    // Update color fill height
-    const fillPct = maxVotes > 0 ? ((c.vote_count || 0) / maxVotes) * 70 : 0;
+    const fillPct = maxVotes > 0 ? ((c.vote_count || 0) / maxVotes) * 65 : 0;
     els.colorFill.style.height = fillPct + '%';
 
-    // Update counter
-    els.counter.textContent = c.vote_count || 0;
+    const ct = els.counter.querySelector('.counter-text');
+    if (ct) ct.textContent = (c.vote_count || 0) + ' VOTES';
 
-    // Re-render marbles
     renderMarbles(c.id, c.vote_count || 0, maxVotes);
   });
 }
@@ -1038,12 +1074,7 @@ function updateTotalDisplay() {
 function triggerJarAnimation(candidateId) {
   const anim = jarAnims[candidateId];
   if (!anim) return;
-
-  if (anim.state !== 'idle') {
-    anim.pendingVotes++;
-    return;
-  }
-
+  if (anim.state !== 'idle') { anim.pendingVotes++; return; }
   runJarAnimation(candidateId);
 }
 
@@ -1054,18 +1085,16 @@ function runJarAnimation(candidateId) {
   if (!anim || !els || !c) return;
 
   anim.state = 'lidOpen';
-
-  // Open lid
   els.lid.classList.add('open');
 
   setTimeout(() => {
-    // Create dropping marble
     anim.state = 'dropping';
     const dropMarble = document.createElement('div');
     dropMarble.className = 'marble';
-    dropMarble.style.width = '22px';
-    dropMarble.style.height = '22px';
-    dropMarble.style.background = `radial-gradient(circle at 35% 35%, ${c.light}, ${c.accent}, ${c.color})`;
+    dropMarble.style.width = '24px';
+    dropMarble.style.height = '24px';
+    dropMarble.style.background = `radial-gradient(circle at 35% 30%, ${c.accent}, ${c.color} 60%, ${darkenHex(c.color, 25)})`;
+    dropMarble.style.position = 'relative';
     const hl = document.createElement('div');
     hl.className = 'marble-highlight';
     dropMarble.appendChild(hl);
@@ -1075,27 +1104,17 @@ function runJarAnimation(candidateId) {
     els.dropZone.classList.add('dropping');
 
     setTimeout(() => {
-      // Settle: update visuals
       anim.state = 'settle';
       els.dropZone.classList.remove('dropping');
       els.dropZone.innerHTML = '';
+      updateAllJars();
 
-      // Update jar visuals
-      updateAllJars(candidateId);
-
-      // Close lid
       setTimeout(() => {
         anim.state = 'lidClose';
         els.lid.classList.remove('open');
-
         setTimeout(() => {
           anim.state = 'idle';
-
-          // Check for pending votes
-          if (anim.pendingVotes > 0) {
-            anim.pendingVotes--;
-            runJarAnimation(candidateId);
-          }
+          if (anim.pendingVotes > 0) { anim.pendingVotes--; runJarAnimation(candidateId); }
         }, 600);
       }, 200);
     }, 600);
@@ -1109,18 +1128,14 @@ function buildTicker() {
   tickerTrack.innerHTML = '';
 
   if (recentVotes.length === 0) {
-    // Empty state: tripled for seamless scroll
-    const msg = 'Cast your vote at the WIN booth...  ✦  Dan Hodge Trophy Fan Vote  ✦  ';
-    for (let copy = 0; copy < 3; copy++) {
-      for (let i = 0; i < 3; i++) {
-        const item = document.createElement('span');
-        item.className = 'ticker-empty-msg';
-        item.textContent = msg;
-        tickerTrack.appendChild(item);
-      }
+    const msg = 'Cast your vote at the WIN booth...';
+    for (let copy = 0; copy < 6; copy++) {
+      const item = document.createElement('span');
+      item.className = 'ticker-empty-msg';
+      item.textContent = msg;
+      tickerTrack.appendChild(item);
     }
   } else {
-    // Triple the content for seamless loop
     for (let copy = 0; copy < 3; copy++) {
       recentVotes.forEach(v => {
         const item = document.createElement('div');
@@ -1128,31 +1143,20 @@ function buildTicker() {
         item.innerHTML = `
           <span class="ticker-voter">${esc(v.firstName)}</span>
           <span class="ticker-arrow">▸</span>
-          <span class="ticker-candidate" style="background: ${esc(v.light)}; color: ${esc(v.color)};">${esc(v.candidateName)}</span>
+          <span class="ticker-candidate">${esc(v.candidateName)}</span>
         `;
         tickerTrack.appendChild(item);
       });
     }
   }
 
-  // Scale speed with vote count
   const duration = Math.max(recentVotes.length * 4, 20);
   tickerTrack.style.animationDuration = duration + 's';
 }
 
 function addTickerVote(firstName, candidateName, candidateColor, candidateLight) {
-  recentVotes.unshift({
-    firstName,
-    candidateName,
-    color: candidateColor,
-    light: candidateLight || '#f0f0f0'
-  });
-
-  // Keep last 20 for the scrolling display
-  if (recentVotes.length > 20) {
-    recentVotes = recentVotes.slice(0, 20);
-  }
-
+  recentVotes.unshift({ firstName, candidateName, color: candidateColor, light: candidateLight || '#f0f0f0' });
+  if (recentVotes.length > 20) recentVotes = recentVotes.slice(0, 20);
   buildTicker();
 }
 
@@ -1160,38 +1164,27 @@ function addTickerVote(firstName, candidateName, candidateColor, candidateLight)
 // Celebration Overlay
 // ===========================================================================
 function queueCelebration(firstName, candidateName, candidateSchool, candidateColor) {
-  // Cap queue at 5
   if (celebrationQueue.length >= 5) return;
-
   celebrationQueue.push({ firstName, candidateName, candidateSchool, candidateColor });
-
-  if (!isCelebrating) {
-    playCelebration();
-  }
+  if (!isCelebrating) playCelebration();
 }
 
 function playCelebration() {
-  if (celebrationQueue.length === 0) {
-    isCelebrating = false;
-    return;
-  }
+  if (celebrationQueue.length === 0) { isCelebrating = false; return; }
 
   isCelebrating = true;
   const { firstName, candidateName, candidateSchool, candidateColor } = celebrationQueue.shift();
 
-  // Set content
   celebVoterName.textContent = firstName.toUpperCase();
   celebCandidateName.textContent = candidateName;
   celebCandidateName.style.color = candidateColor;
   celebCandidateSchool.textContent = candidateSchool;
 
-  // Set colored elements
   celebBarTop.style.background = candidateColor;
   celebBarBottom.style.background = candidateColor;
   celebAccent.style.background = candidateColor;
   celebDivider.style.background = candidateColor;
 
-  // Reset animation classes
   celebrationEl.classList.remove('fade-out');
   celebContent.style.animation = 'none';
   void celebContent.offsetWidth;
@@ -1199,14 +1192,12 @@ function playCelebration() {
 
   celebrationEl.classList.add('active');
 
-  // Hold for 7 seconds then fade out
   setTimeout(() => {
     celebrationEl.classList.add('fade-out');
     celebrationEl.classList.remove('active');
     setTimeout(() => {
       celebrationEl.classList.remove('fade-out');
       celebrationEl.style.opacity = '0';
-      // Play next
       playCelebration();
     }, 1000);
   }, 7000);
@@ -1230,11 +1221,8 @@ function subscribeToVotes() {
       } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
         connectionDot.classList.add('disconnected');
         console.warn('Realtime: disconnected, status =', status);
-        // Attempt reconnection after delay
         setTimeout(() => {
-          if (realtimeChannel) {
-            sb.removeChannel(realtimeChannel);
-          }
+          if (realtimeChannel) sb.removeChannel(realtimeChannel);
           subscribeToVotes();
         }, 5000);
       }
@@ -1248,31 +1236,24 @@ async function handleNewVote(payload) {
   const candidateId = vote.candidate_id;
   const firstName = vote.first_name || 'Fan';
 
-  // Optimistic increment: update local counts immediately
   const candidate = candidateMap[candidateId];
   if (candidate) {
     candidate.vote_count = (candidate.vote_count || 0) + 1;
     totalVotes++;
 
-    // Update counter text immediately
     const els = jarElements[candidateId];
     if (els) {
-      els.counter.textContent = candidate.vote_count;
+      const ct = els.counter.querySelector('.counter-text');
+      if (ct) ct.textContent = candidate.vote_count + ' VOTES';
     }
     updateTotalDisplay();
     animateBump(totalVotesEl);
 
-    // Trigger jar animation
     triggerJarAnimation(candidateId);
-
-    // Add to ticker
     addTickerVote(firstName, candidate.name, candidate.color, candidate.light);
-
-    // Trigger celebration
     queueCelebration(firstName, candidate.name, candidate.school, candidate.color);
   }
 
-  // Re-fetch accurate counts (in case of race conditions)
   try {
     const { data, error } = await sb
       .from('vote_counts')
@@ -1282,9 +1263,7 @@ async function handleNewVote(payload) {
     if (!error && data) {
       totalVotes = 0;
       data.forEach(c => {
-        if (candidateMap[c.id]) {
-          candidateMap[c.id].vote_count = c.vote_count || 0;
-        }
+        if (candidateMap[c.id]) candidateMap[c.id].vote_count = c.vote_count || 0;
         totalVotes += c.vote_count || 0;
       });
       candidates = data;
