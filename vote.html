@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Dan Hodge Trophy Vote | WIN Magazine</title>
+<style>
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  :root {
+    --bg: #0d0d1a;
+    --bg-card: #161628;
+    --bg-input: #1a1a2e;
+    --gold: #FFD700;
+    --gold-dim: #b89b00;
+    --text: #f0f0f0;
+    --text-muted: #8888aa;
+    --error: #ff4d6a;
+    --success: #22c55e;
+    --radius: 12px;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100dvh;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* --- Background texture --- */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 0%, rgba(255,215,0,0.06) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 50% at 50% 100%, rgba(255,215,0,0.03) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .page-wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 24px 16px 48px;
+  }
+
+  /* --- Header --- */
+  .header {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  .header-win {
+    font-size: 3.2rem;
+    font-weight: 900;
+    letter-spacing: 0.25em;
+    color: var(--gold);
+    text-shadow: 0 0 30px rgba(255,215,0,0.3), 0 2px 4px rgba(0,0,0,0.5);
+    line-height: 1.1;
+  }
+
+  .header-magazine {
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.45em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  .header-divider {
+    width: 80px;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 16px auto;
+    border-radius: 2px;
+  }
+
+  .header-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: 0.02em;
+  }
+
+  .header-subtitle {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  /* --- Candidate Grid --- */
+  .candidates-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  @media (min-width: 540px) {
+    .candidates-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .candidate-card {
+    position: relative;
+    background: var(--bg-card);
+    border: 2px solid transparent;
+    border-left: 5px solid var(--card-accent, #666);
+    border-radius: var(--radius);
+    padding: 16px 16px 16px 18px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+
+  .candidate-card:hover {
+    background: #1c1c36;
+  }
+
+  .candidate-card.selected {
+    border-color: var(--gold);
+    border-left-color: var(--gold);
+    background: #1e1e38;
+    transform: scale(1.02);
+    box-shadow: 0 0 20px rgba(255,215,0,0.12), 0 4px 16px rgba(0,0,0,0.3);
+  }
+
+  .candidate-card input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .candidate-name {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .candidate-school {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--card-accent, var(--text-muted));
+  }
+
+  .candidate-meta {
+    display: flex;
+    gap: 16px;
+    margin-top: 6px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+
+  .candidate-meta span {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .candidate-check {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid #444;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+  }
+
+  .candidate-card.selected .candidate-check {
+    background: var(--gold);
+    border-color: var(--gold);
+  }
+
+  .candidate-check svg {
+    width: 14px;
+    height: 14px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  .candidate-card.selected .candidate-check svg {
+    opacity: 1;
+  }
+
+  /* --- Section label --- */
+  .section-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+  }
+
+  .section-label.candidates-label {
+    margin-bottom: 14px;
+  }
+
+  /* --- Form Fields --- */
+  .form-section {
+    margin-bottom: 24px;
+  }
+
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .field-group {
+    margin-bottom: 14px;
+  }
+
+  .field-group label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    letter-spacing: 0.03em;
+  }
+
+  .field-group input {
+    width: 100%;
+    padding: 14px 16px;
+    font-size: 1rem;
+    color: var(--text);
+    background: var(--bg-input);
+    border: 2px solid #2a2a44;
+    border-radius: var(--radius);
+    outline: none;
+    transition: border-color 0.2s ease;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .field-group input::placeholder {
+    color: #555570;
+  }
+
+  .field-group input:focus {
+    border-color: var(--gold);
+  }
+
+  .field-group input.input-error {
+    border-color: var(--error);
+  }
+
+  .field-error {
+    font-size: 0.78rem;
+    color: var(--error);
+    margin-top: 4px;
+    min-height: 0;
+    overflow: hidden;
+    transition: all 0.2s ease;
+  }
+
+  /* --- Consent --- */
+  .consent-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 24px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .consent-row input[type="checkbox"] {
+    width: 22px;
+    height: 22px;
+    min-width: 22px;
+    accent-color: var(--gold);
+    margin-top: 1px;
+    cursor: pointer;
+  }
+
+  .consent-row span {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    line-height: 1.45;
+  }
+
+  /* --- Submit Button --- */
+  .submit-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 18px 24px;
+    font-size: 1.1rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #0d0d1a;
+    background: linear-gradient(135deg, var(--gold) 0%, #e6c200 100%);
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .submit-btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 24px rgba(255,215,0,0.3);
+  }
+
+  .submit-btn:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  .submit-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  /* --- Spinner --- */
+  .spinner {
+    display: inline-block;
+    width: 22px;
+    height: 22px;
+    border: 3px solid rgba(13,13,26,0.3);
+    border-top-color: #0d0d1a;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* --- Global Error --- */
+  .global-error {
+    background: rgba(255,77,106,0.1);
+    border: 1px solid rgba(255,77,106,0.3);
+    border-radius: var(--radius);
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    font-size: 0.88rem;
+    color: var(--error);
+    display: none;
+  }
+
+  .global-error.visible {
+    display: block;
+  }
+
+  /* --- Thank You Screen --- */
+  .thank-you-screen {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 60px 20px;
+    min-height: 60dvh;
+  }
+
+  .thank-you-screen.visible {
+    display: flex;
+  }
+
+  .checkmark-circle {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold) 0%, #e6c200 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 28px;
+    animation: scaleIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 0 40px rgba(255,215,0,0.25);
+  }
+
+  .checkmark-circle svg {
+    width: 52px;
+    height: 52px;
+    stroke: #0d0d1a;
+    stroke-width: 3;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 60;
+    stroke-dashoffset: 60;
+    animation: drawCheck 0.5s 0.3s ease forwards;
+  }
+
+  @keyframes scaleIn {
+    0% { transform: scale(0); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  @keyframes drawCheck {
+    to { stroke-dashoffset: 0; }
+  }
+
+  .thank-you-message {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .thank-you-sub {
+    font-size: 1rem;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+
+  .thank-you-reset {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    opacity: 0.6;
+    margin-top: 20px;
+  }
+
+  /* --- Loading skeleton --- */
+  .loading-skeleton {
+    text-align: center;
+    padding: 40px 0;
+    color: var(--text-muted);
+  }
+
+  .skeleton-spinner {
+    display: inline-block;
+    width: 32px;
+    height: 32px;
+    border: 3px solid #2a2a44;
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    margin-bottom: 12px;
+  }
+
+  /* --- Utility --- */
+  .hidden { display: none !important; }
+
+  /* --- Footer --- */
+  .footer {
+    text-align: center;
+    padding: 32px 0 8px;
+    font-size: 0.75rem;
+    color: #444460;
+  }
+</style>
+</head>
+<body>
+
+<div class="page-wrapper">
+  <!-- Header -->
+  <header class="header">
+    <div class="header-win">WIN</div>
+    <div class="header-magazine">Magazine</div>
+    <div class="header-divider"></div>
+    <h1 class="header-title">Dan Hodge Trophy Fan Vote</h1>
+    <p class="header-subtitle">Select your pick for college wrestling's most outstanding wrestler</p>
+  </header>
+
+  <!-- Voting Form -->
+  <form id="voteForm" autocomplete="off" novalidate>
+
+    <!-- Candidate Selection -->
+    <div class="section-label candidates-label">Select Your Candidate</div>
+    <div id="candidatesGrid" class="candidates-grid">
+      <div class="loading-skeleton">
+        <div class="skeleton-spinner"></div>
+        <div>Loading candidates...</div>
+      </div>
+    </div>
+    <div id="candidateError" class="field-error"></div>
+
+    <!-- Global Error -->
+    <div id="globalError" class="global-error"></div>
+
+    <!-- Voter Info -->
+    <div class="form-section">
+      <div class="section-label">Your Information</div>
+
+      <div class="field-row">
+        <div class="field-group">
+          <label for="firstName">First Name</label>
+          <input type="text" id="firstName" name="first_name" placeholder="First name" required>
+          <div id="firstNameError" class="field-error"></div>
+        </div>
+        <div class="field-group">
+          <label for="lastName">Last Name</label>
+          <input type="text" id="lastName" name="last_name" placeholder="Last name" required>
+          <div id="lastNameError" class="field-error"></div>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" name="email" placeholder="you@example.com" required>
+        <div id="emailError" class="field-error"></div>
+      </div>
+
+      <div class="field-group">
+        <label for="phone">Phone Number</label>
+        <input type="tel" id="phone" name="phone" placeholder="(555) 123-4567" required>
+        <div id="phoneError" class="field-error"></div>
+      </div>
+    </div>
+
+    <!-- Consent -->
+    <label class="consent-row">
+      <input type="checkbox" id="consent" checked>
+      <span>I agree to receive text messages and emails from WIN Magazine about voting results and wrestling news. Message &amp; data rates may apply.</span>
+    </label>
+
+    <!-- Submit -->
+    <button type="submit" class="submit-btn" id="submitBtn">
+      <span id="submitText">Cast Your Vote</span>
+      <span id="submitSpinner" class="spinner hidden"></span>
+    </button>
+
+  </form>
+
+  <!-- Thank You Screen -->
+  <div id="thankYou" class="thank-you-screen">
+    <div class="checkmark-circle">
+      <svg viewBox="0 0 40 40">
+        <polyline points="10,22 18,30 32,12" />
+      </svg>
+    </div>
+    <div class="thank-you-message" id="thankYouMessage"></div>
+    <div class="thank-you-sub">Thank you for voting!</div>
+    <div class="thank-you-reset">Resetting in a few seconds...</div>
+  </div>
+
+  <div class="footer">&copy; WIN Magazine</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+// ---------------------------------------------------------------------------
+// Configuration
+// ---------------------------------------------------------------------------
+const SUPABASE_URL = 'https://aranzjtwsxaqtczswoiz.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFyYW56anR3c3hhcXRjenN3b2l6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE5NDYwMzYsImV4cCI6MjA4NzUyMjAzNn0.8ZKA0ZvZE6VJHQXTZRECDJTjtm5RUQNsSpw9dGO37Do';
+const N8N_WEBHOOK_URL = 'https://n8n.srv1236164.hstgr.cloud/webhook/hodge-vote';
+
+// ---------------------------------------------------------------------------
+// Supabase client
+// ---------------------------------------------------------------------------
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ---------------------------------------------------------------------------
+// State
+// ---------------------------------------------------------------------------
+let candidates = [];
+let selectedCandidateId = null;
+let isSubmitting = false;
+
+// ---------------------------------------------------------------------------
+// DOM references
+// ---------------------------------------------------------------------------
+const $ = (id) => document.getElementById(id);
+const form = $('voteForm');
+const grid = $('candidatesGrid');
+const globalError = $('globalError');
+const thankYouScreen = $('thankYou');
+const submitBtn = $('submitBtn');
+const submitText = $('submitText');
+const submitSpinner = $('submitSpinner');
+
+// ---------------------------------------------------------------------------
+// Load candidates
+// ---------------------------------------------------------------------------
+async function loadCandidates() {
+  try {
+    const { data, error } = await supabase
+      .from('candidates')
+      .select('*')
+      .order('display_order', { ascending: true });
+
+    if (error) throw error;
+    if (!data || data.length === 0) {
+      grid.innerHTML = '<div class="loading-skeleton">No candidates available at this time.</div>';
+      return;
+    }
+
+    candidates = data;
+    renderCandidates();
+  } catch (err) {
+    console.error('Failed to load candidates:', err);
+    grid.innerHTML = '<div class="loading-skeleton" style="color:var(--error)">Unable to load candidates. Please refresh the page.</div>';
+  }
+}
+
+function renderCandidates() {
+  grid.innerHTML = '';
+  candidates.forEach((c) => {
+    const card = document.createElement('label');
+    card.className = 'candidate-card';
+    card.style.setProperty('--card-accent', c.color || '#888');
+    card.setAttribute('data-id', c.id);
+
+    card.innerHTML = `
+      <input type="radio" name="candidate" value="${c.id}">
+      <div class="candidate-check">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#0d0d1a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6,13 10,17 18,8" />
+        </svg>
+      </div>
+      <div class="candidate-name">${esc(c.name)}</div>
+      <div class="candidate-school">${esc(c.school || '')}</div>
+      <div class="candidate-meta">
+        ${c.weight_class ? `<span>${esc(c.weight_class)}</span>` : ''}
+        ${c.record ? `<span>${esc(c.record)}</span>` : ''}
+      </div>
+    `;
+
+    const radio = card.querySelector('input[type="radio"]');
+    card.addEventListener('click', () => selectCandidate(c.id));
+    radio.addEventListener('change', () => selectCandidate(c.id));
+
+    grid.appendChild(card);
+  });
+}
+
+function selectCandidate(id) {
+  selectedCandidateId = id;
+  clearError('candidateError');
+  document.querySelectorAll('.candidate-card').forEach((card) => {
+    const isSelected = card.getAttribute('data-id') == id;
+    card.classList.toggle('selected', isSelected);
+    card.querySelector('input[type="radio"]').checked = isSelected;
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Phone normalization
+// ---------------------------------------------------------------------------
+function normalizePhone(raw) {
+  // Strip everything except digits and leading +
+  const digits = raw.replace(/[^\d]/g, '');
+
+  // If already has country code
+  if (digits.length === 11 && digits.startsWith('1')) {
+    return '+' + digits;
+  }
+  // US 10-digit
+  if (digits.length === 10) {
+    return '+1' + digits;
+  }
+  // If they typed +1 plus 10 digits
+  if (raw.startsWith('+') && digits.length === 11) {
+    return '+' + digits;
+  }
+
+  return null; // invalid
+}
+
+// ---------------------------------------------------------------------------
+// Validation
+// ---------------------------------------------------------------------------
+function validateForm() {
+  let valid = true;
+  clearAllErrors();
+
+  // Candidate
+  if (!selectedCandidateId) {
+    showError('candidateError', 'Please select a candidate');
+    valid = false;
+  }
+
+  // First name
+  const firstName = $('firstName').value.trim();
+  if (!firstName) {
+    showError('firstNameError', 'First name is required');
+    $('firstName').classList.add('input-error');
+    valid = false;
+  }
+
+  // Last name
+  const lastName = $('lastName').value.trim();
+  if (!lastName) {
+    showError('lastNameError', 'Last name is required');
+    $('lastName').classList.add('input-error');
+    valid = false;
+  }
+
+  // Email
+  const email = $('email').value.trim();
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!email) {
+    showError('emailError', 'Email is required');
+    $('email').classList.add('input-error');
+    valid = false;
+  } else if (!emailRegex.test(email)) {
+    showError('emailError', 'Please enter a valid email address');
+    $('email').classList.add('input-error');
+    valid = false;
+  }
+
+  // Phone
+  const phoneRaw = $('phone').value.trim();
+  if (!phoneRaw) {
+    showError('phoneError', 'Phone number is required');
+    $('phone').classList.add('input-error');
+    valid = false;
+  } else {
+    const normalized = normalizePhone(phoneRaw);
+    if (!normalized) {
+      showError('phoneError', 'Please enter a valid 10-digit US phone number');
+      $('phone').classList.add('input-error');
+      valid = false;
+    }
+  }
+
+  return valid;
+}
+
+function showError(id, msg) {
+  const el = $(id);
+  if (el) el.textContent = msg;
+}
+
+function clearError(id) {
+  const el = $(id);
+  if (el) el.textContent = '';
+}
+
+function clearAllErrors() {
+  ['candidateError', 'firstNameError', 'lastNameError', 'emailError', 'phoneError'].forEach(clearError);
+  document.querySelectorAll('.input-error').forEach((el) => el.classList.remove('input-error'));
+  globalError.classList.remove('visible');
+  globalError.textContent = '';
+}
+
+function showGlobalError(msg) {
+  globalError.textContent = msg;
+  globalError.classList.add('visible');
+}
+
+// ---------------------------------------------------------------------------
+// Submit
+// ---------------------------------------------------------------------------
+async function handleSubmit(e) {
+  e.preventDefault();
+  if (isSubmitting) return;
+  if (!validateForm()) return;
+
+  const candidate = candidates.find((c) => c.id == selectedCandidateId);
+  if (!candidate) return;
+
+  const firstName = $('firstName').value.trim();
+  const lastName = $('lastName').value.trim();
+  const email = $('email').value.trim();
+  const phone = normalizePhone($('phone').value.trim());
+  const consentChecked = $('consent').checked;
+
+  const payload = {
+    first_name: firstName,
+    last_name: lastName,
+    email: email,
+    phone: phone,
+    candidate_id: candidate.id,
+    candidate_name: candidate.name,
+    candidate_school: candidate.school || '',
+    consent_texts: consentChecked,
+    consent_emails: consentChecked,
+  };
+
+  setLoading(true);
+
+  try {
+    const response = await fetch(N8N_WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Server error (${response.status})`);
+    }
+
+    showThankYou(firstName);
+  } catch (err) {
+    console.error('Submit error:', err);
+    showGlobalError('Something went wrong submitting your vote. Please try again.');
+  } finally {
+    setLoading(false);
+  }
+}
+
+function setLoading(loading) {
+  isSubmitting = loading;
+  submitBtn.disabled = loading;
+  submitText.classList.toggle('hidden', loading);
+  submitSpinner.classList.toggle('hidden', !loading);
+}
+
+// ---------------------------------------------------------------------------
+// Thank You / Reset
+// ---------------------------------------------------------------------------
+function showThankYou(firstName) {
+  form.classList.add('hidden');
+  $('thankYouMessage').textContent = `${firstName}, your vote has been cast!`;
+  thankYouScreen.classList.add('visible');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  setTimeout(() => {
+    resetForm();
+  }, 5000);
+}
+
+function resetForm() {
+  thankYouScreen.classList.remove('visible');
+  form.classList.remove('hidden');
+
+  form.reset();
+  selectedCandidateId = null;
+  clearAllErrors();
+
+  // Unselect all candidate cards
+  document.querySelectorAll('.candidate-card').forEach((card) => {
+    card.classList.remove('selected');
+    card.querySelector('input[type="radio"]').checked = false;
+  });
+
+  // Re-check consent by default
+  $('consent').checked = true;
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ---------------------------------------------------------------------------
+// Utility
+// ---------------------------------------------------------------------------
+function esc(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+// ---------------------------------------------------------------------------
+// Phone input formatting (visual only)
+// ---------------------------------------------------------------------------
+$('phone').addEventListener('input', function () {
+  let digits = this.value.replace(/[^\d]/g, '');
+  // Remove leading 1 for formatting purposes
+  if (digits.length > 10 && digits.startsWith('1')) {
+    digits = digits.substring(1);
+  }
+  if (digits.length > 10) digits = digits.substring(0, 10);
+
+  let formatted = '';
+  if (digits.length > 0) formatted = '(' + digits.substring(0, 3);
+  if (digits.length >= 3) formatted += ') ';
+  if (digits.length > 3) formatted += digits.substring(3, 6);
+  if (digits.length >= 6) formatted += '-';
+  if (digits.length > 6) formatted += digits.substring(6, 10);
+
+  // Only apply formatting if user has typed enough
+  if (digits.length >= 1) {
+    this.value = formatted;
+  }
+});
+
+// Remove error styling on focus
+['firstName', 'lastName', 'email', 'phone'].forEach((id) => {
+  $(id).addEventListener('focus', () => {
+    $(id).classList.remove('input-error');
+    clearError(id + 'Error');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Init
+// ---------------------------------------------------------------------------
+form.addEventListener('submit', handleSubmit);
+loadCandidates();
+</script>
+</body>
+</html>
