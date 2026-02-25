@@ -768,6 +768,7 @@ let recentVotes = [];
 let celebrationQueue = [];
 let isCelebrating = false;
 let realtimeChannel = null;
+let pendingJarAnims = []; // jar animations waiting for celebration to finish
 
 let jarElements = {};
 let jarAnims = {};
@@ -1163,17 +1164,27 @@ function addTickerVote(firstName, candidateName, candidateColor, candidateLight)
 // ===========================================================================
 // Celebration Overlay
 // ===========================================================================
-function queueCelebration(firstName, candidateName, candidateSchool, candidateColor) {
+function queueCelebrationThenJar(firstName, candidateName, candidateSchool, candidateColor, candidateId) {
   if (celebrationQueue.length >= 5) return;
-  celebrationQueue.push({ firstName, candidateName, candidateSchool, candidateColor });
+  celebrationQueue.push({ firstName, candidateName, candidateSchool, candidateColor, candidateId });
   if (!isCelebrating) playCelebration();
 }
 
 function playCelebration() {
-  if (celebrationQueue.length === 0) { isCelebrating = false; return; }
+  if (celebrationQueue.length === 0) {
+    isCelebrating = false;
+    // Now play all queued jar animations
+    while (pendingJarAnims.length > 0) {
+      triggerJarAnimation(pendingJarAnims.shift());
+    }
+    return;
+  }
 
   isCelebrating = true;
-  const { firstName, candidateName, candidateSchool, candidateColor } = celebrationQueue.shift();
+  const { firstName, candidateName, candidateSchool, candidateColor, candidateId } = celebrationQueue.shift();
+
+  // Queue this jar animation for after all celebrations finish
+  pendingJarAnims.push(candidateId);
 
   celebVoterName.textContent = firstName.toUpperCase();
   celebCandidateName.textContent = candidateName;
@@ -1249,9 +1260,8 @@ async function handleNewVote(payload) {
     updateTotalDisplay();
     animateBump(totalVotesEl);
 
-    triggerJarAnimation(candidateId);
     addTickerVote(firstName, candidate.name, candidate.color, candidate.light);
-    queueCelebration(firstName, candidate.name, candidate.school, candidate.color);
+    queueCelebrationThenJar(firstName, candidate.name, candidate.school, candidate.color, candidateId);
   }
 
   try {
