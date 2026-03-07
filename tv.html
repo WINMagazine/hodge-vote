@@ -6,353 +6,264 @@
 <title>Dan Hodge Trophy Live Vote | WIN Magazine</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800;9..40,900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --gold: #C9A84C;
-    --gold-light: #dfc06a;
-    --dark: #1a1816;
-    --dark-elevated: #2a2724;
-    --text: #1a1816;
-    --text-muted: #8a8880;
-    --text-subtle: #a8a49c;
-    --bg: #f0eeeb;
-    --border: #d8d5d0;
-    --border-light: #e4e1dc;
+    --gold: #e2b93b;
+    --gold-bright: #f5d245;
+    --dark: #0b0b0f;
+    --surface: #141418;
+    --surface-glass: rgba(255,255,255,0.04);
+    --border: rgba(255,255,255,0.08);
+    --text: #f0eff4;
+    --text-secondary: rgba(255,255,255,0.55);
+    --text-dim: rgba(255,255,255,0.3);
+    --ease: cubic-bezier(.19,1,.22,1);
   }
 
   html, body {
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden;
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: radial-gradient(ellipse at 50% 60%, #f7f5f2 0%, #f0eeeb 40%, #e4e1dc 100%);
+    width: 100vw; height: 100vh; overflow: hidden;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--dark);
     color: var(--text);
     -webkit-font-smoothing: antialiased;
+    position: relative;
+  }
+
+  /* --- Mesh BG --- */
+  .mesh-bg {
+    position: fixed; inset: 0; z-index: 0;
+    overflow: hidden; pointer-events: none;
+  }
+  .mesh-orb {
+    position: absolute; border-radius: 50%;
+    filter: blur(120px); opacity: 0.3;
+    animation: meshFloat 25s ease-in-out infinite;
+  }
+  .mesh-orb:nth-child(1) {
+    width: 700px; height: 700px;
+    background: radial-gradient(circle, rgba(226,185,59,0.35), transparent 70%);
+    top: -20%; left: -5%;
+  }
+  .mesh-orb:nth-child(2) {
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(139,92,246,0.25), transparent 70%);
+    bottom: -15%; right: -8%;
+    animation-delay: -8s;
+  }
+  .mesh-orb:nth-child(3) {
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(59,130,246,0.15), transparent 70%);
+    top: 50%; left: 40%;
+    animation-delay: -16s;
+  }
+  @keyframes meshFloat {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    25% { transform: translate(40px, -50px) scale(1.04); }
+    50% { transform: translate(-30px, 25px) scale(0.97); }
+    75% { transform: translate(20px, 35px) scale(1.02); }
+  }
+
+  /* --- Noise --- */
+  body::after {
+    content: ''; position: fixed; inset: 0; z-index: 1;
+    pointer-events: none; opacity: 0.02;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-repeat: repeat; background-size: 256px;
   }
 
   .page {
-    display: flex;
-    flex-direction: column;
-    width: 100vw;
-    height: 100vh;
+    display: flex; flex-direction: column;
+    width: 100vw; height: 100vh;
+    position: relative; z-index: 2;
   }
 
-  /* ==================== TICKER BAR ==================== */
+  /* ==================== TICKER ==================== */
   #voteScroll {
-    flex-shrink: 0;
-    height: 40px;
-    background: linear-gradient(90deg, var(--gold) 0%, #d4b65e 50%, var(--gold) 100%);
-    overflow: hidden;
-    position: relative;
-    box-shadow: inset 0 -1px 0 rgba(0,0,0,0.08);
+    flex-shrink: 0; height: 42px;
+    background: linear-gradient(90deg, var(--gold), var(--gold-bright), var(--gold));
+    overflow: hidden; position: relative;
+    box-shadow: 0 2px 16px rgba(226,185,59,0.2);
   }
-
   .ticker-track {
-    display: flex;
-    align-items: center;
-    height: 100%;
+    display: flex; align-items: center; height: 100%;
     white-space: nowrap;
     animation: tickerScroll 20s linear infinite;
   }
-
   .ticker-item {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
+    display: inline-flex; align-items: center; gap: 8px;
     padding: 0 28px;
-    font-size: 14px;
-    font-weight: 600;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    color: var(--dark);
-    flex-shrink: 0;
+    font-size: 13px; font-weight: 700;
+    letter-spacing: 0.04em; text-transform: uppercase;
+    color: var(--dark); flex-shrink: 0;
   }
-
-  .ticker-voter {
-    font-weight: 800;
-  }
-
-  .ticker-arrow {
-    font-size: 12px;
-    opacity: 0.5;
-  }
-
-  .ticker-candidate {
-    font-weight: 700;
-  }
-
+  .ticker-voter { font-weight: 900; }
+  .ticker-arrow { font-size: 11px; opacity: 0.4; }
+  .ticker-candidate { font-weight: 700; }
   .ticker-empty-msg {
-    display: inline-flex;
-    align-items: center;
+    display: inline-flex; align-items: center;
     padding: 0 60px;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 13px;
-    font-weight: 500;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: rgba(26,24,22,0.4);
-    flex-shrink: 0;
+    font-size: 12px; font-weight: 500;
+    letter-spacing: 0.25em; text-transform: uppercase;
+    color: rgba(11,11,15,0.35); flex-shrink: 0;
   }
-
   @keyframes tickerScroll {
     0% { transform: translateX(0); }
     100% { transform: translateX(-33.333%); }
   }
 
-  /* ==================== HEADER BAR ==================== */
+  /* ==================== HEADER ==================== */
   #header {
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 32px;
-    height: 60px;
-    background: var(--dark);
+    flex-shrink: 0; display: flex;
+    align-items: center; justify-content: space-between;
+    padding: 0 36px; height: 64px;
+    background: rgba(11,11,15,0.8);
+    backdrop-filter: blur(16px) saturate(150%);
+    -webkit-backdrop-filter: blur(16px) saturate(150%);
+    border-bottom: 1px solid var(--border);
   }
-
-  .header-left {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
+  .header-left { display: flex; align-items: center; gap: 14px; }
   .brand-box {
-    display: flex;
-    align-items: center;
+    display: flex; align-items: center;
     padding: 4px 14px;
-    border: 1.5px solid rgba(201,168,76,0.6);
-    border-radius: 4px;
-    box-shadow: 0 0 16px rgba(201,168,76,0.08);
+    border: 1.5px solid var(--gold);
+    border-radius: 5px;
+    box-shadow: 0 0 20px rgba(226,185,59,0.12);
   }
-
   .brand-win {
-    font-size: 24px;
-    font-weight: 900;
-    letter-spacing: 0.2em;
-    color: var(--gold);
-    line-height: 1;
+    font-size: 22px; font-weight: 900;
+    letter-spacing: 0.22em; color: var(--gold); line-height: 1;
   }
-
   .brand-magazine {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    color: rgba(255,255,255,0.4);
+    font-size: 10px; font-weight: 500;
+    letter-spacing: 0.25em; text-transform: uppercase;
+    color: var(--text-dim);
   }
-
   .header-center {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 18px;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    text-transform: uppercase;
-    color: rgba(255,255,255,0.85);
+    position: absolute; left: 50%; transform: translateX(-50%);
+    font-size: 17px; font-weight: 800;
+    letter-spacing: -0.02em; text-transform: uppercase;
+    color: rgba(255,255,255,0.8);
   }
-
-  .header-center .accent {
-    color: var(--gold);
-    font-weight: 800;
-  }
-
-  .header-right {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-  }
-
+  .header-center .accent { color: var(--gold); }
+  .header-right { display: flex; align-items: center; gap: 18px; }
   .live-indicator {
-    display: flex;
-    align-items: center;
-    gap: 6px;
+    display: flex; align-items: center; gap: 7px;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: rgba(255,255,255,0.5);
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--text-dim);
   }
-
   .live-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
+    width: 8px; height: 8px; border-radius: 50%;
     background: #ef4444;
+    box-shadow: 0 0 8px rgba(239,68,68,0.6);
     animation: pulse 1.5s ease-in-out infinite;
   }
-
   @keyframes pulse {
     0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.4; transform: scale(0.85); }
+    50% { opacity: 0.4; transform: scale(0.8); }
   }
-
   .total-box {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 16px;
-    background: rgba(255,255,255,0.06);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 8px;
+    display: flex; align-items: center; gap: 10px;
+    padding: 7px 18px;
+    background: var(--surface-glass);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border);
+    border-radius: 10px;
   }
-
   .total-number {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 22px;
-    font-weight: 700;
-    color: #fff;
-    font-variant-numeric: tabular-nums;
-    line-height: 1;
-    transition: transform 0.3s ease;
+    font-size: 24px; font-weight: 700; color: #fff;
+    font-variant-numeric: tabular-nums; line-height: 1;
+    transition: transform 0.3s var(--ease);
   }
-
-  .total-number.bump {
-    transform: scale(1.15);
-  }
-
+  .total-number.bump { transform: scale(1.2); }
   .total-label {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    font-weight: 500;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: rgba(255,255,255,0.4);
-    line-height: 1;
+    font-size: 9px; font-weight: 500;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--text-dim); line-height: 1;
   }
 
-  /* ==================== MAIN CONTENT ==================== */
+  /* ==================== MAIN ==================== */
   #mainContent {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    flex: 1; display: flex;
+    align-items: center; justify-content: center;
     min-height: 0;
   }
-
   #jarsGrid {
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    gap: 32px;
+    display: flex; align-items: flex-end;
+    justify-content: center; gap: 32px;
     padding: 0 48px;
   }
 
-  /* ==================== JAR CONTAINER ==================== */
+  /* ==================== JAR ==================== */
   .jar-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 150px;
+    display: flex; flex-direction: column;
+    align-items: center; width: 150px;
   }
-
   .jar-color-bar {
-    width: 80%;
-    height: 4px;
-    border-radius: 2px;
-    margin-bottom: 8px;
+    width: 80%; height: 3px; border-radius: 2px;
+    margin-bottom: 10px;
+    box-shadow: 0 0 12px var(--jar-color, rgba(255,255,255,0.1));
   }
-
   .jar-name {
-    font-size: 17px;
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: -0.02em;
-    color: var(--text);
-    text-align: center;
-    line-height: 1.15;
-    min-height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    font-size: 16px; font-weight: 900;
+    text-transform: uppercase; letter-spacing: -0.02em;
+    color: var(--text); text-align: center;
+    line-height: 1.15; min-height: 40px;
+    display: flex; align-items: center; justify-content: center;
   }
-
   .jar-school {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.65rem;
-    font-weight: 500;
-    color: var(--text-muted);
-    text-align: center;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
+    font-size: 0.6rem; font-weight: 500;
+    color: var(--text-dim); text-align: center;
+    text-transform: uppercase; letter-spacing: 0.14em;
     margin-bottom: 8px;
   }
-
-  /* ==================== JAR BODY ==================== */
   .jar-body {
-    position: relative;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    position: relative; width: 100%;
+    display: flex; flex-direction: column; align-items: center;
   }
 
-  /* Lid */
   .jar-lid {
-    position: relative;
-    z-index: 5;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    position: relative; z-index: 5;
+    display: flex; flex-direction: column; align-items: center;
     transform-origin: bottom center;
     transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
-
-  .jar-lid.open {
-    transform: translateY(-14px) rotate(-25deg);
-  }
-
+  .jar-lid.open { transform: translateY(-14px) rotate(-25deg); }
   .lid-knob {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: radial-gradient(circle at 40% 35%, #ebe8e3, #c8c4bc, #a8a49c);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    width: 20px; height: 20px; border-radius: 50%;
+    background: radial-gradient(circle at 40% 35%, #4a4a50, #2a2a30, #1a1a20);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
   }
-
   .lid-cap {
-    width: 60px;
-    height: 8px;
-    background: linear-gradient(180deg, #d8d5d0, #b8b4ac);
-    border-radius: 3px 3px 0 0;
-    margin-top: -2px;
+    width: 60px; height: 8px;
+    background: linear-gradient(180deg, #3a3a40, #222228);
+    border-radius: 3px 3px 0 0; margin-top: -2px;
   }
-
   .lid-ring {
-    width: 54px;
-    height: 5px;
-    background: linear-gradient(180deg, #c8c4bc, #a8a49c);
+    width: 54px; height: 5px;
+    background: linear-gradient(180deg, #2a2a30, #1a1a20);
   }
 
-  /* Drop zone */
   .jar-drop-zone {
-    position: absolute;
-    top: 30px;
-    left: 50%;
+    position: absolute; top: 30px; left: 50%;
     transform: translateX(-50%);
-    width: 24px;
-    height: 24px;
-    z-index: 4;
-    pointer-events: none;
-    opacity: 0;
+    width: 24px; height: 24px;
+    z-index: 4; pointer-events: none; opacity: 0;
   }
-
   .jar-drop-zone.dropping {
     opacity: 1;
     animation: ballFall 0.6s cubic-bezier(0.45, 0, 0.85, 0.35) forwards;
   }
-
   @keyframes ballFall {
     0% { top: 30px; opacity: 1; }
     70% { opacity: 1; }
@@ -361,405 +272,248 @@
     100% { top: 224px; opacity: 0; }
   }
 
-  /* Neck */
   .jar-neck {
-    width: 52px;
-    height: 20px;
+    width: 52px; height: 20px;
     background: linear-gradient(90deg,
-      rgba(200,196,188,0.4) 0%,
-      rgba(240,238,235,0.7) 30%,
-      rgba(250,249,247,0.8) 50%,
-      rgba(240,238,235,0.7) 70%,
-      rgba(200,196,188,0.4) 100%
-    );
-    border-left: 2px solid rgba(190,186,178,0.5);
-    border-right: 2px solid rgba(190,186,178,0.5);
-    position: relative;
-    z-index: 3;
-    margin-top: -1px;
+      rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.08) 30%,
+      rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.08) 70%,
+      rgba(255,255,255,0.03) 100%);
+    border-left: 1px solid rgba(255,255,255,0.08);
+    border-right: 1px solid rgba(255,255,255,0.08);
+    position: relative; z-index: 3; margin-top: -1px;
   }
-
-  /* Shoulder */
   .jar-shoulder {
-    width: 52px;
-    height: 24px;
-    position: relative;
-    z-index: 2;
+    width: 52px; height: 24px;
+    position: relative; z-index: 2;
   }
-
   .jar-shoulder::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -37px;
-    right: -37px;
-    height: 100%;
+    content: ''; position: absolute;
+    top: 0; left: -37px; right: -37px; height: 100%;
     background: linear-gradient(90deg,
-      rgba(200,196,188,0.35) 0%,
-      rgba(235,232,226,0.6) 25%,
-      rgba(250,249,247,0.7) 50%,
-      rgba(235,232,226,0.6) 75%,
-      rgba(200,196,188,0.35) 100%
-    );
-    border-left: 2px solid rgba(190,186,178,0.5);
-    border-right: 2px solid rgba(190,186,178,0.5);
+      rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.06) 25%,
+      rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.06) 75%,
+      rgba(255,255,255,0.02) 100%);
+    border-left: 1px solid rgba(255,255,255,0.06);
+    border-right: 1px solid rgba(255,255,255,0.06);
     border-radius: 0 0 50% 50% / 0 0 100% 100%;
   }
 
-  /* Glass body */
   .jar-glass {
-    width: 128px;
-    height: 200px;
-    position: relative;
+    width: 128px; height: 200px; position: relative;
     background: linear-gradient(90deg,
-      rgba(200,196,188,0.3) 0%,
-      rgba(235,232,226,0.5) 20%,
-      rgba(250,249,247,0.6) 45%,
-      rgba(235,232,226,0.5) 80%,
-      rgba(200,196,188,0.3) 100%
-    );
-    border: 2px solid rgba(190,186,178,0.5);
+      rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.05) 20%,
+      rgba(255,255,255,0.07) 45%, rgba(255,255,255,0.05) 80%,
+      rgba(255,255,255,0.02) 100%);
+    border: 1px solid rgba(255,255,255,0.08);
     border-top: none;
     border-radius: 0 0 16px 16px;
     overflow: hidden;
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
   }
-
   .glass-highlight {
-    position: absolute;
-    top: 8px;
-    left: 14px;
-    width: 5px;
-    bottom: 8px;
-    background: linear-gradient(180deg, rgba(255,255,255,0.5), rgba(255,255,255,0.1));
-    border-radius: 3px;
-    pointer-events: none;
-    z-index: 3;
+    position: absolute; top: 8px; left: 14px;
+    width: 4px; bottom: 8px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.02));
+    border-radius: 3px; pointer-events: none; z-index: 3;
   }
-
   .glass-highlight-right {
-    position: absolute;
-    top: 20px;
-    right: 18px;
-    width: 3px;
-    bottom: 20px;
-    background: linear-gradient(180deg, rgba(255,255,255,0.25), rgba(255,255,255,0.03));
-    border-radius: 2px;
-    pointer-events: none;
-    z-index: 3;
+    position: absolute; top: 20px; right: 18px;
+    width: 2px; bottom: 20px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.01));
+    border-radius: 2px; pointer-events: none; z-index: 3;
   }
-
   .color-fill {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    position: absolute; bottom: 0; left: 0; right: 0;
     transition: height 0.8s ease-out;
-    border-radius: 0 0 14px 14px;
-    z-index: 1;
+    border-radius: 0 0 14px 14px; z-index: 1;
+    opacity: 0.5;
   }
-
   .marbles-container {
-    position: absolute;
-    bottom: 6px;
-    left: 6px;
-    right: 6px;
-    z-index: 2;
+    position: absolute; bottom: 6px; left: 6px; right: 6px; z-index: 2;
   }
-
   .marble {
-    position: absolute;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
+    position: absolute; width: 24px; height: 24px; border-radius: 50%;
     box-shadow:
-      inset -3px -3px 6px rgba(0,0,0,0.25),
-      inset 2px 2px 4px rgba(255,255,255,0.3),
-      0 1px 3px rgba(0,0,0,0.15);
+      inset -3px -3px 6px rgba(0,0,0,0.4),
+      inset 2px 2px 4px rgba(255,255,255,0.15),
+      0 0 8px rgba(0,0,0,0.3);
   }
-
   .marble-highlight {
-    position: absolute;
-    top: 4px;
-    left: 6px;
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.8);
+    position: absolute; top: 4px; left: 6px;
+    width: 7px; height: 7px; border-radius: 50%;
+    background: rgba(255,255,255,0.7);
   }
 
-  /* ==================== VOTE COUNTER PLATE ==================== */
   .vote-counter {
-    margin-top: 10px;
-    padding: 6px 16px;
-    background: linear-gradient(180deg, #eae7e2, #d8d5d0);
+    margin-top: 10px; padding: 7px 18px;
+    background: var(--surface-glass);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     border: 1px solid var(--border);
-    border-radius: 6px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.8);
+    border-radius: 8px;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.72rem;
-    font-weight: 700;
-    color: var(--text);
+    font-size: 0.68rem; font-weight: 600;
+    color: var(--text-secondary);
     font-variant-numeric: tabular-nums;
-    text-align: center;
-    letter-spacing: 0.1em;
+    text-align: center; letter-spacing: 0.1em;
     text-transform: uppercase;
-    display: flex;
-    align-items: center;
-    gap: 6px;
+    display: flex; align-items: center; gap: 6px;
   }
-
   .counter-dot {
-    width: 4px;
-    height: 4px;
-    border-radius: 50%;
-    background: var(--text-subtle);
+    width: 3px; height: 3px; border-radius: 50%;
+    background: var(--text-dim);
   }
 
-  /* ==================== CELEBRATION OVERLAY ==================== */
+  /* ==================== CELEBRATION ==================== */
   #celebration {
-    position: fixed;
-    inset: 0;
-    z-index: 200;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background: rgba(240,238,235,0.88);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    opacity: 0;
-    pointer-events: none;
+    position: fixed; inset: 0; z-index: 200;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    background: rgba(11,11,15,0.85);
+    backdrop-filter: blur(32px) saturate(120%);
+    -webkit-backdrop-filter: blur(32px) saturate(120%);
+    opacity: 0; pointer-events: none;
   }
-
   #celebration::before {
-    content: '';
-    position: absolute;
-    width: 50vw;
-    height: 50vw;
-    border-radius: 50%;
+    content: ''; position: absolute;
+    width: 50vw; height: 50vw; border-radius: 50%;
     background: radial-gradient(circle, var(--celeb-glow, transparent), transparent 70%);
-    opacity: 0.08;
-    pointer-events: none;
+    opacity: 0.12; pointer-events: none;
   }
+  #celebration.active { opacity: 1; animation: overlayIn 0.5s var(--ease) forwards; }
+  #celebration.fade-out { animation: overlayOut 0.8s ease-in forwards; }
+  @keyframes overlayIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes overlayOut { from { opacity: 1; } to { opacity: 0; } }
 
-  #celebration.active {
-    opacity: 1;
-    animation: overlayIn 0.6s ease-out forwards;
+  .celeb-bar-top, .celeb-bar-bottom {
+    position: absolute; left: 0; right: 0; height: 4px;
   }
-
-  #celebration.fade-out {
-    animation: overlayOut 1s ease-in forwards;
-  }
-
-  @keyframes overlayIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-
-  @keyframes overlayOut {
-    from { opacity: 1; }
-    to { opacity: 0; }
-  }
-
-  .celeb-bar-top,
-  .celeb-bar-bottom {
-    position: absolute;
-    left: 0;
-    right: 0;
-    height: 6px;
-  }
-
   .celeb-bar-top { top: 0; }
   .celeb-bar-bottom { bottom: 0; }
-
   .celeb-accent-line {
-    position: absolute;
-    left: 60px;
-    top: 10%;
-    bottom: 10%;
-    width: 4px;
-    border-radius: 2px;
+    position: absolute; left: 60px;
+    top: 10%; bottom: 10%;
+    width: 3px; border-radius: 2px;
   }
-
   .celeb-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-    opacity: 0;
-    transform: translateY(40px) perspective(600px) rotateX(8deg);
+    display: flex; flex-direction: column;
+    align-items: center; gap: 14px;
+    opacity: 0; transform: translateY(40px) scale(0.95);
   }
-
   #celebration.active .celeb-content {
-    animation: celebContent 0.6s ease-out 0.2s forwards;
+    animation: celebContent 0.6s var(--ease) 0.15s forwards;
   }
-
   #celebration.fade-out .celeb-content {
-    animation: celebOut 0.8s ease-in forwards;
+    animation: celebOut 0.6s ease-in forwards;
   }
-
   @keyframes celebContent {
-    from { opacity: 0; transform: translateY(40px) perspective(600px) rotateX(8deg); }
-    to { opacity: 1; transform: translateY(0) perspective(600px) rotateX(0deg); }
+    from { opacity: 0; transform: translateY(40px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
   }
-
   @keyframes celebOut {
     from { opacity: 1; transform: translateY(0); }
-    to { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 0; transform: translateY(-16px); }
   }
-
   .celeb-label {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--text-muted);
+    font-size: 12px; font-weight: 600;
+    letter-spacing: 0.25em; text-transform: uppercase;
+    color: var(--text-dim);
   }
-
   .celeb-voter-name {
-    font-size: 72px;
-    font-weight: 900;
-    color: var(--text);
-    text-transform: uppercase;
-    letter-spacing: -0.03em;
-    line-height: 1;
+    font-size: clamp(48px, 8vw, 80px);
+    font-weight: 900; color: var(--text);
+    text-transform: uppercase; letter-spacing: -0.04em; line-height: 1;
   }
-
   .celeb-divider {
-    width: 80px;
-    height: 3px;
-    border-radius: 2px;
-    margin: 4px 0;
+    width: 60px; height: 3px; border-radius: 2px;
+    margin: 2px 0;
+    box-shadow: 0 0 16px var(--celeb-glow, transparent);
   }
-
   .celeb-voted-for {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 14px;
-    font-weight: 500;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--text-muted);
+    font-size: 12px; font-weight: 500;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--text-dim);
   }
-
   .celeb-candidate-name {
-    font-size: 36px;
-    font-weight: 800;
-    letter-spacing: -0.02em;
+    font-size: 36px; font-weight: 800; letter-spacing: -0.03em;
   }
-
   .celeb-candidate-school {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 16px;
-    font-weight: 500;
-    color: var(--text-muted);
-    margin-top: -4px;
-    letter-spacing: 0.06em;
+    font-size: 14px; font-weight: 500;
+    color: var(--text-dim); margin-top: -6px;
+    letter-spacing: 0.08em;
   }
+  .celeb-trophy { margin-top: 16px; font-size: 36px; }
 
-  .celeb-trophy {
-    margin-top: 16px;
-    font-size: 32px;
-  }
-
-  /* ==================== CONNECTION DOT ==================== */
+  /* ==================== CONNECTION ==================== */
   #connectionDot {
-    position: fixed;
-    bottom: 12px;
-    right: 12px;
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background: #4a9e6a;
-    box-shadow: 0 0 6px rgba(74,158,106,0.6);
+    position: fixed; bottom: 14px; right: 14px;
+    width: 10px; height: 10px; border-radius: 50%;
+    background: #4ade80;
+    box-shadow: 0 0 8px rgba(74,222,128,0.5);
     z-index: 100;
-    transition: background 0.3s ease, box-shadow 0.3s ease;
+    transition: background 0.3s, box-shadow 0.3s;
   }
-
   #connectionDot.disconnected {
-    background: #c44040;
-    box-shadow: 0 0 6px rgba(196,64,64,0.6);
+    background: #ef4444;
+    box-shadow: 0 0 8px rgba(239,68,68,0.5);
     animation: pulseRed 1.5s ease-in-out infinite;
   }
+  @keyframes pulseRed { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
-  @keyframes pulseRed {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.4; }
-  }
-
-  /* ==================== LOADING ==================== */
   #loadingState {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 80px;
-    color: var(--text-muted);
-    font-size: 18px;
-    font-weight: 600;
-    gap: 16px;
+    display: flex; align-items: center; justify-content: center;
+    padding: 80px; color: var(--text-dim);
+    font-size: 16px; font-weight: 600; gap: 16px;
   }
-
   .loader-spinner {
-    display: inline-block;
-    width: 28px;
-    height: 28px;
-    border: 3px solid var(--border);
+    display: inline-block; width: 24px; height: 24px;
+    border: 2.5px solid var(--border);
     border-top-color: var(--gold);
     border-radius: 50%;
     animation: spin 0.7s linear infinite;
   }
-
-  @keyframes spin {
-    to { transform: rotate(360deg); }
-  }
+  @keyframes spin { to { transform: rotate(360deg); } }
 </style>
 </head>
 <body>
 
+<div class="mesh-bg">
+  <div class="mesh-orb"></div>
+  <div class="mesh-orb"></div>
+  <div class="mesh-orb"></div>
+</div>
+
 <div class="page">
-  <!-- Gold Ticker Bar -->
   <div id="voteScroll">
     <div class="ticker-track" id="tickerTrack"></div>
   </div>
-
-  <!-- Dark Header Bar -->
   <div id="header">
     <div class="header-left">
-      <div class="brand-box">
-        <span class="brand-win">WIN</span>
-      </div>
+      <div class="brand-box"><span class="brand-win">WIN</span></div>
       <span class="brand-magazine">Magazine</span>
     </div>
-    <div class="header-center">
-      Dan Hodge Trophy &mdash; <span class="accent">Live Fan Vote</span>
-    </div>
+    <div class="header-center">Dan Hodge Trophy &mdash; <span class="accent">Live Fan Vote</span></div>
     <div class="header-right">
-      <div class="live-indicator">
-        <div class="live-dot"></div>
-        LIVE
-      </div>
+      <div class="live-indicator"><div class="live-dot"></div>LIVE</div>
       <div class="total-box">
         <span class="total-number" id="totalVotes">0</span>
         <span class="total-label">Total Votes</span>
       </div>
     </div>
   </div>
-
-  <!-- Main Content — Jars Centered -->
   <div id="mainContent">
     <div id="jarsGrid">
-      <div id="loadingState">
-        <div class="loader-spinner"></div>
-        Loading candidates...
-      </div>
+      <div id="loadingState"><div class="loader-spinner"></div>Loading candidates...</div>
     </div>
   </div>
 </div>
 
-<!-- Connection indicator -->
 <div id="connectionDot" title="Realtime connection status"></div>
 
-<!-- Celebration overlay -->
 <div id="celebration">
   <div class="celeb-bar-top" id="celebBarTop"></div>
   <div class="celeb-bar-bottom" id="celebBarBottom"></div>
@@ -777,20 +531,10 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-// ===========================================================================
-// Configuration
-// ===========================================================================
 const SUPABASE_URL = 'https://aranzjtwsxaqtczswoiz.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFyYW56anR3c3hhcXRjenN3b2l6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE5NDYwMzYsImV4cCI6MjA4NzUyMjAzNn0.8ZKA0ZvZE6VJHQXTZRECDJTjtm5RUQNsSpw9dGO37Do';
-
-// ===========================================================================
-// Supabase Client
-// ===========================================================================
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// ===========================================================================
-// State
-// ===========================================================================
 let candidates = [];
 let candidateMap = {};
 let totalVotes = 0;
@@ -799,13 +543,9 @@ let celebrationQueue = [];
 let isCelebrating = false;
 let realtimeChannel = null;
 let pendingJarAnims = [];
-
 let jarElements = {};
 let jarAnims = {};
 
-// ===========================================================================
-// DOM References
-// ===========================================================================
 const jarsGrid = document.getElementById('jarsGrid');
 const loadingState = document.getElementById('loadingState');
 const totalVotesEl = document.getElementById('totalVotes');
@@ -821,508 +561,154 @@ const celebAccent = document.getElementById('celebAccent');
 const celebDivider = document.getElementById('celebDivider');
 const celebContent = document.getElementById('celebContent');
 
-// ===========================================================================
-// Utility
-// ===========================================================================
-function esc(str) {
-  const d = document.createElement('div');
-  d.textContent = str;
-  return d.innerHTML;
-}
+function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+function animateBump(el) { el.classList.add('bump'); setTimeout(() => el.classList.remove('bump'), 300); }
 
-function animateBump(el) {
-  el.classList.add('bump');
-  setTimeout(() => el.classList.remove('bump'), 300);
-}
-
-// ===========================================================================
-// Color Derivation
-// ===========================================================================
 function hexToHsl(hex) {
-  hex = hex.replace('#', '');
-  const r = parseInt(hex.substring(0, 2), 16) / 255;
-  const g = parseInt(hex.substring(2, 4), 16) / 255;
-  const b = parseInt(hex.substring(4, 6), 16) / 255;
-  const max = Math.max(r, g, b), min = Math.min(r, g, b);
-  let h, s, l = (max + min) / 2;
-  if (max === min) {
-    h = s = 0;
-  } else {
-    const d = max - min;
-    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-    switch (max) {
-      case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
-      case g: h = ((b - r) / d + 2) / 6; break;
-      case b: h = ((r - g) / d + 4) / 6; break;
-    }
-  }
-  return { h: h * 360, s: s * 100, l: l * 100 };
+  hex = hex.replace('#','');
+  const r=parseInt(hex.substring(0,2),16)/255, g=parseInt(hex.substring(2,4),16)/255, b=parseInt(hex.substring(4,6),16)/255;
+  const max=Math.max(r,g,b), min=Math.min(r,g,b);
+  let h,s,l=(max+min)/2;
+  if(max===min){h=s=0}else{const d=max-min;s=l>0.5?d/(2-max-min):d/(max+min);
+  switch(max){case r:h=((g-b)/d+(g<b?6:0))/6;break;case g:h=((b-r)/d+2)/6;break;case b:h=((r-g)/d+4)/6;break;}}
+  return{h:h*360,s:s*100,l:l*100};
+}
+function hslToHex(h,s,l){
+  h/=360;s/=100;l/=100;let r,g,b;
+  if(s===0){r=g=b=l}else{const hue2rgb=(p,q,t)=>{if(t<0)t+=1;if(t>1)t-=1;if(t<1/6)return p+(q-p)*6*t;if(t<1/2)return q;if(t<2/3)return p+(q-p)*(2/3-t)*6;return p;};
+  const q=l<0.5?l*(1+s):l+s-l*s;const p=2*l-q;r=hue2rgb(p,q,h+1/3);g=hue2rgb(p,q,h);b=hue2rgb(p,q,h-1/3);}
+  const toHex=v=>{const hex=Math.round(v*255).toString(16);return hex.length===1?'0'+hex:hex;};
+  return'#'+toHex(r)+toHex(g)+toHex(b);
+}
+function deriveColors(hex){const hsl=hexToHsl(hex);return{color:hex,accent:hslToHex(hsl.h,hsl.s,Math.min(hsl.l+18,95)),light:hslToHex(hsl.h,Math.max(hsl.s-20,0),Math.min(hsl.l+40,95))};}
+function darkenHex(hex,amt){const hsl=hexToHsl(hex);return hslToHex(hsl.h,hsl.s,Math.max(hsl.l-amt,5));}
+
+async function loadVoteCounts(){
+  try{
+    const{data,error}=await sb.from('vote_counts').select('*').order('display_order',{ascending:true});
+    if(error)throw error;
+    if(!data||data.length===0){loadingState.textContent='No candidates available.';return;}
+    candidates=data;candidateMap={};totalVotes=0;
+    candidates.forEach(c=>{const colors=deriveColors(c.color||'#888888');c.accent=colors.accent;c.light=colors.light;candidateMap[c.id]=c;totalVotes+=c.vote_count||0;});
+    renderJars();updateTotalDisplay();buildTicker();
+  }catch(err){console.error('Failed:',err);loadingState.textContent='Error loading data. Retrying...';setTimeout(loadVoteCounts,5000);}
 }
 
-function hslToHex(h, s, l) {
-  h /= 360; s /= 100; l /= 100;
-  let r, g, b;
-  if (s === 0) {
-    r = g = b = l;
-  } else {
-    const hue2rgb = (p, q, t) => {
-      if (t < 0) t += 1; if (t > 1) t -= 1;
-      if (t < 1/6) return p + (q - p) * 6 * t;
-      if (t < 1/2) return q;
-      if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
-      return p;
-    };
-    const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-    const p = 2 * l - q;
-    r = hue2rgb(p, q, h + 1/3);
-    g = hue2rgb(p, q, h);
-    b = hue2rgb(p, q, h - 1/3);
-  }
-  const toHex = v => {
-    const hex = Math.round(v * 255).toString(16);
-    return hex.length === 1 ? '0' + hex : hex;
-  };
-  return '#' + toHex(r) + toHex(g) + toHex(b);
-}
-
-function deriveColors(hex) {
-  const hsl = hexToHsl(hex);
-  const accent = hslToHex(hsl.h, hsl.s, Math.min(hsl.l + 18, 95));
-  const light = hslToHex(hsl.h, Math.max(hsl.s - 20, 0), Math.min(hsl.l + 40, 95));
-  return { color: hex, accent, light };
-}
-
-// ===========================================================================
-// Initial Data Load
-// ===========================================================================
-async function loadVoteCounts() {
-  try {
-    const { data, error } = await sb
-      .from('vote_counts')
-      .select('*')
-      .order('display_order', { ascending: true });
-
-    if (error) throw error;
-    if (!data || data.length === 0) {
-      loadingState.textContent = 'No candidates available.';
-      return;
-    }
-
-    candidates = data;
-    candidateMap = {};
-    totalVotes = 0;
-    candidates.forEach(c => {
-      const colors = deriveColors(c.color || '#888888');
-      c.accent = colors.accent;
-      c.light = colors.light;
-      candidateMap[c.id] = c;
-      totalVotes += c.vote_count || 0;
-    });
-
-    renderJars();
-    updateTotalDisplay();
-    buildTicker();
-  } catch (err) {
-    console.error('Failed to load vote counts:', err);
-    loadingState.textContent = 'Error loading data. Retrying...';
-    setTimeout(loadVoteCounts, 5000);
-  }
-}
-
-// ===========================================================================
-// Render Glass Jars
-// ===========================================================================
-function renderJars() {
-  if (loadingState) loadingState.remove();
-
-  const maxVotes = Math.max(...candidates.map(c => c.vote_count || 0), 1);
-
-  candidates.forEach(c => {
-    const container = document.createElement('div');
-    container.className = 'jar-container';
-    container.setAttribute('data-candidate-id', c.id);
-
-    // Color bar
-    const colorBar = document.createElement('div');
-    colorBar.className = 'jar-color-bar';
-    colorBar.style.background = c.color;
-    container.appendChild(colorBar);
-
-    // Name
-    const name = document.createElement('div');
-    name.className = 'jar-name';
-    name.textContent = c.name;
-    container.appendChild(name);
-
-    // School
-    const school = document.createElement('div');
-    school.className = 'jar-school';
-    school.textContent = c.school;
-    container.appendChild(school);
-
-    // Jar body
-    const body = document.createElement('div');
-    body.className = 'jar-body';
-
-    // Lid
-    const lid = document.createElement('div');
-    lid.className = 'jar-lid';
-    lid.innerHTML = '<div class="lid-knob"></div><div class="lid-cap"></div><div class="lid-ring"></div>';
-    body.appendChild(lid);
-
-    // Drop zone
-    const dropZone = document.createElement('div');
-    dropZone.className = 'jar-drop-zone';
-    body.appendChild(dropZone);
-
-    // Neck
-    const neck = document.createElement('div');
-    neck.className = 'jar-neck';
-    body.appendChild(neck);
-
-    // Shoulder
-    const shoulder = document.createElement('div');
-    shoulder.className = 'jar-shoulder';
-    body.appendChild(shoulder);
-
-    // Glass body
-    const glass = document.createElement('div');
-    glass.className = 'jar-glass';
-
-    const highlight = document.createElement('div');
-    highlight.className = 'glass-highlight';
-    glass.appendChild(highlight);
-
-    const highlightR = document.createElement('div');
-    highlightR.className = 'glass-highlight-right';
-    glass.appendChild(highlightR);
-
-    const colorFill = document.createElement('div');
-    colorFill.className = 'color-fill';
-    colorFill.style.background = c.light;
-    colorFill.style.opacity = '0.35';
-    const fillPct = maxVotes > 0 ? ((c.vote_count || 0) / maxVotes) * 65 : 0;
-    colorFill.style.height = fillPct + '%';
-    glass.appendChild(colorFill);
-
-    const marblesContainer = document.createElement('div');
-    marblesContainer.className = 'marbles-container';
-    glass.appendChild(marblesContainer);
-
-    body.appendChild(glass);
-    container.appendChild(body);
-
-    // Vote counter plate
-    const counter = document.createElement('div');
-    counter.className = 'vote-counter';
-    counter.innerHTML = `<span class="counter-dot"></span><span class="counter-text">${c.vote_count || 0} VOTES</span><span class="counter-dot"></span>`;
+function renderJars(){
+  if(loadingState)loadingState.remove();
+  const maxVotes=Math.max(...candidates.map(c=>c.vote_count||0),1);
+  candidates.forEach(c=>{
+    const container=document.createElement('div');container.className='jar-container';container.setAttribute('data-candidate-id',c.id);
+    container.style.setProperty('--jar-color',c.color);
+    const colorBar=document.createElement('div');colorBar.className='jar-color-bar';colorBar.style.background=c.color;container.appendChild(colorBar);
+    const name=document.createElement('div');name.className='jar-name';name.textContent=c.name;container.appendChild(name);
+    const school=document.createElement('div');school.className='jar-school';school.textContent=c.school;container.appendChild(school);
+    const body=document.createElement('div');body.className='jar-body';
+    const lid=document.createElement('div');lid.className='jar-lid';lid.innerHTML='<div class="lid-knob"></div><div class="lid-cap"></div><div class="lid-ring"></div>';body.appendChild(lid);
+    const dropZone=document.createElement('div');dropZone.className='jar-drop-zone';body.appendChild(dropZone);
+    const neck=document.createElement('div');neck.className='jar-neck';body.appendChild(neck);
+    const shoulder=document.createElement('div');shoulder.className='jar-shoulder';body.appendChild(shoulder);
+    const glass=document.createElement('div');glass.className='jar-glass';
+    glass.appendChild(Object.assign(document.createElement('div'),{className:'glass-highlight'}));
+    glass.appendChild(Object.assign(document.createElement('div'),{className:'glass-highlight-right'}));
+    const colorFill=document.createElement('div');colorFill.className='color-fill';colorFill.style.background=c.light;
+    colorFill.style.height=((maxVotes>0?((c.vote_count||0)/maxVotes)*65:0))+'%';glass.appendChild(colorFill);
+    const marblesContainer=document.createElement('div');marblesContainer.className='marbles-container';glass.appendChild(marblesContainer);
+    body.appendChild(glass);container.appendChild(body);
+    const counter=document.createElement('div');counter.className='vote-counter';
+    counter.innerHTML=`<span class="counter-dot"></span><span class="counter-text">${c.vote_count||0} VOTES</span><span class="counter-dot"></span>`;
     container.appendChild(counter);
-
     jarsGrid.appendChild(container);
-
-    // Cache refs
-    jarElements[c.id] = { container, lid, dropZone, glass, colorFill, marblesContainer, counter };
-    jarAnims[c.id] = { state: 'idle', pendingVotes: 0 };
-
-    // Render initial marbles
-    renderMarbles(c.id, c.vote_count || 0, maxVotes);
+    jarElements[c.id]={container,lid,dropZone,glass,colorFill,marblesContainer,counter};
+    jarAnims[c.id]={state:'idle',pendingVotes:0};
+    renderMarbles(c.id,c.vote_count||0,maxVotes);
   });
 }
 
-// ===========================================================================
-// Marble Rendering
-// ===========================================================================
-function renderMarbles(candidateId, voteCount, maxVotes) {
-  const els = jarElements[candidateId];
-  if (!els) return;
-  const c = candidateMap[candidateId];
-
-  els.marblesContainer.innerHTML = '';
-
-  const marbleCount = maxVotes > 0 ? Math.min(Math.ceil((voteCount / maxVotes) * 24), 24) : 0;
-  if (marbleCount === 0) return;
-
-  const containerWidth = 116;
-  const marbleSize = 24;
-  const cols = 4;
-  const spacing = (containerWidth - cols * marbleSize) / (cols + 1);
-
-  for (let i = 0; i < marbleCount; i++) {
-    const row = Math.floor(i / cols);
-    const col = i % cols;
-    const isOddRow = row % 2 === 1;
-
-    const marble = document.createElement('div');
-    marble.className = 'marble';
-
-    let xPos = spacing + col * (marbleSize + spacing);
-    if (isOddRow) xPos += (marbleSize + spacing) / 2;
-    if (xPos + marbleSize > containerWidth) xPos = containerWidth - marbleSize - 2;
-
-    const yPos = row * (marbleSize - 1);
-
-    marble.style.left = xPos + 'px';
-    marble.style.bottom = yPos + 'px';
-    marble.style.background = `radial-gradient(circle at 35% 30%, ${c.accent}, ${c.color} 60%, ${darkenHex(c.color, 25)})`;
-
-    const hl = document.createElement('div');
-    hl.className = 'marble-highlight';
-    marble.appendChild(hl);
-
-    els.marblesContainer.appendChild(marble);
+function renderMarbles(cid,vc,mv){
+  const els=jarElements[cid];if(!els)return;const c=candidateMap[cid];
+  els.marblesContainer.innerHTML='';
+  const mc=mv>0?Math.min(Math.ceil((vc/mv)*24),24):0;if(mc===0)return;
+  const cw=116,ms=24,cols=4,sp=(cw-cols*ms)/(cols+1);
+  for(let i=0;i<mc;i++){
+    const row=Math.floor(i/cols),col=i%cols,odd=row%2===1;
+    const m=document.createElement('div');m.className='marble';
+    let x=sp+col*(ms+sp);if(odd)x+=(ms+sp)/2;if(x+ms>cw)x=cw-ms-2;
+    m.style.left=x+'px';m.style.bottom=(row*(ms-1))+'px';
+    m.style.background=`radial-gradient(circle at 35% 30%,${c.accent},${c.color} 60%,${darkenHex(c.color,25)})`;
+    const hl=document.createElement('div');hl.className='marble-highlight';m.appendChild(hl);
+    els.marblesContainer.appendChild(m);
   }
 }
 
-function darkenHex(hex, amount) {
-  const hsl = hexToHsl(hex);
-  return hslToHex(hsl.h, hsl.s, Math.max(hsl.l - amount, 5));
-}
-
-function updateAllJars() {
-  const maxVotes = Math.max(...candidates.map(c => c.vote_count || 0), 1);
-
-  candidates.forEach(c => {
-    const els = jarElements[c.id];
-    if (!els) return;
-
-    const fillPct = maxVotes > 0 ? ((c.vote_count || 0) / maxVotes) * 65 : 0;
-    els.colorFill.style.height = fillPct + '%';
-
-    const ct = els.counter.querySelector('.counter-text');
-    if (ct) ct.textContent = (c.vote_count || 0) + ' VOTES';
-
-    renderMarbles(c.id, c.vote_count || 0, maxVotes);
+function updateAllJars(){
+  const mv=Math.max(...candidates.map(c=>c.vote_count||0),1);
+  candidates.forEach(c=>{const els=jarElements[c.id];if(!els)return;
+    els.colorFill.style.height=((mv>0?((c.vote_count||0)/mv)*65:0))+'%';
+    const ct=els.counter.querySelector('.counter-text');if(ct)ct.textContent=(c.vote_count||0)+' VOTES';
+    renderMarbles(c.id,c.vote_count||0,mv);
   });
 }
+function updateTotalDisplay(){totalVotesEl.textContent=totalVotes.toLocaleString();}
 
-function updateTotalDisplay() {
-  totalVotesEl.textContent = totalVotes.toLocaleString();
+function triggerJarAnimation(cid){const a=jarAnims[cid];if(!a)return;if(a.state!=='idle'){a.pendingVotes++;return;}runJarAnimation(cid);}
+function runJarAnimation(cid){
+  const a=jarAnims[cid],els=jarElements[cid],c=candidateMap[cid];if(!a||!els||!c)return;
+  a.state='lidOpen';els.lid.classList.add('open');
+  setTimeout(()=>{a.state='dropping';
+    const dm=document.createElement('div');dm.className='marble';dm.style.cssText=`width:24px;height:24px;position:relative;background:radial-gradient(circle at 35% 30%,${c.accent},${c.color} 60%,${darkenHex(c.color,25)})`;
+    dm.appendChild(Object.assign(document.createElement('div'),{className:'marble-highlight'}));
+    els.dropZone.innerHTML='';els.dropZone.appendChild(dm);els.dropZone.classList.add('dropping');
+    setTimeout(()=>{a.state='settle';els.dropZone.classList.remove('dropping');els.dropZone.innerHTML='';updateAllJars();
+      setTimeout(()=>{a.state='lidClose';els.lid.classList.remove('open');
+        setTimeout(()=>{a.state='idle';if(a.pendingVotes>0){a.pendingVotes--;runJarAnimation(cid);}},600);
+      },200);
+    },600);
+  },600);
 }
 
-// ===========================================================================
-// Jar Animation State Machine
-// ===========================================================================
-function triggerJarAnimation(candidateId) {
-  const anim = jarAnims[candidateId];
-  if (!anim) return;
-  if (anim.state !== 'idle') { anim.pendingVotes++; return; }
-  runJarAnimation(candidateId);
+function buildTicker(){
+  tickerTrack.innerHTML='';
+  if(recentVotes.length===0){const msg='Cast your vote at the WIN booth...';for(let i=0;i<6;i++){const s=document.createElement('span');s.className='ticker-empty-msg';s.textContent=msg;tickerTrack.appendChild(s);}}
+  else{for(let c=0;c<3;c++){recentVotes.forEach(v=>{const d=document.createElement('div');d.className='ticker-item';d.innerHTML=`<span class="ticker-voter">${esc(v.firstName)}</span><span class="ticker-arrow">&#9656;</span><span class="ticker-candidate">${esc(v.candidateName)}</span>`;tickerTrack.appendChild(d);});}}
+  tickerTrack.style.animationDuration=Math.max(recentVotes.length*4,20)+'s';
 }
+function addTickerVote(fn,cn,cc,cl){recentVotes.unshift({firstName:fn,candidateName:cn,color:cc,light:cl||'#f0f0f0'});if(recentVotes.length>20)recentVotes=recentVotes.slice(0,20);buildTicker();}
 
-function runJarAnimation(candidateId) {
-  const anim = jarAnims[candidateId];
-  const els = jarElements[candidateId];
-  const c = candidateMap[candidateId];
-  if (!anim || !els || !c) return;
-
-  anim.state = 'lidOpen';
-  els.lid.classList.add('open');
-
-  setTimeout(() => {
-    anim.state = 'dropping';
-    const dropMarble = document.createElement('div');
-    dropMarble.className = 'marble';
-    dropMarble.style.width = '24px';
-    dropMarble.style.height = '24px';
-    dropMarble.style.background = `radial-gradient(circle at 35% 30%, ${c.accent}, ${c.color} 60%, ${darkenHex(c.color, 25)})`;
-    dropMarble.style.position = 'relative';
-    const hl = document.createElement('div');
-    hl.className = 'marble-highlight';
-    dropMarble.appendChild(hl);
-
-    els.dropZone.innerHTML = '';
-    els.dropZone.appendChild(dropMarble);
-    els.dropZone.classList.add('dropping');
-
-    setTimeout(() => {
-      anim.state = 'settle';
-      els.dropZone.classList.remove('dropping');
-      els.dropZone.innerHTML = '';
-      updateAllJars();
-
-      setTimeout(() => {
-        anim.state = 'lidClose';
-        els.lid.classList.remove('open');
-        setTimeout(() => {
-          anim.state = 'idle';
-          if (anim.pendingVotes > 0) { anim.pendingVotes--; runJarAnimation(candidateId); }
-        }, 600);
-      }, 200);
-    }, 600);
-  }, 600);
-}
-
-// ===========================================================================
-// Vote Scroll (Marquee Ticker)
-// ===========================================================================
-function buildTicker() {
-  tickerTrack.innerHTML = '';
-
-  if (recentVotes.length === 0) {
-    const msg = 'Cast your vote at the WIN booth...';
-    for (let copy = 0; copy < 6; copy++) {
-      const item = document.createElement('span');
-      item.className = 'ticker-empty-msg';
-      item.textContent = msg;
-      tickerTrack.appendChild(item);
-    }
-  } else {
-    for (let copy = 0; copy < 3; copy++) {
-      recentVotes.forEach(v => {
-        const item = document.createElement('div');
-        item.className = 'ticker-item';
-        item.innerHTML = `
-          <span class="ticker-voter">${esc(v.firstName)}</span>
-          <span class="ticker-arrow">&#9656;</span>
-          <span class="ticker-candidate">${esc(v.candidateName)}</span>
-        `;
-        tickerTrack.appendChild(item);
-      });
-    }
-  }
-
-  const duration = Math.max(recentVotes.length * 4, 20);
-  tickerTrack.style.animationDuration = duration + 's';
-}
-
-function addTickerVote(firstName, candidateName, candidateColor, candidateLight) {
-  recentVotes.unshift({ firstName, candidateName, color: candidateColor, light: candidateLight || '#f0f0f0' });
-  if (recentVotes.length > 20) recentVotes = recentVotes.slice(0, 20);
-  buildTicker();
-}
-
-// ===========================================================================
-// Celebration Overlay
-// ===========================================================================
-function queueCelebrationThenJar(firstName, candidateName, candidateSchool, candidateColor, candidateId) {
-  if (celebrationQueue.length >= 5) return;
-  celebrationQueue.push({ firstName, candidateName, candidateSchool, candidateColor, candidateId });
-  if (!isCelebrating) playCelebration();
-}
-
-function playCelebration() {
-  if (celebrationQueue.length === 0) {
-    isCelebrating = false;
-    while (pendingJarAnims.length > 0) {
-      triggerJarAnimation(pendingJarAnims.shift());
-    }
-    return;
-  }
-
-  isCelebrating = true;
-  const { firstName, candidateName, candidateSchool, candidateColor, candidateId } = celebrationQueue.shift();
-
-  pendingJarAnims.push(candidateId);
-
-  celebVoterName.textContent = firstName.toUpperCase();
-  celebCandidateName.textContent = candidateName;
-  celebCandidateName.style.color = candidateColor;
-  celebCandidateSchool.textContent = candidateSchool;
-
-  celebBarTop.style.background = candidateColor;
-  celebBarBottom.style.background = candidateColor;
-  celebAccent.style.background = candidateColor;
-  celebDivider.style.background = candidateColor;
-
-  // Set glow color for radial gradient pseudo-element
-  celebrationEl.style.setProperty('--celeb-glow', candidateColor);
-
-  celebrationEl.classList.remove('fade-out');
-  celebContent.style.animation = 'none';
-  void celebContent.offsetWidth;
-  celebContent.style.animation = '';
-
+function queueCelebrationThenJar(fn,cn,cs,cc,cid){if(celebrationQueue.length>=5)return;celebrationQueue.push({fn,cn,cs,cc,cid});if(!isCelebrating)playCelebration();}
+function playCelebration(){
+  if(celebrationQueue.length===0){isCelebrating=false;while(pendingJarAnims.length>0)triggerJarAnimation(pendingJarAnims.shift());return;}
+  isCelebrating=true;const{fn,cn,cs,cc,cid}=celebrationQueue.shift();pendingJarAnims.push(cid);
+  celebVoterName.textContent=fn.toUpperCase();celebCandidateName.textContent=cn;celebCandidateName.style.color=cc;celebCandidateSchool.textContent=cs;
+  celebBarTop.style.background=cc;celebBarBottom.style.background=cc;celebAccent.style.background=cc;celebDivider.style.background=cc;
+  celebrationEl.style.setProperty('--celeb-glow',cc);
+  celebrationEl.classList.remove('fade-out');celebContent.style.animation='none';void celebContent.offsetWidth;celebContent.style.animation='';
   celebrationEl.classList.add('active');
-
-  setTimeout(() => {
-    celebrationEl.classList.add('fade-out');
-    celebrationEl.classList.remove('active');
-    setTimeout(() => {
-      celebrationEl.classList.remove('fade-out');
-      celebrationEl.style.opacity = '0';
-      playCelebration();
-    }, 1000);
-  }, 7000);
+  setTimeout(()=>{celebrationEl.classList.add('fade-out');celebrationEl.classList.remove('active');
+    setTimeout(()=>{celebrationEl.classList.remove('fade-out');celebrationEl.style.opacity='0';playCelebration();},1000);
+  },7000);
 }
 
-// ===========================================================================
-// Supabase Realtime Subscription
-// ===========================================================================
-function subscribeToVotes() {
-  realtimeChannel = sb
-    .channel('tv-votes')
-    .on(
-      'postgres_changes',
-      { event: 'INSERT', schema: 'public', table: 'votes' },
-      handleNewVote
-    )
-    .subscribe((status) => {
-      if (status === 'SUBSCRIBED') {
-        connectionDot.classList.remove('disconnected');
-        console.log('Realtime: connected');
-      } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
-        connectionDot.classList.add('disconnected');
-        console.warn('Realtime: disconnected, status =', status);
-        setTimeout(() => {
-          if (realtimeChannel) sb.removeChannel(realtimeChannel);
-          subscribeToVotes();
-        }, 5000);
-      }
-    });
+function subscribeToVotes(){
+  realtimeChannel=sb.channel('tv-votes').on('postgres_changes',{event:'INSERT',schema:'public',table:'votes'},handleNewVote)
+    .subscribe(status=>{if(status==='SUBSCRIBED'){connectionDot.classList.remove('disconnected');console.log('Realtime: connected');}
+    else if(status==='CHANNEL_ERROR'||status==='TIMED_OUT'||status==='CLOSED'){connectionDot.classList.add('disconnected');setTimeout(()=>{if(realtimeChannel)sb.removeChannel(realtimeChannel);subscribeToVotes();},5000);}});
 }
 
-async function handleNewVote(payload) {
-  const vote = payload.new;
-  if (!vote) return;
-
-  const candidateId = vote.candidate_id;
-  const firstName = vote.first_name || 'Fan';
-
-  const candidate = candidateMap[candidateId];
-  if (candidate) {
-    candidate.vote_count = (candidate.vote_count || 0) + 1;
-    totalVotes++;
-
-    const els = jarElements[candidateId];
-    if (els) {
-      const ct = els.counter.querySelector('.counter-text');
-      if (ct) ct.textContent = candidate.vote_count + ' VOTES';
-    }
-    updateTotalDisplay();
-    animateBump(totalVotesEl);
-
-    addTickerVote(firstName, candidate.name, candidate.color, candidate.light);
-    queueCelebrationThenJar(firstName, candidate.name, candidate.school, candidate.color, candidateId);
+async function handleNewVote(payload){
+  const vote=payload.new;if(!vote)return;
+  const cid=vote.candidate_id,fn=vote.first_name||'Fan',c=candidateMap[cid];
+  if(c){c.vote_count=(c.vote_count||0)+1;totalVotes++;
+    const els=jarElements[cid];if(els){const ct=els.counter.querySelector('.counter-text');if(ct)ct.textContent=c.vote_count+' VOTES';}
+    updateTotalDisplay();animateBump(totalVotesEl);
+    addTickerVote(fn,c.name,c.color,c.light);queueCelebrationThenJar(fn,c.name,c.school,c.color,cid);
   }
-
-  try {
-    const { data, error } = await sb
-      .from('vote_counts')
-      .select('*')
-      .order('display_order', { ascending: true });
-
-    if (!error && data) {
-      totalVotes = 0;
-      data.forEach(c => {
-        if (candidateMap[c.id]) candidateMap[c.id].vote_count = c.vote_count || 0;
-        totalVotes += c.vote_count || 0;
-      });
-      candidates = data;
-      updateAllJars();
-      updateTotalDisplay();
-    }
-  } catch (err) {
-    console.warn('Re-fetch vote counts failed:', err);
-  }
+  try{const{data,error}=await sb.from('vote_counts').select('*').order('display_order',{ascending:true});
+    if(!error&&data){totalVotes=0;data.forEach(c=>{if(candidateMap[c.id])candidateMap[c.id].vote_count=c.vote_count||0;totalVotes+=c.vote_count||0;});candidates=data;updateAllJars();updateTotalDisplay();}
+  }catch(err){console.warn('Re-fetch failed:',err);}
 }
 
-// ===========================================================================
-// Init
-// ===========================================================================
-(async function init() {
-  await loadVoteCounts();
-  subscribeToVotes();
-})();
+(async function(){await loadVoteCounts();subscribeToVotes();})();
 </script>
 </body>
 </html>
