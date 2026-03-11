@@ -1,645 +1,310 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Dan Hodge Trophy Vote | WIN Magazine</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-  @keyframes meshFloat {
-    0%, 100% { transform: translate(0, 0) scale(1); }
-    25% { transform: translate(30px, -40px) scale(1.05); }
-    50% { transform: translate(-20px, 20px) scale(0.97); }
-    75% { transform: translate(15px, 30px) scale(1.02); }
-  }
-  @keyframes shimmer {
-    0% { background-position: -200% center; }
-    100% { background-position: 200% center; }
-  }
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(24px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  @keyframes scaleIn {
-    0% { transform: scale(0) rotate(-8deg); opacity: 0; }
-    100% { transform: scale(1) rotate(0deg); opacity: 1; }
-  }
-  @keyframes drawCheck { to { stroke-dashoffset: 0; } }
-  @keyframes pulseGlow {
-    0%, 100% { opacity: 0.6; }
-    50% { opacity: 1; }
-  }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dan Hodge Trophy | Fan Vote</title>
+    <style>
+        :root {
+            --win-gold: #cfa85e;
+            --win-gold-hover: #b38d45;
+            --win-dark: #0f172a;
+            --win-darker: #020617;
+            --card-bg: #ffffff;
+            --text-dark: #1e293b;
+        }
 
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-  :root {
-    --bg: #0b0b0f;
-    --surface: #141418;
-    --surface-2: #1c1c22;
-    --surface-glass: rgba(255,255,255,0.04);
-    --border: rgba(255,255,255,0.08);
-    --border-hover: rgba(255,255,255,0.14);
-    --text: #f0eff4;
-    --text-secondary: rgba(255,255,255,0.55);
-    --text-dim: rgba(255,255,255,0.3);
-    --gold: #e2b93b;
-    --gold-bright: #f5d245;
-    --gold-glow: rgba(226,185,59,0.15);
-    --gold-glow-strong: rgba(226,185,59,0.3);
-    --error: #ff4757;
-    --radius: 16px;
-    --radius-sm: 10px;
-    --ease: cubic-bezier(.19,1,.22,1);
-  }
+        body {
+            background: linear-gradient(135deg, var(--win-darker) 0%, var(--win-dark) 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
 
-  html { scroll-behavior: smooth; }
+        /* --- HEADER --- */
+        header {
+            text-align: center;
+            padding: 1.5rem 1rem 1rem;
+            background: rgba(0,0,0,0.3);
+            border-bottom: 4px solid var(--win-gold);
+        }
+        .logo-placeholder {
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--win-gold);
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+        h1 {
+            font-size: 1.8rem;
+            letter-spacing: 1px;
+            margin-bottom: 0.2rem;
+        }
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--win-gold);
+            font-weight: bold;
+            text-transform: uppercase;
+        }
 
-  body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100dvh;
-    line-height: 1.5;
-    -webkit-font-smoothing: antialiased;
-    overflow-x: hidden;
-    position: relative;
-  }
+        /* --- MAIN CONTAINER --- */
+        main {
+            flex: 1;
+            padding: 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+        }
 
-  /* --- Animated mesh background --- */
-  .mesh-bg {
-    position: fixed;
-    inset: 0;
-    z-index: 0;
-    overflow: hidden;
-    pointer-events: none;
-  }
-  .mesh-orb {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(100px);
-    opacity: 0.35;
-    animation: meshFloat 20s ease-in-out infinite;
-  }
-  .mesh-orb:nth-child(1) {
-    width: 600px; height: 600px;
-    background: radial-gradient(circle, rgba(226,185,59,0.4), transparent 70%);
-    top: -15%; left: -10%;
-    animation-delay: 0s;
-  }
-  .mesh-orb:nth-child(2) {
-    width: 500px; height: 500px;
-    background: radial-gradient(circle, rgba(139,92,246,0.3), transparent 70%);
-    bottom: -10%; right: -10%;
-    animation-delay: -7s;
-  }
-  .mesh-orb:nth-child(3) {
-    width: 400px; height: 400px;
-    background: radial-gradient(circle, rgba(59,130,246,0.2), transparent 70%);
-    top: 40%; left: 50%;
-    animation-delay: -13s;
-  }
+        /* --- CANDIDATE GRID --- */
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 2.5rem;
+        }
 
-  /* --- Noise texture overlay --- */
-  body::after {
-    content: '';
-    position: fixed;
-    inset: 0;
-    z-index: 1;
-    pointer-events: none;
-    opacity: 0.025;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-    background-repeat: repeat;
-    background-size: 256px;
-  }
+        .card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            display: flex;
+            padding: 0.75rem;
+            cursor: pointer;
+            transition: transform 0.1s, box-shadow 0.2s, border 0.2s;
+            border: 3px solid transparent;
+            color: var(--text-dark);
+            align-items: center;
+        }
 
-  .page-wrapper {
-    position: relative;
-    z-index: 2;
-    max-width: 720px;
-    margin: 0 auto;
-    padding: 0 20px 64px;
-  }
+        .card.selected {
+            border-color: var(--win-gold);
+            box-shadow: 0 0 15px rgba(207, 168, 94, 0.4);
+            transform: scale(1.02);
+        }
 
-  /* --- Header --- */
-  .header {
-    text-align: center;
-    padding: 48px 0 40px;
-    position: relative;
-  }
-  .header-brand {
-    display: inline-flex;
-    align-items: center;
-    gap: 14px;
-    margin-bottom: 24px;
-  }
-  .header-win-box {
-    display: inline-flex;
-    align-items: center;
-    padding: 5px 16px;
-    border: 1.5px solid var(--gold);
-    border-radius: 6px;
-    box-shadow: 0 0 24px rgba(226,185,59,0.15), inset 0 0 12px rgba(226,185,59,0.05);
-  }
-  .header-win {
-    font-size: 1.8rem;
-    font-weight: 900;
-    letter-spacing: 0.22em;
-    color: var(--gold);
-    line-height: 1;
-  }
-  .header-magazine {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.6rem;
-    font-weight: 500;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-  }
-  .header-title {
-    font-size: clamp(2rem, 5vw, 3.2rem);
-    font-weight: 900;
-    letter-spacing: -0.04em;
-    line-height: 1.05;
-    color: var(--text);
-    margin-bottom: 12px;
-  }
-  .header-title .accent {
-    background: linear-gradient(135deg, var(--gold), var(--gold-bright));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  .header-sub {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.72rem;
-    color: var(--text-dim);
-    letter-spacing: 0.08em;
-  }
-  .header-line {
-    width: 48px;
-    height: 2px;
-    background: linear-gradient(90deg, var(--gold), transparent);
-    margin: 20px auto 0;
-    border-radius: 1px;
-  }
+        .card-avatar {
+            width: 80px;
+            height: 100px;
+            background: #cbd5e1;
+            border-radius: 4px;
+            margin-right: 1rem;
+            flex-shrink: 0;
+            background-size: cover;
+            background-position: center;
+        }
 
-  /* --- Candidate Grid --- */
-  .section-label {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.65rem;
-    font-weight: 600;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    margin-bottom: 16px;
-    padding-left: 2px;
-  }
-  .section-label.candidates-label { margin-top: 8px; }
+        .card-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
 
-  .candidates-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 10px;
-    margin-bottom: 32px;
-  }
-  @media (min-width: 540px) {
-    .candidates-grid { grid-template-columns: 1fr 1fr; }
-  }
+        .card-rank { font-size: 0.8rem; font-weight: bold; color: #64748b; }
+        .card-name { font-size: 1.3rem; font-weight: 800; text-transform: uppercase; line-height: 1.1; margin-bottom: 0.25rem;}
+        .card-school { font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 0.5rem;}
 
-  .candidate-card {
-    position: relative;
-    background: var(--surface-glass);
-    backdrop-filter: blur(16px) saturate(150%);
-    -webkit-backdrop-filter: blur(16px) saturate(150%);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 22px 22px 20px;
-    cursor: pointer;
-    transition: all 0.5s var(--ease);
-    -webkit-tap-highlight-color: transparent;
-    user-select: none;
-    overflow: hidden;
-    animation: fadeUp 0.6s var(--ease) both;
-  }
-  .candidate-card::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: var(--radius);
-    background: radial-gradient(ellipse at 20% 0%, rgba(255,255,255,0.06) 0%, transparent 60%);
-    pointer-events: none;
-    transition: opacity 0.5s var(--ease);
-  }
-  .candidate-card::after {
-    content: '';
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 3px;
-    background: var(--card-accent, rgba(255,255,255,0.1));
-    border-radius: 0 0 var(--radius) var(--radius);
-    opacity: 0.6;
-    transition: opacity 0.4s ease, height 0.4s var(--ease);
-  }
-  .candidate-card:hover {
-    border-color: var(--border-hover);
-    background: rgba(255,255,255,0.06);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 32px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.06);
-  }
-  .candidate-card:hover::after {
-    opacity: 1;
-    height: 4px;
-  }
-  .candidate-card.selected {
-    border-color: var(--gold);
-    background: rgba(226,185,59,0.06);
-    box-shadow: 0 0 0 1px var(--gold), 0 8px 40px rgba(226,185,59,0.1), 0 0 80px rgba(226,185,59,0.04);
-  }
-  .candidate-card.selected::after {
-    background: var(--gold);
-    opacity: 1;
-    height: 4px;
-  }
-  .candidate-card input[type="radio"] {
-    position: absolute;
-    opacity: 0;
-    pointer-events: none;
-  }
-  .candidate-name {
-    font-size: 1.1rem;
-    font-weight: 800;
-    color: var(--text);
-    margin-bottom: 3px;
-    letter-spacing: -0.02em;
-    position: relative;
-    z-index: 1;
-  }
-  .candidate-school {
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: var(--card-accent, var(--text-secondary));
-    position: relative;
-    z-index: 1;
-  }
-  .candidate-meta {
-    display: flex;
-    gap: 14px;
-    margin-top: 10px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.65rem;
-    color: var(--text-dim);
-    letter-spacing: 0.05em;
-    position: relative;
-    z-index: 1;
-  }
-  .candidate-meta span {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 3px 8px;
-    background: rgba(255,255,255,0.04);
-    border-radius: 6px;
-    border: 1px solid rgba(255,255,255,0.05);
-  }
-  .candidate-check {
-    position: absolute;
-    top: 16px; right: 16px;
-    width: 28px; height: 28px;
-    border-radius: 50%;
-    border: 1.5px solid rgba(255,255,255,0.12);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.4s var(--ease);
-    z-index: 1;
-    background: rgba(255,255,255,0.03);
-  }
-  .candidate-card.selected .candidate-check {
-    background: var(--gold);
-    border-color: var(--gold);
-    box-shadow: 0 0 16px rgba(226,185,59,0.4);
-  }
-  .candidate-check svg {
-    width: 14px; height: 14px;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-  .candidate-card.selected .candidate-check svg { opacity: 1; }
+        .vote-btn {
+            background: #e2e8f0;
+            color: #475569;
+            border: none;
+            padding: 0.5rem;
+            font-weight: bold;
+            border-radius: 4px;
+            text-transform: uppercase;
+            width: 100%;
+            pointer-events: none;
+        }
 
-  /* --- Form Fields --- */
-  .form-section { margin-bottom: 28px; }
-  .field-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-  }
-  .field-group { margin-bottom: 14px; }
-  .field-group label {
-    display: block;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.62rem;
-    font-weight: 600;
-    color: var(--text-dim);
-    margin-bottom: 8px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-  }
-  .field-group input {
-    width: 100%;
-    padding: 14px 16px;
-    font-size: 0.95rem;
-    font-family: 'Inter', sans-serif;
-    color: var(--text);
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    outline: none;
-    transition: all 0.35s var(--ease);
-    -webkit-appearance: none;
-    appearance: none;
-  }
-  .field-group input::placeholder { color: var(--text-dim); }
-  .field-group input:focus {
-    border-color: var(--gold);
-    box-shadow: 0 0 0 3px var(--gold-glow), 0 0 24px rgba(226,185,59,0.06);
-    background: var(--surface-2);
-  }
-  .field-group input.input-error { border-color: var(--error); }
-  .field-error {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.62rem;
-    color: var(--error);
-    margin-top: 6px;
-    min-height: 0;
-  }
+        .card.selected .vote-btn {
+            background: var(--win-gold);
+            color: var(--win-darker);
+        }
 
-  /* --- Consent --- */
-  .consent-row {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    margin-bottom: 28px;
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .consent-row input[type="checkbox"] {
-    width: 20px; height: 20px; min-width: 20px;
-    accent-color: var(--gold);
-    margin-top: 2px;
-    cursor: pointer;
-  }
-  .consent-row span {
-    font-size: 0.78rem;
-    color: var(--text-dim);
-    line-height: 1.55;
-  }
+        /* --- LOADING --- */
+        .grid-loading {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 2rem;
+            color: #94a3b8;
+            font-size: 1rem;
+        }
 
-  /* --- Submit Button --- */
-  .submit-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    width: 100%;
-    padding: 18px 24px;
-    font-size: 0.95rem;
-    font-family: 'Inter', sans-serif;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--bg);
-    background: linear-gradient(135deg, var(--gold), var(--gold-bright));
-    border: none;
-    border-radius: var(--radius);
-    cursor: pointer;
-    transition: all 0.4s var(--ease);
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 4px 24px rgba(226,185,59,0.2), 0 0 0 1px rgba(226,185,59,0.3);
-  }
-  .submit-btn::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(105deg, transparent 35%, rgba(255,255,255,0.25) 45%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0.25) 55%, transparent 65%);
-    background-size: 200% 100%;
-    border-radius: inherit;
-    opacity: 0;
-    transition: opacity 0.4s ease;
-    animation: shimmer 2s linear infinite;
-    pointer-events: none;
-  }
-  .submit-btn:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 40px rgba(226,185,59,0.3), 0 0 0 1px rgba(226,185,59,0.5);
-  }
-  .submit-btn:hover:not(:disabled)::after { opacity: 1; }
-  .submit-btn:active:not(:disabled) { transform: translateY(0); }
-  .submit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        /* --- FORM --- */
+        .form-section {
+            background: rgba(255,255,255,0.05);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
 
-  /* --- Spinner --- */
-  .spinner {
-    display: inline-block;
-    width: 20px; height: 20px;
-    border: 2.5px solid rgba(11,11,15,0.2);
-    border-top-color: var(--bg);
-    border-radius: 50%;
-    animation: spin 0.7s linear infinite;
-  }
+        .form-title {
+            text-align: center;
+            color: var(--win-gold);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+        }
 
-  /* --- Global Error --- */
-  .global-error {
-    background: rgba(255,71,87,0.08);
-    border: 1px solid rgba(255,71,87,0.2);
-    border-radius: var(--radius-sm);
-    padding: 12px 16px;
-    margin-bottom: 20px;
-    font-size: 0.82rem;
-    color: var(--error);
-    display: none;
-    backdrop-filter: blur(8px);
-  }
-  .global-error.visible { display: block; }
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
 
-  /* --- Thank You Screen --- */
-  .thank-you-screen {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 60px 20px;
-    min-height: 60dvh;
-  }
-  .thank-you-screen.visible { display: flex; }
-  .thank-you-glass {
-    background: var(--surface-glass);
-    backdrop-filter: blur(24px) saturate(150%);
-    -webkit-backdrop-filter: blur(24px) saturate(150%);
-    border: 1px solid var(--border);
-    border-radius: 24px;
-    padding: 56px 48px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    box-shadow: 0 16px 64px rgba(0,0,0,0.4);
-    animation: fadeUp 0.5s var(--ease);
-  }
-  .checkmark-circle {
-    width: 96px; height: 96px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--gold), var(--gold-bright));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 28px;
-    animation: scaleIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    box-shadow: 0 0 48px rgba(226,185,59,0.3);
-  }
-  .checkmark-circle svg {
-    width: 48px; height: 48px;
-    stroke: var(--bg);
-    stroke-width: 3; fill: none;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    stroke-dasharray: 60;
-    stroke-dashoffset: 60;
-    animation: drawCheck 0.5s 0.3s ease forwards;
-  }
-  .thank-you-message {
-    font-size: 1.8rem;
-    font-weight: 900;
-    letter-spacing: -0.04em;
-    color: var(--text);
-    margin-bottom: 8px;
-  }
-  .thank-you-sub {
-    font-size: 0.95rem;
-    color: var(--text-secondary);
-  }
-  .thank-you-reset {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.65rem;
-    color: var(--text-dim);
-    margin-top: 24px;
-    letter-spacing: 0.06em;
-  }
+        input[type="text"], input[type="email"], input[type="tel"] {
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(0,0,0,0.4);
+            color: white;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
 
-  /* --- Loading skeleton --- */
-  .loading-skeleton {
-    text-align: center;
-    padding: 40px 0;
-    color: var(--text-dim);
-    font-size: 0.85rem;
-  }
-  .skeleton-spinner {
-    display: inline-block;
-    width: 28px; height: 28px;
-    border: 2.5px solid var(--border);
-    border-top-color: var(--gold);
-    border-radius: 50%;
-    animation: spin 0.7s linear infinite;
-    margin-bottom: 12px;
-  }
+        input:focus {
+            outline: none;
+            border-color: var(--win-gold);
+        }
 
-  .hidden { display: none !important; }
+        .consent-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            color: #cbd5e1;
+            margin-bottom: 1.5rem;
+        }
 
-  .footer {
-    text-align: center;
-    padding: 40px 0 8px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.58rem;
-    color: var(--text-dim);
-    letter-spacing: 0.12em;
-  }
-</style>
+        .submit-btn {
+            width: 100%;
+            padding: 1.25rem;
+            background: var(--win-gold);
+            color: var(--win-darker);
+            font-size: 1.2rem;
+            font-weight: 900;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: background 0.2s;
+        }
+
+        .submit-btn:hover { background: var(--win-gold-hover); }
+        .submit-btn:disabled { background: #64748b; cursor: not-allowed; }
+
+        .error-msg {
+            color: #ef4444;
+            font-size: 0.85rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            min-height: 1.2em;
+        }
+
+        /* --- TICKER --- */
+        .ticker-wrap {
+            background: var(--win-gold);
+            color: var(--win-darker);
+            padding: 0.75rem 0;
+            overflow: hidden;
+            white-space: nowrap;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        .ticker {
+            display: inline-block;
+            animation: ticker 25s linear infinite;
+        }
+        @keyframes ticker {
+            0% { transform: translate3d(100%, 0, 0); }
+            100% { transform: translate3d(-100%, 0, 0); }
+        }
+
+        /* --- THANK YOU SCREEN --- */
+        #thank-you-view {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 60vh;
+            text-align: center;
+        }
+        .hidden { display: none !important; }
+
+        .ty-title { font-size: 3rem; color: var(--win-gold); margin-bottom: 1rem; }
+        .ty-sub { font-size: 1.5rem; margin-bottom: 2rem; }
+
+        .reset-btn {
+            background: transparent;
+            border: 2px solid white;
+            color: white;
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-bottom: 1rem;
+        }
+
+        .reset-timer { color: #94a3b8; font-size: 0.9rem; }
+    </style>
 </head>
 <body>
 
-<div class="mesh-bg">
-  <div class="mesh-orb"></div>
-  <div class="mesh-orb"></div>
-  <div class="mesh-orb"></div>
-</div>
+    <div id="voting-view">
+        <header>
+            <div class="logo-placeholder">WIN MAGAZINE</div>
+            <h1>DAN HODGE TROPHY</h1>
+            <div class="subtitle">Official Fan Vote</div>
+        </header>
 
-<div class="page-wrapper">
-  <header class="header">
-    <div class="header-brand">
-      <div class="header-win-box">
-        <span class="header-win">WIN</span>
-      </div>
-      <span class="header-magazine">Magazine</span>
-    </div>
-    <h1 class="header-title">Dan Hodge Trophy<br><span class="accent">Fan Vote</span></h1>
-    <p class="header-sub">Select your pick for college wrestling's most outstanding wrestler</p>
-    <div class="header-line"></div>
-  </header>
+        <main>
+            <div class="grid" id="candidate-grid">
+                <div class="grid-loading">Loading candidates...</div>
+            </div>
 
-  <form id="voteForm" autocomplete="off" novalidate>
-    <div class="section-label candidates-label">Select Your Candidate</div>
-    <div id="candidatesGrid" class="candidates-grid">
-      <div class="loading-skeleton">
-        <div class="skeleton-spinner"></div>
-        <div>Loading candidates...</div>
-      </div>
-    </div>
-    <div id="candidateError" class="field-error"></div>
+            <div class="form-section">
+                <div class="form-title">VOTER INFORMATION</div>
+                <form id="vote-form">
+                    <div class="form-grid">
+                        <input type="text" id="fname" placeholder="First Name" required>
+                        <input type="text" id="lname" placeholder="Last Name" required>
+                        <input type="tel" id="phone" placeholder="Phone Number" required maxlength="14">
+                        <input type="email" id="email" placeholder="Email Address" required>
+                    </div>
+                    <label class="consent-row">
+                        <input type="checkbox" id="consent" checked required style="margin-top: 3px;">
+                        <span>I consent to receive texts/emails from WIN Magazine regarding my free digital subscription and wrestling news.</span>
+                    </label>
+                    <div class="error-msg" id="error-msg"></div>
+                    <button type="submit" class="submit-btn" id="submit-btn">Submit Vote</button>
+                </form>
+            </div>
+        </main>
 
-    <div id="globalError" class="global-error"></div>
-
-    <div class="form-section">
-      <div class="section-label">Your Information</div>
-      <div class="field-row">
-        <div class="field-group">
-          <label for="firstName">First Name</label>
-          <input type="text" id="firstName" name="first_name" placeholder="First name" required>
-          <div id="firstNameError" class="field-error"></div>
+        <div class="ticker-wrap">
+            <div class="ticker" id="ticker-text">
+                CAST YOUR VOTE AT THE BOOTH • WHO WILL WIN THE 2026 DAN HODGE TROPHY? • VOTE NOW •
+            </div>
         </div>
-        <div class="field-group">
-          <label for="lastName">Last Name</label>
-          <input type="text" id="lastName" name="last_name" placeholder="Last name" required>
-          <div id="lastNameError" class="field-error"></div>
-        </div>
-      </div>
-      <div class="field-group">
-        <label for="email">Email Address</label>
-        <input type="email" id="email" name="email" placeholder="you@example.com" required>
-        <div id="emailError" class="field-error"></div>
-      </div>
-      <div class="field-group">
-        <label for="phone">Phone Number</label>
-        <input type="tel" id="phone" name="phone" placeholder="(555) 123-4567" required>
-        <div id="phoneError" class="field-error"></div>
-      </div>
     </div>
 
-    <label class="consent-row">
-      <input type="checkbox" id="consent" checked>
-      <span>I agree to receive text messages and emails from WIN Magazine about voting results and wrestling news. Message &amp; data rates may apply.</span>
-    </label>
-
-    <button type="submit" class="submit-btn" id="submitBtn">
-      <span id="submitText">Cast Your Vote</span>
-      <span id="submitSpinner" class="spinner hidden"></span>
-    </button>
-  </form>
-
-  <div id="thankYou" class="thank-you-screen">
-    <div class="thank-you-glass">
-      <div class="checkmark-circle">
-        <svg viewBox="0 0 40 40"><polyline points="10,22 18,30 32,12" /></svg>
-      </div>
-      <div class="thank-you-message" id="thankYouMessage"></div>
-      <div class="thank-you-sub">Thank you for voting!</div>
-      <div class="thank-you-reset">Resetting in a few seconds...</div>
+    <div id="thank-you-view">
+        <div class="ty-title">VOTE RECORDED!</div>
+        <div class="ty-sub">Watch the big screen to see your vote drop.</div>
+        <button class="reset-btn" onclick="resetForm()">Next Voter</button>
+        <div class="reset-timer">Auto-resetting in <span id="countdown">5</span> seconds...</div>
     </div>
-  </div>
-
-  <div class="footer">&copy; WIN Magazine</div>
-</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
@@ -649,20 +314,14 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let candidates = [];
 let selectedCandidateId = null;
+let resetInterval;
 let isSubmitting = false;
 
-const $ = (id) => document.getElementById(id);
-const form = $('voteForm');
-const grid = $('candidatesGrid');
-const globalError = $('globalError');
-const thankYouScreen = $('thankYou');
-const submitBtn = $('submitBtn');
-const submitText = $('submitText');
-const submitSpinner = $('submitSpinner');
+const grid = document.getElementById('candidate-grid');
+const errorMsg = document.getElementById('error-msg');
+const submitBtn = document.getElementById('submit-btn');
 
-// --- Staggered card entrance ---
-let cardIndex = 0;
-
+// --- Load candidates from Supabase ---
 async function loadCandidates() {
   try {
     const { data, error } = await sb
@@ -671,168 +330,163 @@ async function loadCandidates() {
       .order('display_order', { ascending: true });
     if (error) throw error;
     if (!data || data.length === 0) {
-      grid.innerHTML = '<div class="loading-skeleton">No candidates available at this time.</div>';
+      grid.innerHTML = '<div class="grid-loading">No candidates available at this time.</div>';
       return;
     }
     candidates = data;
     renderCandidates();
   } catch (err) {
     console.error('Failed to load candidates:', err);
-    grid.innerHTML = '<div class="loading-skeleton" style="color:var(--error)">Unable to load candidates. Please refresh.</div>';
+    grid.innerHTML = '<div class="grid-loading" style="color:#ef4444">Unable to load candidates. Please refresh.</div>';
   }
 }
 
 function renderCandidates() {
   grid.innerHTML = '';
-  cardIndex = 0;
-  candidates.forEach((c, i) => {
-    const card = document.createElement('label');
-    card.className = 'candidate-card';
-    card.style.setProperty('--card-accent', c.color || '#888');
-    card.style.animationDelay = (i * 0.08) + 's';
-    card.setAttribute('data-id', c.id);
+  candidates.forEach((c, index) => {
+    const div = document.createElement('div');
+    div.className = 'card';
+    div.dataset.id = c.id;
+    div.onclick = () => selectCandidate(div, c.id);
 
-    card.innerHTML = `
-      <input type="radio" name="candidate" value="${c.id}">
-      <div class="candidate-check">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="6,13 10,17 18,8" />
-        </svg>
-      </div>
-      <div class="candidate-name">${esc(c.name)}</div>
-      <div class="candidate-school">${esc(c.school || '')}</div>
-      <div class="candidate-meta">
-        ${c.weight_class ? `<span>${esc(c.weight_class)}</span>` : ''}
-        ${c.record ? `<span>${esc(c.record)}</span>` : ''}
+    const weightDisplay = c.weight_class ? ` | ${c.weight_class}` : '';
+    const recordDisplay = c.record ? ` | ${c.record}` : '';
+
+    div.innerHTML = `
+      <div class="card-avatar" style="${c.color ? 'background:' + c.color : ''}"></div>
+      <div class="card-info">
+        <div class="card-rank">${index + 1}.</div>
+        <div class="card-name">${esc(c.name)}</div>
+        <div class="card-school">${esc(c.school || '')}${esc(weightDisplay)}${esc(recordDisplay)}</div>
+        <button type="button" class="vote-btn">Vote</button>
       </div>
     `;
-
-    card.addEventListener('click', () => selectCandidate(c.id));
-    card.querySelector('input[type="radio"]').addEventListener('change', () => selectCandidate(c.id));
-    grid.appendChild(card);
+    grid.appendChild(div);
   });
 }
 
-function selectCandidate(id) {
+function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+// --- Selection ---
+function selectCandidate(cardElement, id) {
+  document.querySelectorAll('.card').forEach(c => {
+    c.classList.remove('selected');
+    c.querySelector('.vote-btn').innerText = 'Vote';
+  });
+  cardElement.classList.add('selected');
+  cardElement.querySelector('.vote-btn').innerText = 'Selected \u2713';
   selectedCandidateId = id;
-  clearError('candidateError');
-  document.querySelectorAll('.candidate-card').forEach((card) => {
-    const isSelected = card.getAttribute('data-id') == id;
-    card.classList.toggle('selected', isSelected);
-    card.querySelector('input[type="radio"]').checked = isSelected;
-  });
+  errorMsg.textContent = '';
 }
 
-function normalizePhone(raw) {
-  const digits = raw.replace(/[^\d]/g, '');
-  if (digits.length === 11 && digits.startsWith('1')) return '+' + digits;
-  if (digits.length === 10) return '+1' + digits;
-  if (raw.startsWith('+') && digits.length === 11) return '+' + digits;
-  return null;
-}
+// --- Phone formatter ---
+const phoneInput = document.getElementById('phone');
+phoneInput.addEventListener('input', function (e) {
+  let x = e.target.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
+  e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
+});
 
-function validateForm() {
-  let valid = true;
-  clearAllErrors();
-  if (!selectedCandidateId) { showError('candidateError', 'Please select a candidate'); valid = false; }
-  const firstName = $('firstName').value.trim();
-  if (!firstName) { showError('firstNameError', 'Required'); $('firstName').classList.add('input-error'); valid = false; }
-  const lastName = $('lastName').value.trim();
-  if (!lastName) { showError('lastNameError', 'Required'); $('lastName').classList.add('input-error'); valid = false; }
-  const email = $('email').value.trim();
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!email) { showError('emailError', 'Required'); $('email').classList.add('input-error'); valid = false; }
-  else if (!emailRegex.test(email)) { showError('emailError', 'Invalid email'); $('email').classList.add('input-error'); valid = false; }
-  const phoneRaw = $('phone').value.trim();
-  if (!phoneRaw) { showError('phoneError', 'Required'); $('phone').classList.add('input-error'); valid = false; }
-  else if (!normalizePhone(phoneRaw)) { showError('phoneError', 'Enter a valid 10-digit number'); $('phone').classList.add('input-error'); valid = false; }
-  return valid;
-}
-
-function showError(id, msg) { const el = $(id); if (el) el.textContent = msg; }
-function clearError(id) { const el = $(id); if (el) el.textContent = ''; }
-function clearAllErrors() {
-  ['candidateError','firstNameError','lastNameError','emailError','phoneError'].forEach(clearError);
-  document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
-  globalError.classList.remove('visible');
-  globalError.textContent = '';
-}
-function showGlobalError(msg) { globalError.textContent = msg; globalError.classList.add('visible'); }
-
-async function handleSubmit(e) {
+// --- Submit ---
+document.getElementById('vote-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   if (isSubmitting) return;
-  if (!validateForm()) return;
-  const candidate = candidates.find(c => c.id == selectedCandidateId);
-  if (!candidate) return;
-  const firstName = $('firstName').value.trim();
-  const lastName = $('lastName').value.trim();
-  const email = $('email').value.trim();
-  const phone = normalizePhone($('phone').value.trim());
-  const consentChecked = $('consent').checked;
-  setLoading(true);
+
+  // Spam check
+  const lastVoteTime = sessionStorage.getItem('lastVoteTimestamp');
+  if (lastVoteTime && (Date.now() - lastVoteTime < 30000)) {
+    errorMsg.textContent = 'Please wait 30 seconds before submitting another vote.';
+    return;
+  }
+
+  if (!selectedCandidateId) {
+    errorMsg.textContent = 'Please select a wrestler before submitting!';
+    return;
+  }
+
+  const firstName = document.getElementById('fname').value.trim();
+  const lastName = document.getElementById('lname').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const phoneRaw = phoneInput.value.trim();
+  const phoneDigits = phoneRaw.replace(/\D/g, '');
+  const consentChecked = document.getElementById('consent').checked;
+
+  if (!firstName || !lastName) {
+    errorMsg.textContent = 'Please enter your first and last name.';
+    return;
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    errorMsg.textContent = 'Please enter a valid email address.';
+    return;
+  }
+  if (phoneDigits.length !== 10) {
+    errorMsg.textContent = 'Please enter a valid 10-digit phone number.';
+    return;
+  }
+
+  const phone = '+1' + phoneDigits;
+
+  isSubmitting = true;
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Submitting...';
+  errorMsg.textContent = '';
+
   try {
     const { error } = await sb.from('votes').insert({
-      candidate_id: candidate.id, first_name: firstName, last_name: lastName,
-      email, phone, consent_texts: consentChecked, consent_emails: consentChecked,
+      candidate_id: selectedCandidateId,
+      first_name: firstName,
+      last_name: lastName,
+      email: email,
+      phone: phone,
+      consent_texts: consentChecked,
+      consent_emails: consentChecked,
     });
     if (error) throw error;
-    showThankYou(firstName);
+
+    sessionStorage.setItem('lastVoteTimestamp', Date.now());
+    showThankYouScreen();
   } catch (err) {
     console.error('Submit error:', err);
-    showGlobalError('Something went wrong. Please try again.');
-  } finally { setLoading(false); }
-}
+    errorMsg.textContent = 'Something went wrong. Please try again.';
+  } finally {
+    isSubmitting = false;
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Submit Vote';
+  }
+});
 
-function setLoading(on) {
-  isSubmitting = on;
-  submitBtn.disabled = on;
-  submitText.classList.toggle('hidden', on);
-  submitSpinner.classList.toggle('hidden', !on);
-}
+// --- Thank You ---
+function showThankYouScreen() {
+  document.getElementById('voting-view').style.display = 'none';
+  document.getElementById('thank-you-view').style.display = 'flex';
 
-function showThankYou(firstName) {
-  form.classList.add('hidden');
-  $('thankYouMessage').textContent = `${firstName}, your vote is in.`;
-  thankYouScreen.classList.add('visible');
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-  setTimeout(resetForm, 5000);
+  let timeLeft = 5;
+  document.getElementById('countdown').innerText = timeLeft;
+
+  resetInterval = setInterval(() => {
+    timeLeft--;
+    document.getElementById('countdown').innerText = timeLeft;
+    if (timeLeft <= 0) resetForm();
+  }, 1000);
 }
 
 function resetForm() {
-  thankYouScreen.classList.remove('visible');
-  form.classList.remove('hidden');
-  form.reset();
+  clearInterval(resetInterval);
+  document.getElementById('vote-form').reset();
+  document.getElementById('consent').checked = true;
   selectedCandidateId = null;
-  clearAllErrors();
-  document.querySelectorAll('.candidate-card').forEach(card => {
-    card.classList.remove('selected');
-    card.querySelector('input[type="radio"]').checked = false;
+  errorMsg.textContent = '';
+
+  document.querySelectorAll('.card').forEach(c => {
+    c.classList.remove('selected');
+    c.querySelector('.vote-btn').innerText = 'Vote';
   });
-  $('consent').checked = true;
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  document.getElementById('thank-you-view').style.display = 'none';
+  document.getElementById('voting-view').style.display = 'block';
+  window.scrollTo(0, 0);
 }
 
-function esc(str) { const d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
-
-$('phone').addEventListener('input', function () {
-  let digits = this.value.replace(/[^\d]/g, '');
-  if (digits.length > 10 && digits.startsWith('1')) digits = digits.substring(1);
-  if (digits.length > 10) digits = digits.substring(0, 10);
-  let f = '';
-  if (digits.length > 0) f = '(' + digits.substring(0, 3);
-  if (digits.length >= 3) f += ') ';
-  if (digits.length > 3) f += digits.substring(3, 6);
-  if (digits.length >= 6) f += '-';
-  if (digits.length > 6) f += digits.substring(6, 10);
-  if (digits.length >= 1) this.value = f;
-});
-
-['firstName','lastName','email','phone'].forEach(id => {
-  $(id).addEventListener('focus', () => { $(id).classList.remove('input-error'); clearError(id + 'Error'); });
-});
-
-form.addEventListener('submit', handleSubmit);
+// --- Init ---
 loadCandidates();
 </script>
 </body>
