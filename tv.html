@@ -264,7 +264,7 @@ pmremGenerator.compileEquirectangularShader();
 const roomEnv = new RoomEnvironment();
 const envTexture = pmremGenerator.fromScene(roomEnv, 0.04).texture;
 scene.environment = envTexture;
-scene.environmentIntensity = 0.4; // Tone down env reflections for darker look
+scene.environmentIntensity = 0.6; // Env for bead reflections (glass no longer uses it)
 roomEnv.dispose();
 
 // ============================================================
@@ -326,18 +326,44 @@ scene.add(floor);
 // ============================================================
 // 6. MATERIALS
 // ============================================================
-const glassMaterial = new THREE.MeshPhysicalMaterial({
-    metalness: 0.0,
-    roughness: 0.02,
-    transmission: 0.98,
-    ior: 1.45,
-    thickness: 0.15,        // Thinner = less milky distortion
+// Fresnel-based glass shader: nearly invisible center, bright edges — like real glass on camera
+const glassShaderMaterial = new THREE.ShaderMaterial({
     transparent: true,
-    color: 0xffffff,
-    envMapIntensity: 0.6,   // Much less env reflection = clearer glass
+    depthWrite: false,
     side: THREE.DoubleSide,
-    opacity: 0.3,           // Subtle glass tint
-    depthWrite: false,      // Prevents z-fighting with beads inside
+    uniforms: {
+        uColor: { value: new THREE.Color(0xc0d8ff) },  // cool blue-white tint
+        uEdgeColor: { value: new THREE.Color(0xffffff) },
+        uFresnelPower: { value: 3.0 },      // higher = thinner edge
+        uOpacityMin: { value: 0.02 },        // center opacity (nearly invisible)
+        uOpacityMax: { value: 0.35 },        // edge opacity (subtle bright rim)
+    },
+    vertexShader: `
+        varying vec3 vNormal;
+        varying vec3 vViewDir;
+        void main() {
+            vNormal = normalize(normalMatrix * normal);
+            vec4 worldPos = modelMatrix * vec4(position, 1.0);
+            vViewDir = normalize(cameraPosition - worldPos.xyz);
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+    `,
+    fragmentShader: `
+        uniform vec3 uColor;
+        uniform vec3 uEdgeColor;
+        uniform float uFresnelPower;
+        uniform float uOpacityMin;
+        uniform float uOpacityMax;
+        varying vec3 vNormal;
+        varying vec3 vViewDir;
+        void main() {
+            float fresnel = 1.0 - abs(dot(normalize(vNormal), normalize(vViewDir)));
+            fresnel = pow(fresnel, uFresnelPower);
+            float alpha = mix(uOpacityMin, uOpacityMax, fresnel);
+            vec3 color = mix(uColor, uEdgeColor, fresnel * 0.7);
+            gl_FragColor = vec4(color, alpha);
+        }
+    `,
 });
 
 const metalBaseMaterial = new THREE.MeshStandardMaterial({
@@ -387,15 +413,57 @@ function buildCylinders() {
         group.position.x = startX + i * spacing;
         group.position.y = 0;
 
-        // Glass tube (open ends)
-        const geoGlass = new THREE.CylinderGeometry(0.85, 0.85, 8.5, 32, 1, true);
-        const meshGlass = new THREE.Mesh(geoGlass, glassMaterial);
+        // Glass tube (open ends) — fresnel shader for clear glass look
+        const geoGlass = new THREE.CylinderGeometry(0.85, 0.85, 8.5, 48, 1, true);
+        const meshGlass = new THREE.Mesh(geoGlass, glassShaderMaterial.clone());
         meshGlass.position.y = 4.5;
-        meshGlass.castShadow = true;
         group.add(meshGlass);
 
-        // Top cap ring
-        const geoTopCap = new THREE.TorusGeometry(0.88, 0.08, 8, 32);
+        // Bright edge highlight rings — these sell the "glass" look
+        const edgeRingMat = new THREE.MeshBasicMaterial({
+            color: 0xffffff, transparent: true, opacity: 0.5,
+        });
+
+        // Top highlight ring
+        const geoTopRing = new THREE.TorusGeometry(0.86, 0.015, 8, 64);
+        const meshTopRing = new THREE.Mesh(geoTopRing, edgeRingMat);
+        meshTopRing.rotation.x = Math.PI / 2;
+        meshTopRing.position.y = 8.75;
+        group.add(meshTopRing);
+
+        // Bottom highlight ring (at base)
+        const geoBotRing = new THREE.TorusGeometry(0.86, 0.015, 8, 64);
+        const meshBotRing = new THREE.Mesh(geoBotRing, edgeRingMat.clone());
+        meshBotRing.rotation.x = Math.PI / 2;
+        meshBotRing.position.y = 0.6;
+        meshBotRing.material.opacity = 0.35;
+        group.add(meshBotRing);
+
+        // Middle highlight ring (subtle)
+        const geoMidRing = new THREE.TorusGeometry(0.86, 0.01, 8, 64);
+        const meshMidRing = new THREE.Mesh(geoMidRing, edgeRingMat.clone());
+        meshMidRing.rotation.x = Math.PI / 2;
+        meshMidRing.position.y = 4.5;
+        meshMidRing.material.opacity = 0.15;
+        group.add(meshMidRing);
+
+        // Subtle vertical highlight lines (specular-like edge catches)
+        const vertLineMat = new THREE.MeshBasicMaterial({
+            color: 0xffffff, transparent: true, opacity: 0.12,
+        });
+        for (let angle of [0, Math.PI * 0.3, Math.PI * 0.7, Math.PI, Math.PI * 1.3, Math.PI * 1.7]) {
+            const lineGeo = new THREE.CylinderGeometry(0.005, 0.005, 8.2, 4);
+            const lineMesh = new THREE.Mesh(lineGeo, vertLineMat);
+            lineMesh.position.set(
+                Math.cos(angle) * 0.855,
+                4.5,
+                Math.sin(angle) * 0.855
+            );
+            group.add(lineMesh);
+        }
+
+        // Top cap ring (metallic)
+        const geoTopCap = new THREE.TorusGeometry(0.88, 0.06, 8, 32);
         const meshTopCap = new THREE.Mesh(geoTopCap, metalCapMaterial);
         meshTopCap.rotation.x = Math.PI / 2;
         meshTopCap.position.y = 8.75;
@@ -444,13 +512,15 @@ function buildBeads(candidate, index, maxVotes) {
     const beadCount = Math.max(Math.floor(maxBeads * fillPct), 15);
 
     const hexColor = candidate.color || '#888888';
-    const beadRadius = 0.12; // Bigger beads
-    const geoBead = new THREE.SphereGeometry(beadRadius, 10, 8);
+    const beadRadius = 0.13;
+    const geoBead = new THREE.SphereGeometry(beadRadius, 12, 10);
     const matBead = new THREE.MeshStandardMaterial({
         color: new THREE.Color(hexColor),
-        metalness: 0.7,
-        roughness: 0.25,
-        envMapIntensity: 0.8,
+        metalness: 0.6,
+        roughness: 0.2,
+        envMapIntensity: 1.2,
+        emissive: new THREE.Color(hexColor),
+        emissiveIntensity: 0.15,  // Subtle glow so beads pop through glass
     });
 
     const instancedBeads = new THREE.InstancedMesh(geoBead, matBead, beadCount);
