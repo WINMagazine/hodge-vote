@@ -56,18 +56,18 @@
 
         /* === CANDIDATE LABELS === */
         #labels-container {
-            position: absolute; bottom: 0; left: 0; right: 0;
-            height: 200px; z-index: 11; pointer-events: none;
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 11; pointer-events: none; overflow: hidden;
         }
-        .tube-label {
-            position: absolute; text-align: center; width: 140px;
+        .tube-label-top, .tube-label-bottom {
+            position: absolute; text-align: center; width: 160px;
             transform: translateX(-50%);
         }
         .tube-label-bar { width: 50px; height: 3px; border-radius: 2px; margin: 0 auto 8px; }
-        .tube-label-name { font-size: 14px; font-weight: 900; text-transform: uppercase; line-height: 1.15; margin-bottom: 2px; text-shadow: 0 2px 8px rgba(0,0,0,0.9); }
-        .tube-label-school { font-size: 9px; font-weight: 600; color: rgba(255,255,255,0.35); letter-spacing: 0.12em; text-transform: uppercase; text-shadow: 0 1px 4px rgba(0,0,0,0.9); }
-        .tube-label-pct { font-size: 22px; font-weight: 800; margin-top: 6px; text-shadow: 0 0 12px currentColor, 0 2px 8px rgba(0,0,0,0.9); }
-        .tube-label-votes { font-size: 10px; font-weight: 500; color: rgba(255,255,255,0.3); }
+        .tube-label-name { font-size: 15px; font-weight: 900; text-transform: uppercase; line-height: 1.15; margin-bottom: 3px; text-shadow: 0 2px 10px rgba(0,0,0,0.95); }
+        .tube-label-school { font-size: 9px; font-weight: 600; color: rgba(255,255,255,0.4); letter-spacing: 0.14em; text-transform: uppercase; text-shadow: 0 1px 6px rgba(0,0,0,0.95); }
+        .tube-label-pct { font-size: 24px; font-weight: 800; text-shadow: 0 0 16px currentColor, 0 2px 10px rgba(0,0,0,0.95); }
+        .tube-label-votes { font-size: 10px; font-weight: 500; color: rgba(255,255,255,0.3); margin-top: 2px; }
 
         /* === CELEBRATION TEXT (THE SLAM) === */
         #celebration {
@@ -245,9 +245,9 @@ const container = document.getElementById('canvas-container');
 const scene = new THREE.Scene();
 scene.fog = new THREE.FogExp2(0x05080f, 0.015);
 
-const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-camera.position.set(0, 3, 24);
-camera.lookAt(0, 2.5, 0);
+const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 1000);
+camera.position.set(0, 4, 26);
+camera.lookAt(0, 3.5, 0);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -264,20 +264,21 @@ pmremGenerator.compileEquirectangularShader();
 const roomEnv = new RoomEnvironment();
 const envTexture = pmremGenerator.fromScene(roomEnv, 0.04).texture;
 scene.environment = envTexture;
+scene.environmentIntensity = 0.4; // Tone down env reflections for darker look
 roomEnv.dispose();
 
 // ============================================================
 // 4. STUDIO LIGHTING
 // ============================================================
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.3); // Darker ambient for more contrast
 scene.add(ambientLight);
 
-// Key light (main spot from above)
-const spotLight = new THREE.SpotLight(0xffffff, 600);
+// Key light (main spot from above) — brighter
+const spotLight = new THREE.SpotLight(0xffffff, 900);
 spotLight.position.set(0, 22, 12);
-spotLight.angle = Math.PI / 3.5;
-spotLight.penumbra = 0.6;
-spotLight.decay = 1.5;
+spotLight.angle = Math.PI / 3;
+spotLight.penumbra = 0.5;
+spotLight.decay = 1.2;
 spotLight.castShadow = true;
 spotLight.shadow.mapSize.set(1024, 1024);
 scene.add(spotLight);
@@ -291,18 +292,21 @@ fillLight.angle = Math.PI / 4;
 fillLight.penumbra = 0.8;
 scene.add(fillLight);
 
-// Gold rim light from behind
-const backLight = new THREE.PointLight(0xcfa85e, 300, 60);
-backLight.position.set(0, 6, -12);
+// Gold rim light from behind — stronger
+const backLight = new THREE.PointLight(0xcfa85e, 500, 70);
+backLight.position.set(0, 6, -14);
 scene.add(backLight);
 
-// Floor accent lights
-const floorLight1 = new THREE.PointLight(0xcfa85e, 50, 20);
-floorLight1.position.set(-8, 0.5, 2);
+// Floor accent lights — brighter gold pools
+const floorLight1 = new THREE.PointLight(0xcfa85e, 120, 25);
+floorLight1.position.set(-8, 0.3, 3);
 scene.add(floorLight1);
-const floorLight2 = new THREE.PointLight(0xcfa85e, 50, 20);
-floorLight2.position.set(8, 0.5, 2);
+const floorLight2 = new THREE.PointLight(0xcfa85e, 120, 25);
+floorLight2.position.set(8, 0.3, 3);
 scene.add(floorLight2);
+const floorLightCenter = new THREE.PointLight(0xcfa85e, 80, 20);
+floorLightCenter.position.set(0, 0.3, 4);
+scene.add(floorLightCenter);
 
 // ============================================================
 // 5. FLOOR
@@ -323,15 +327,17 @@ scene.add(floor);
 // 6. MATERIALS
 // ============================================================
 const glassMaterial = new THREE.MeshPhysicalMaterial({
-    metalness: 0.05,
-    roughness: 0.05,
-    transmission: 0.95,
-    ior: 1.5,
-    thickness: 0.8,
+    metalness: 0.0,
+    roughness: 0.02,
+    transmission: 0.98,
+    ior: 1.45,
+    thickness: 0.15,        // Thinner = less milky distortion
     transparent: true,
     color: 0xffffff,
-    envMapIntensity: 2.0,
+    envMapIntensity: 0.6,   // Much less env reflection = clearer glass
     side: THREE.DoubleSide,
+    opacity: 0.3,           // Subtle glass tint
+    depthWrite: false,      // Prevents z-fighting with beads inside
 });
 
 const metalBaseMaterial = new THREE.MeshStandardMaterial({
@@ -434,24 +440,23 @@ function buildBeads(candidate, index, maxVotes) {
     if (voteCount === 0) return null;
 
     const fillPct = voteCount / maxVotes;
-    const maxBeads = 2000;
-    const beadCount = Math.max(Math.floor(maxBeads * fillPct), 20);
+    const maxBeads = 800;  // Fewer but larger = more visible individual beads
+    const beadCount = Math.max(Math.floor(maxBeads * fillPct), 15);
 
     const hexColor = candidate.color || '#888888';
-    const geoBead = new THREE.SphereGeometry(0.08, 8, 6);
-    const matBead = new THREE.MeshPhysicalMaterial({
+    const beadRadius = 0.12; // Bigger beads
+    const geoBead = new THREE.SphereGeometry(beadRadius, 10, 8);
+    const matBead = new THREE.MeshStandardMaterial({
         color: new THREE.Color(hexColor),
-        metalness: 0.85,
-        roughness: 0.15,
-        clearcoat: 1.0,
-        clearcoatRoughness: 0.1,
-        envMapIntensity: 1.5,
+        metalness: 0.7,
+        roughness: 0.25,
+        envMapIntensity: 0.8,
     });
 
     const instancedBeads = new THREE.InstancedMesh(geoBead, matBead, beadCount);
     const dummy = new THREE.Object3D();
-    const cylinderRadius = 0.72;
-    let currentY = 0.65;
+    const cylinderRadius = 0.65;
+    let currentY = 0.7;
 
     for (let b = 0; b < beadCount; b++) {
         const r = cylinderRadius * Math.sqrt(Math.random());
@@ -464,7 +469,7 @@ function buildBeads(candidate, index, maxVotes) {
         dummy.updateMatrix();
         instancedBeads.setMatrixAt(b, dummy.matrix);
 
-        if (b % 40 === 0) currentY += 0.13;
+        if (b % 25 === 0) currentY += 0.18; // Taller stacking
     }
 
     instancedBeads.instanceMatrix.needsUpdate = true;
@@ -506,28 +511,41 @@ function updateLabels() {
 
     candidates.forEach((c, i) => {
         const worldX = startX + i * spacing;
-
-        // Project 3D position to screen coordinates
-        const vec = new THREE.Vector3(worldX, -0.5, 0);
-        vec.project(camera);
-        const screenX = (vec.x * 0.5 + 0.5) * window.innerWidth;
-        const screenY = (-vec.y * 0.5 + 0.5) * window.innerHeight;
-
         const pct = totalVotesCount > 0 ? ((c.vote_count || 0) / totalVotesCount * 100).toFixed(0) : '0';
         const hexColor = c.color || '#888888';
 
-        const label = document.createElement('div');
-        label.className = 'tube-label';
-        label.style.left = screenX + 'px';
-        label.style.top = (screenY - 10) + 'px';
-        label.innerHTML = `
-            <div class="tube-label-bar" style="background:${hexColor}; box-shadow: 0 0 10px ${hexColor};"></div>
+        // Project TOP of tube (name + school above)
+        const vecTop = new THREE.Vector3(worldX, 9.5, 0);
+        vecTop.project(camera);
+        const topX = (vecTop.x * 0.5 + 0.5) * window.innerWidth;
+        const topY = (-vecTop.y * 0.5 + 0.5) * window.innerHeight;
+
+        const topLabel = document.createElement('div');
+        topLabel.className = 'tube-label-top';
+        topLabel.style.left = topX + 'px';
+        topLabel.style.bottom = (window.innerHeight - topY + 5) + 'px';
+        topLabel.innerHTML = `
+            <div class="tube-label-bar" style="background:${hexColor}; box-shadow: 0 0 12px ${hexColor};"></div>
             <div class="tube-label-name">${esc(c.name)}</div>
             <div class="tube-label-school">${esc(c.school || '')}</div>
+        `;
+        labelsContainer.appendChild(topLabel);
+
+        // Project BOTTOM of tube (percentage + vote count below)
+        const vecBot = new THREE.Vector3(worldX, -0.5, 0);
+        vecBot.project(camera);
+        const botX = (vecBot.x * 0.5 + 0.5) * window.innerWidth;
+        const botY = (-vecBot.y * 0.5 + 0.5) * window.innerHeight;
+
+        const botLabel = document.createElement('div');
+        botLabel.className = 'tube-label-bottom';
+        botLabel.style.left = botX + 'px';
+        botLabel.style.top = (botY + 10) + 'px';
+        botLabel.innerHTML = `
             <div class="tube-label-pct" style="color:${hexColor}">${pct}%</div>
             <div class="tube-label-votes">${c.vote_count || 0} votes</div>
         `;
-        labelsContainer.appendChild(label);
+        labelsContainer.appendChild(botLabel);
     });
 }
 
