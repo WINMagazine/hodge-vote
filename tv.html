@@ -10,447 +10,202 @@
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  :root {
-    --gold: #e2b93b;
-    --gold-bright: #f5d245;
-    --dark: #0b0b0f;
-    --surface: #141418;
-    --surface-glass: rgba(255,255,255,0.04);
-    --border: rgba(255,255,255,0.08);
-    --text: #f0eff4;
-    --text-secondary: rgba(255,255,255,0.55);
-    --text-dim: rgba(255,255,255,0.3);
-    --ease: cubic-bezier(.19,1,.22,1);
-  }
-
   html, body {
     width: 100vw; height: 100vh; overflow: hidden;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    background: var(--dark);
-    color: var(--text);
+    background: #0a0a0e;
+    color: #f0eff4;
     -webkit-font-smoothing: antialiased;
-    position: relative;
   }
 
-  /* --- Mesh BG --- */
-  .mesh-bg {
-    position: fixed; inset: 0; z-index: 0;
-    overflow: hidden; pointer-events: none;
-  }
-  .mesh-orb {
-    position: absolute; border-radius: 50%;
-    filter: blur(120px); opacity: 0.3;
-    animation: meshFloat 25s ease-in-out infinite;
-  }
-  .mesh-orb:nth-child(1) {
-    width: 700px; height: 700px;
-    background: radial-gradient(circle, rgba(226,185,59,0.35), transparent 70%);
-    top: -20%; left: -5%;
-  }
-  .mesh-orb:nth-child(2) {
-    width: 600px; height: 600px;
-    background: radial-gradient(circle, rgba(139,92,246,0.25), transparent 70%);
-    bottom: -15%; right: -8%;
-    animation-delay: -8s;
-  }
-  .mesh-orb:nth-child(3) {
-    width: 500px; height: 500px;
-    background: radial-gradient(circle, rgba(59,130,246,0.15), transparent 70%);
-    top: 50%; left: 40%;
-    animation-delay: -16s;
-  }
-  @keyframes meshFloat {
-    0%, 100% { transform: translate(0, 0) scale(1); }
-    25% { transform: translate(40px, -50px) scale(1.04); }
-    50% { transform: translate(-30px, 25px) scale(0.97); }
-    75% { transform: translate(20px, 35px) scale(1.02); }
-  }
-
-  /* --- Noise --- */
-  body::after {
-    content: ''; position: fixed; inset: 0; z-index: 1;
-    pointer-events: none; opacity: 0.02;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-    background-repeat: repeat; background-size: 256px;
-  }
-
-  .page {
-    display: flex; flex-direction: column;
+  canvas#stage {
+    position: fixed; inset: 0; z-index: 1;
     width: 100vw; height: 100vh;
-    position: relative; z-index: 2;
+    display: block;
   }
 
-  /* ==================== TICKER ==================== */
-  #voteScroll {
-    flex-shrink: 0; height: 42px;
-    background: linear-gradient(90deg, var(--gold), var(--gold-bright), var(--gold));
-    overflow: hidden; position: relative;
-    box-shadow: 0 2px 16px rgba(226,185,59,0.2);
+  /* ==================== HEADER BAR ==================== */
+  #headerBar {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 10;
+    height: 48px;
+    background: rgba(10,10,14,0.85);
+    backdrop-filter: blur(16px) saturate(140%);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+    border-bottom: 1px solid rgba(226,185,59,0.25);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 32px;
+    font-family: 'Inter', sans-serif;
+  }
+  .hdr-left { display: flex; align-items: center; gap: 18px; }
+  .live-badge {
+    display: flex; align-items: center; gap: 7px;
+    background: rgba(239,68,68,0.15);
+    border: 1px solid rgba(239,68,68,0.3);
+    border-radius: 6px; padding: 4px 12px;
+  }
+  .live-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #ef4444;
+    box-shadow: 0 0 8px rgba(239,68,68,0.7);
+    animation: pulseDot 1.5s ease-in-out infinite;
+  }
+  @keyframes pulseDot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.75); }
+  }
+  .live-text {
+    font-size: 11px; font-weight: 800;
+    letter-spacing: 0.18em; color: #ef4444;
+  }
+  .hdr-divider {
+    width: 1px; height: 20px;
+    background: rgba(255,255,255,0.12);
+  }
+  .hdr-time {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px; font-weight: 600;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 0.05em;
+    font-variant-numeric: tabular-nums;
+  }
+  .hdr-event {
+    font-size: 12px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+  }
+
+  .hdr-center {
+    position: absolute; left: 50%; transform: translateX(-50%);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .brand-box {
+    display: flex; align-items: center;
+    padding: 3px 14px;
+    border: 1.5px solid #e2b93b;
+    border-radius: 5px;
+    box-shadow: 0 0 16px rgba(226,185,59,0.12);
+  }
+  .brand-win {
+    font-size: 20px; font-weight: 900;
+    letter-spacing: 0.22em; color: #e2b93b; line-height: 1;
+  }
+  .brand-magazine {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; font-weight: 500;
+    letter-spacing: 0.25em; text-transform: uppercase;
+    color: rgba(255,255,255,0.25);
+  }
+
+  .hdr-right { display: flex; align-items: center; gap: 14px; }
+  .total-box {
+    display: flex; align-items: center; gap: 10px;
+    padding: 6px 18px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+  }
+  .total-number {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 22px; font-weight: 700; color: #fff;
+    font-variant-numeric: tabular-nums; line-height: 1;
+    transition: transform 0.3s cubic-bezier(.19,1,.22,1);
+  }
+  .total-number.bump { transform: scale(1.25); }
+  .total-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px; font-weight: 600;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    color: rgba(255,255,255,0.3); line-height: 1;
+  }
+
+  /* ==================== BOTTOM TICKER ==================== */
+  #tickerBar {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 10;
+  }
+  .ticker-line1 {
+    height: 28px; display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(90deg, #b8941e, #e2b93b, #f5d245, #e2b93b, #b8941e);
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.28em; text-transform: uppercase;
+    color: rgba(11,11,15,0.6);
+  }
+  .ticker-line1 .dot {
+    display: inline-block; width: 5px; height: 5px;
+    border-radius: 50%; background: rgba(11,11,15,0.3);
+    margin: 0 14px;
+  }
+  .ticker-line2 {
+    height: 36px; overflow: hidden; position: relative;
+    background: linear-gradient(90deg, #e2b93b, #f5d245, #e2b93b);
+    box-shadow: 0 -2px 16px rgba(226,185,59,0.3);
   }
   .ticker-track {
     display: flex; align-items: center; height: 100%;
     white-space: nowrap;
-    animation: tickerScroll 20s linear infinite;
+    animation: tickerScroll 30s linear infinite;
   }
-  .ticker-item {
-    display: inline-flex; align-items: center; gap: 8px;
-    padding: 0 28px;
-    font-size: 13px; font-weight: 700;
-    letter-spacing: 0.04em; text-transform: uppercase;
-    color: var(--dark); flex-shrink: 0;
+  .ticker-msg {
+    display: inline-flex; align-items: center; gap: 12px;
+    padding: 0 32px; flex-shrink: 0;
+    font-size: 13px; font-weight: 800;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: #0a0a0e;
   }
-  .ticker-voter { font-weight: 900; }
-  .ticker-arrow { font-size: 11px; opacity: 0.4; }
-  .ticker-candidate { font-weight: 700; }
-  .ticker-empty-msg {
-    display: inline-flex; align-items: center;
-    padding: 0 60px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px; font-weight: 500;
-    letter-spacing: 0.25em; text-transform: uppercase;
-    color: rgba(11,11,15,0.35); flex-shrink: 0;
+  .ticker-sep {
+    display: inline-block; width: 6px; height: 6px;
+    border-radius: 50%; background: rgba(11,11,15,0.25);
+    flex-shrink: 0;
   }
   @keyframes tickerScroll {
     0% { transform: translateX(0); }
     100% { transform: translateX(-33.333%); }
   }
 
-  /* ==================== HEADER ==================== */
-  #header {
-    flex-shrink: 0; display: flex;
-    align-items: center; justify-content: space-between;
-    padding: 0 36px; height: 64px;
-    background: rgba(11,11,15,0.8);
-    backdrop-filter: blur(16px) saturate(150%);
-    -webkit-backdrop-filter: blur(16px) saturate(150%);
-    border-bottom: 1px solid var(--border);
+  /* ==================== VOTE NOTIFICATION ==================== */
+  #voteNotification {
+    position: fixed; inset: 0; z-index: 20;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.4s ease-out;
   }
-  .header-left { display: flex; align-items: center; gap: 14px; }
-  .brand-box {
-    display: flex; align-items: center;
-    padding: 4px 14px;
-    border: 1.5px solid var(--gold);
-    border-radius: 5px;
-    box-shadow: 0 0 20px rgba(226,185,59,0.12);
+  #voteNotification.active { opacity: 1; }
+  #voteNotification.fade-out {
+    opacity: 0;
+    transition: opacity 0.6s ease-in;
   }
-  .brand-win {
-    font-size: 22px; font-weight: 900;
-    letter-spacing: 0.22em; color: var(--gold); line-height: 1;
-  }
-  .brand-magazine {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px; font-weight: 500;
-    letter-spacing: 0.25em; text-transform: uppercase;
-    color: var(--text-dim);
-  }
-  .header-center {
-    position: absolute; left: 50%; transform: translateX(-50%);
-    font-size: 17px; font-weight: 800;
-    letter-spacing: -0.02em; text-transform: uppercase;
+  .notif-line1 {
+    font-size: 28px; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase;
     color: rgba(255,255,255,0.8);
+    text-shadow: 0 0 40px rgba(0,0,0,0.8), 0 2px 8px rgba(0,0,0,0.9);
   }
-  .header-center .accent { color: var(--gold); }
-  .header-right { display: flex; align-items: center; gap: 18px; }
-  .live-indicator {
-    display: flex; align-items: center; gap: 7px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px; font-weight: 700;
-    letter-spacing: 0.2em; text-transform: uppercase;
-    color: var(--text-dim);
+  .notif-candidate {
+    font-size: clamp(52px, 6vw, 80px);
+    font-weight: 900; text-transform: uppercase;
+    letter-spacing: -0.03em; line-height: 1;
+    color: #f5d245;
+    text-shadow: 0 0 60px rgba(226,185,59,0.5), 0 0 120px rgba(226,185,59,0.2),
+                 0 4px 16px rgba(0,0,0,0.8);
   }
-  .live-dot {
-    width: 8px; height: 8px; border-radius: 50%;
-    background: #ef4444;
-    box-shadow: 0 0 8px rgba(239,68,68,0.6);
-    animation: pulse 1.5s ease-in-out infinite;
+  .notif-from {
+    font-size: 24px; font-weight: 600;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: rgba(255,255,255,0.6);
+    margin-top: 8px;
+    text-shadow: 0 0 40px rgba(0,0,0,0.8), 0 2px 8px rgba(0,0,0,0.9);
   }
-  @keyframes pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.4; transform: scale(0.8); }
+  .notif-content {
+    text-align: center;
+    transform: scale(0.85);
+    transition: transform 0.4s cubic-bezier(.19,1,.22,1);
   }
-  .total-box {
-    display: flex; align-items: center; gap: 10px;
-    padding: 7px 18px;
-    background: var(--surface-glass);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-  }
-  .total-number {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 24px; font-weight: 700; color: #fff;
-    font-variant-numeric: tabular-nums; line-height: 1;
-    transition: transform 0.3s var(--ease);
-  }
-  .total-number.bump { transform: scale(1.2); }
-  .total-label {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 9px; font-weight: 500;
-    letter-spacing: 0.15em; text-transform: uppercase;
-    color: var(--text-dim); line-height: 1;
-  }
+  #voteNotification.active .notif-content { transform: scale(1); }
 
-  /* ==================== MAIN ==================== */
-  #mainContent {
-    flex: 1; display: flex;
-    align-items: center; justify-content: center;
-    min-height: 0;
-  }
-  #jarsGrid {
-    display: flex; align-items: flex-end;
-    justify-content: center; gap: 32px;
-    padding: 0 48px;
-  }
-
-  /* ==================== JAR ==================== */
-  .jar-container {
-    display: flex; flex-direction: column;
-    align-items: center; width: 150px;
-  }
-  .jar-color-bar {
-    width: 80%; height: 3px; border-radius: 2px;
-    margin-bottom: 10px;
-    box-shadow: 0 0 12px var(--jar-color, rgba(255,255,255,0.1));
-  }
-  .jar-name {
-    font-size: 16px; font-weight: 900;
-    text-transform: uppercase; letter-spacing: -0.02em;
-    color: var(--text); text-align: center;
-    line-height: 1.15; min-height: 40px;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .jar-school {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.6rem; font-weight: 500;
-    color: var(--text-dim); text-align: center;
-    text-transform: uppercase; letter-spacing: 0.14em;
-    margin-bottom: 8px;
-  }
-  .jar-body {
-    position: relative; width: 100%;
-    display: flex; flex-direction: column; align-items: center;
-  }
-
-  .jar-lid {
-    position: relative; z-index: 5;
-    display: flex; flex-direction: column; align-items: center;
-    transform-origin: bottom center;
-    transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-  .jar-lid.open { transform: translateY(-14px) rotate(-25deg); }
-  .lid-knob {
-    width: 20px; height: 20px; border-radius: 50%;
-    background: radial-gradient(circle at 40% 35%, #4a4a50, #2a2a30, #1a1a20);
-    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
-  }
-  .lid-cap {
-    width: 60px; height: 8px;
-    background: linear-gradient(180deg, #3a3a40, #222228);
-    border-radius: 3px 3px 0 0; margin-top: -2px;
-  }
-  .lid-ring {
-    width: 54px; height: 5px;
-    background: linear-gradient(180deg, #2a2a30, #1a1a20);
-  }
-
-  .jar-drop-zone {
-    position: absolute; top: 30px; left: 50%;
-    transform: translateX(-50%);
-    width: 24px; height: 24px;
-    z-index: 4; pointer-events: none; opacity: 0;
-  }
-  .jar-drop-zone.dropping {
-    opacity: 1;
-    animation: ballFall 0.6s cubic-bezier(0.45, 0, 0.85, 0.35) forwards;
-  }
-  @keyframes ballFall {
-    0% { top: 30px; opacity: 1; }
-    70% { opacity: 1; }
-    85% { top: 230px; }
-    92% { top: 218px; }
-    100% { top: 224px; opacity: 0; }
-  }
-
-  .jar-neck {
-    width: 52px; height: 20px;
-    background: linear-gradient(90deg,
-      rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.08) 30%,
-      rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.08) 70%,
-      rgba(255,255,255,0.03) 100%);
-    border-left: 1px solid rgba(255,255,255,0.08);
-    border-right: 1px solid rgba(255,255,255,0.08);
-    position: relative; z-index: 3; margin-top: -1px;
-  }
-  .jar-shoulder {
-    width: 52px; height: 24px;
-    position: relative; z-index: 2;
-  }
-  .jar-shoulder::before {
-    content: ''; position: absolute;
-    top: 0; left: -37px; right: -37px; height: 100%;
-    background: linear-gradient(90deg,
-      rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.06) 25%,
-      rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.06) 75%,
-      rgba(255,255,255,0.02) 100%);
-    border-left: 1px solid rgba(255,255,255,0.06);
-    border-right: 1px solid rgba(255,255,255,0.06);
-    border-radius: 0 0 50% 50% / 0 0 100% 100%;
-  }
-
-  .jar-glass {
-    width: 128px; height: 200px; position: relative;
-    background: linear-gradient(90deg,
-      rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.05) 20%,
-      rgba(255,255,255,0.07) 45%, rgba(255,255,255,0.05) 80%,
-      rgba(255,255,255,0.02) 100%);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-top: none;
-    border-radius: 0 0 16px 16px;
-    overflow: hidden;
-    backdrop-filter: blur(2px);
-    -webkit-backdrop-filter: blur(2px);
-  }
-  .glass-highlight {
-    position: absolute; top: 8px; left: 14px;
-    width: 4px; bottom: 8px;
-    background: linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.02));
-    border-radius: 3px; pointer-events: none; z-index: 3;
-  }
-  .glass-highlight-right {
-    position: absolute; top: 20px; right: 18px;
-    width: 2px; bottom: 20px;
-    background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.01));
-    border-radius: 2px; pointer-events: none; z-index: 3;
-  }
-  .color-fill {
-    position: absolute; bottom: 0; left: 0; right: 0;
-    transition: height 0.8s ease-out;
-    border-radius: 0 0 14px 14px; z-index: 1;
-    opacity: 0.5;
-  }
-  .marbles-container {
-    position: absolute; bottom: 6px; left: 6px; right: 6px; z-index: 2;
-  }
-  .marble {
-    position: absolute; width: 24px; height: 24px; border-radius: 50%;
-    box-shadow:
-      inset -3px -3px 6px rgba(0,0,0,0.4),
-      inset 2px 2px 4px rgba(255,255,255,0.15),
-      0 0 8px rgba(0,0,0,0.3);
-  }
-  .marble-highlight {
-    position: absolute; top: 4px; left: 6px;
-    width: 7px; height: 7px; border-radius: 50%;
-    background: rgba(255,255,255,0.7);
-  }
-
-  .vote-counter {
-    margin-top: 10px; padding: 7px 18px;
-    background: var(--surface-glass);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.68rem; font-weight: 600;
-    color: var(--text-secondary);
-    font-variant-numeric: tabular-nums;
-    text-align: center; letter-spacing: 0.1em;
-    text-transform: uppercase;
-    display: flex; align-items: center; gap: 6px;
-  }
-  .counter-dot {
-    width: 3px; height: 3px; border-radius: 50%;
-    background: var(--text-dim);
-  }
-
-  /* ==================== CELEBRATION ==================== */
-  #celebration {
-    position: fixed; inset: 0; z-index: 200;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    background: rgba(11,11,15,0.85);
-    backdrop-filter: blur(32px) saturate(120%);
-    -webkit-backdrop-filter: blur(32px) saturate(120%);
-    opacity: 0; pointer-events: none;
-  }
-  #celebration::before {
-    content: ''; position: absolute;
-    width: 50vw; height: 50vw; border-radius: 50%;
-    background: radial-gradient(circle, var(--celeb-glow, transparent), transparent 70%);
-    opacity: 0.12; pointer-events: none;
-  }
-  #celebration.active { opacity: 1; animation: overlayIn 0.5s var(--ease) forwards; }
-  #celebration.fade-out { animation: overlayOut 0.8s ease-in forwards; }
-  @keyframes overlayIn { from { opacity: 0; } to { opacity: 1; } }
-  @keyframes overlayOut { from { opacity: 1; } to { opacity: 0; } }
-
-  .celeb-bar-top, .celeb-bar-bottom {
-    position: absolute; left: 0; right: 0; height: 4px;
-  }
-  .celeb-bar-top { top: 0; }
-  .celeb-bar-bottom { bottom: 0; }
-  .celeb-accent-line {
-    position: absolute; left: 60px;
-    top: 10%; bottom: 10%;
-    width: 3px; border-radius: 2px;
-  }
-  .celeb-content {
-    display: flex; flex-direction: column;
-    align-items: center; gap: 14px;
-    opacity: 0; transform: translateY(40px) scale(0.95);
-  }
-  #celebration.active .celeb-content {
-    animation: celebContent 0.6s var(--ease) 0.15s forwards;
-  }
-  #celebration.fade-out .celeb-content {
-    animation: celebOut 0.6s ease-in forwards;
-  }
-  @keyframes celebContent {
-    from { opacity: 0; transform: translateY(40px) scale(0.95); }
-    to { opacity: 1; transform: translateY(0) scale(1); }
-  }
-  @keyframes celebOut {
-    from { opacity: 1; transform: translateY(0); }
-    to { opacity: 0; transform: translateY(-16px); }
-  }
-  .celeb-label {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px; font-weight: 600;
-    letter-spacing: 0.25em; text-transform: uppercase;
-    color: var(--text-dim);
-  }
-  .celeb-voter-name {
-    font-size: clamp(48px, 8vw, 80px);
-    font-weight: 900; color: var(--text);
-    text-transform: uppercase; letter-spacing: -0.04em; line-height: 1;
-  }
-  .celeb-divider {
-    width: 60px; height: 3px; border-radius: 2px;
-    margin: 2px 0;
-    box-shadow: 0 0 16px var(--celeb-glow, transparent);
-  }
-  .celeb-voted-for {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px; font-weight: 500;
-    letter-spacing: 0.2em; text-transform: uppercase;
-    color: var(--text-dim);
-  }
-  .celeb-candidate-name {
-    font-size: 36px; font-weight: 800; letter-spacing: -0.03em;
-  }
-  .celeb-candidate-school {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 14px; font-weight: 500;
-    color: var(--text-dim); margin-top: -6px;
-    letter-spacing: 0.08em;
-  }
-  .celeb-trophy { margin-top: 16px; font-size: 36px; }
-
-  /* ==================== CONNECTION ==================== */
+  /* ==================== CONNECTION DOT ==================== */
   #connectionDot {
-    position: fixed; bottom: 14px; right: 14px;
+    position: fixed; bottom: 74px; right: 14px;
     width: 10px; height: 10px; border-radius: 50%;
     background: #4ade80;
     box-shadow: 0 0 8px rgba(74,222,128,0.5);
@@ -464,15 +219,20 @@
   }
   @keyframes pulseRed { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
-  #loadingState {
+  /* ==================== LOADING ==================== */
+  #loadingOverlay {
+    position: fixed; inset: 0; z-index: 50;
     display: flex; align-items: center; justify-content: center;
-    padding: 80px; color: var(--text-dim);
+    background: #0a0a0e;
+    color: rgba(255,255,255,0.3);
     font-size: 16px; font-weight: 600; gap: 16px;
+    transition: opacity 0.5s ease;
   }
+  #loadingOverlay.hidden { opacity: 0; pointer-events: none; }
   .loader-spinner {
     display: inline-block; width: 24px; height: 24px;
-    border: 2.5px solid var(--border);
-    border-top-color: var(--gold);
+    border: 2.5px solid rgba(255,255,255,0.08);
+    border-top-color: #e2b93b;
     border-radius: 50%;
     animation: spin 0.7s linear infinite;
   }
@@ -481,89 +241,123 @@
 </head>
 <body>
 
-<div class="mesh-bg">
-  <div class="mesh-orb"></div>
-  <div class="mesh-orb"></div>
-  <div class="mesh-orb"></div>
+<canvas id="stage"></canvas>
+
+<!-- Header Bar -->
+<div id="headerBar">
+  <div class="hdr-left">
+    <div class="live-badge">
+      <div class="live-dot"></div>
+      <span class="live-text">LIVE</span>
+    </div>
+    <div class="hdr-divider"></div>
+    <span class="hdr-time" id="hdrTime"></span>
+    <div class="hdr-divider"></div>
+    <span class="hdr-event">Championship Vote</span>
+  </div>
+  <div class="hdr-center">
+    <div class="brand-box"><span class="brand-win">WIN</span></div>
+    <span class="brand-magazine">Magazine</span>
+  </div>
+  <div class="hdr-right">
+    <div class="total-box">
+      <span class="total-number" id="totalVotes">0</span>
+      <span class="total-label">Total<br>Votes</span>
+    </div>
+  </div>
 </div>
 
-<div class="page">
-  <div id="voteScroll">
+<!-- Bottom Ticker -->
+<div id="tickerBar">
+  <div class="ticker-line1">
+    <span class="dot"></span>
+    WIN Magazine Collegiate Wrestling Tournament
+    <span class="dot"></span>
+  </div>
+  <div class="ticker-line2">
     <div class="ticker-track" id="tickerTrack"></div>
   </div>
-  <div id="header">
-    <div class="header-left">
-      <div class="brand-box"><span class="brand-win">WIN</span></div>
-      <span class="brand-magazine">Magazine</span>
-    </div>
-    <div class="header-center">Dan Hodge Trophy &mdash; <span class="accent">Live Fan Vote</span></div>
-    <div class="header-right">
-      <div class="live-indicator"><div class="live-dot"></div>LIVE</div>
-      <div class="total-box">
-        <span class="total-number" id="totalVotes">0</span>
-        <span class="total-label">Total Votes</span>
-      </div>
-    </div>
-  </div>
-  <div id="mainContent">
-    <div id="jarsGrid">
-      <div id="loadingState"><div class="loader-spinner"></div>Loading candidates...</div>
-    </div>
+</div>
+
+<!-- Vote Notification -->
+<div id="voteNotification">
+  <div class="notif-content">
+    <div class="notif-line1">New Vote For</div>
+    <div class="notif-candidate" id="notifCandidate"></div>
+    <div class="notif-from" id="notifFrom"></div>
   </div>
 </div>
 
-<div id="connectionDot" title="Realtime connection status"></div>
+<!-- Connection Indicator -->
+<div id="connectionDot" title="Realtime connection"></div>
 
-<div id="celebration">
-  <div class="celeb-bar-top" id="celebBarTop"></div>
-  <div class="celeb-bar-bottom" id="celebBarBottom"></div>
-  <div class="celeb-accent-line" id="celebAccent"></div>
-  <div class="celeb-content" id="celebContent">
-    <div class="celeb-label">Vote Confirmed</div>
-    <div class="celeb-voter-name" id="celebVoterName"></div>
-    <div class="celeb-divider" id="celebDivider"></div>
-    <div class="celeb-voted-for">Voted For</div>
-    <div class="celeb-candidate-name" id="celebCandidateName"></div>
-    <div class="celeb-candidate-school" id="celebCandidateSchool"></div>
-    <div class="celeb-trophy">&#127942;</div>
-  </div>
+<!-- Loading -->
+<div id="loadingOverlay">
+  <div class="loader-spinner"></div>
+  Loading candidates...
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+// ============================================================
+// Section 1: Constants & Configuration
+// ============================================================
 const SUPABASE_URL = 'https://aranzjtwsxaqtczswoiz.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFyYW56anR3c3hhcXRjenN3b2l6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE5NDYwMzYsImV4cCI6MjA4NzUyMjAzNn0.8ZKA0ZvZE6VJHQXTZRECDJTjtm5RUQNsSpw9dGO37Do';
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+const W = 1920, H = 1080;
+const HEADER_H = 48;
+const TICKER_H = 64;
+const FLOOR_Y = H - TICKER_H - 100; // where tubes rest
+const TUBE_BASE_Y = FLOOR_Y;
+const TUBE_MAX_H = 480;
+const TUBE_MIN_H = 60;
+const TUBE_W = 100;
+const MARBLE_SIZE = 10;
+const MAX_MARBLES_PER_TUBE = 70;
+const PARTICLE_MAX = 250;
+const NOTIF_HOLD_MS = 3000;
+const NOTIF_FADE_MS = 600;
+
+const GOLD_COLORS = ['#f5d245','#e2b93b','#ffeaa7','#fff3c4','#ffffff'];
+
+// ============================================================
+// Section 2: State
+// ============================================================
 let candidates = [];
 let candidateMap = {};
-let totalVotes = 0;
+let totalVotesCount = 0;
 let recentVotes = [];
-let celebrationQueue = [];
-let isCelebrating = false;
+let notificationQueue = [];
+let isNotifying = false;
 let realtimeChannel = null;
-let pendingJarAnims = [];
-let jarElements = {};
-let jarAnims = {};
 
-const jarsGrid = document.getElementById('jarsGrid');
-const loadingState = document.getElementById('loadingState');
+// Per-candidate rendering state
+let tubeState = {}; // { currentH, targetH, marblePositions[], marbleSprite }
+let droppingMarbles = []; // { cid, x, currentY, targetY, startTime, duration }
+
+// Particle system
+let particles = [];
+
+// Canvas
+const canvas = document.getElementById('stage');
+const ctx = canvas.getContext('2d');
+let vignetteCache = null;
+
+// DOM elements
 const totalVotesEl = document.getElementById('totalVotes');
 const tickerTrack = document.getElementById('tickerTrack');
 const connectionDot = document.getElementById('connectionDot');
-const celebrationEl = document.getElementById('celebration');
-const celebVoterName = document.getElementById('celebVoterName');
-const celebCandidateName = document.getElementById('celebCandidateName');
-const celebCandidateSchool = document.getElementById('celebCandidateSchool');
-const celebBarTop = document.getElementById('celebBarTop');
-const celebBarBottom = document.getElementById('celebBarBottom');
-const celebAccent = document.getElementById('celebAccent');
-const celebDivider = document.getElementById('celebDivider');
-const celebContent = document.getElementById('celebContent');
+const loadingOverlay = document.getElementById('loadingOverlay');
+const hdrTime = document.getElementById('hdrTime');
+const notifEl = document.getElementById('voteNotification');
+const notifCandidate = document.getElementById('notifCandidate');
+const notifFrom = document.getElementById('notifFrom');
 
-function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
-function animateBump(el) { el.classList.add('bump'); setTimeout(() => el.classList.remove('bump'), 300); }
-
+// ============================================================
+// Section 3: Color Utilities (kept from original)
+// ============================================================
 function hexToHsl(hex) {
   hex = hex.replace('#','');
   const r=parseInt(hex.substring(0,2),16)/255, g=parseInt(hex.substring(2,4),16)/255, b=parseInt(hex.substring(4,6),16)/255;
@@ -582,133 +376,815 @@ function hslToHex(h,s,l){
 }
 function deriveColors(hex){const hsl=hexToHsl(hex);return{color:hex,accent:hslToHex(hsl.h,hsl.s,Math.min(hsl.l+18,95)),light:hslToHex(hsl.h,Math.max(hsl.s-20,0),Math.min(hsl.l+40,95))};}
 function darkenHex(hex,amt){const hsl=hexToHsl(hex);return hslToHex(hsl.h,hsl.s,Math.max(hsl.l-amt,5));}
-
-async function loadVoteCounts(){
-  try{
-    const{data,error}=await sb.from('vote_counts').select('*').order('display_order',{ascending:true});
-    if(error)throw error;
-    if(!data||data.length===0){loadingState.textContent='No candidates available.';return;}
-    candidates=data;candidateMap={};totalVotes=0;
-    candidates.forEach(c=>{const colors=deriveColors(c.color||'#888888');c.accent=colors.accent;c.light=colors.light;candidateMap[c.id]=c;totalVotes+=c.vote_count||0;});
-    renderJars();updateTotalDisplay();buildTicker();
-  }catch(err){console.error('Failed:',err);loadingState.textContent='Error loading data. Retrying...';setTimeout(loadVoteCounts,5000);}
+function hexToRgba(hex, a) {
+  hex = hex.replace('#','');
+  const r=parseInt(hex.substring(0,2),16), g=parseInt(hex.substring(2,4),16), b=parseInt(hex.substring(4,6),16);
+  return `rgba(${r},${g},${b},${a})`;
 }
 
-function renderJars(){
-  if(loadingState)loadingState.remove();
-  const maxVotes=Math.max(...candidates.map(c=>c.vote_count||0),1);
-  candidates.forEach(c=>{
-    const container=document.createElement('div');container.className='jar-container';container.setAttribute('data-candidate-id',c.id);
-    container.style.setProperty('--jar-color',c.color);
-    const colorBar=document.createElement('div');colorBar.className='jar-color-bar';colorBar.style.background=c.color;container.appendChild(colorBar);
-    const name=document.createElement('div');name.className='jar-name';name.textContent=c.name;container.appendChild(name);
-    const school=document.createElement('div');school.className='jar-school';school.textContent=c.school;container.appendChild(school);
-    const body=document.createElement('div');body.className='jar-body';
-    const lid=document.createElement('div');lid.className='jar-lid';lid.innerHTML='<div class="lid-knob"></div><div class="lid-cap"></div><div class="lid-ring"></div>';body.appendChild(lid);
-    const dropZone=document.createElement('div');dropZone.className='jar-drop-zone';body.appendChild(dropZone);
-    const neck=document.createElement('div');neck.className='jar-neck';body.appendChild(neck);
-    const shoulder=document.createElement('div');shoulder.className='jar-shoulder';body.appendChild(shoulder);
-    const glass=document.createElement('div');glass.className='jar-glass';
-    glass.appendChild(Object.assign(document.createElement('div'),{className:'glass-highlight'}));
-    glass.appendChild(Object.assign(document.createElement('div'),{className:'glass-highlight-right'}));
-    const colorFill=document.createElement('div');colorFill.className='color-fill';colorFill.style.background=c.light;
-    colorFill.style.height=((maxVotes>0?((c.vote_count||0)/maxVotes)*65:0))+'%';glass.appendChild(colorFill);
-    const marblesContainer=document.createElement('div');marblesContainer.className='marbles-container';glass.appendChild(marblesContainer);
-    body.appendChild(glass);container.appendChild(body);
-    const counter=document.createElement('div');counter.className='vote-counter';
-    counter.innerHTML=`<span class="counter-dot"></span><span class="counter-text">${c.vote_count||0} VOTES</span><span class="counter-dot"></span>`;
-    container.appendChild(counter);
-    jarsGrid.appendChild(container);
-    jarElements[c.id]={container,lid,dropZone,glass,colorFill,marblesContainer,counter};
-    jarAnims[c.id]={state:'idle',pendingVotes:0};
-    renderMarbles(c.id,c.vote_count||0,maxVotes);
+function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+// ============================================================
+// Section 4: Canvas Setup
+// ============================================================
+function setupCanvas() {
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  canvas.style.width = '100vw';
+  canvas.style.height = '100vh';
+  ctx.scale(dpr, dpr);
+  preRenderVignette();
+}
+
+function preRenderVignette() {
+  const oc = document.createElement('canvas');
+  oc.width = W; oc.height = H;
+  const octx = oc.getContext('2d');
+  const g = octx.createRadialGradient(W/2, H/2, W*0.25, W/2, H/2, W*0.75);
+  g.addColorStop(0, 'rgba(0,0,0,0)');
+  g.addColorStop(0.7, 'rgba(0,0,0,0.15)');
+  g.addColorStop(1, 'rgba(0,0,0,0.6)');
+  octx.fillStyle = g;
+  octx.fillRect(0, 0, W, H);
+  vignetteCache = oc;
+}
+
+// ============================================================
+// Section 5: Marble Sprite Pre-rendering
+// ============================================================
+function createMarbleSprite(color) {
+  const sz = MARBLE_SIZE * 3; // render at 3x for quality
+  const oc = document.createElement('canvas');
+  oc.width = sz; oc.height = sz;
+  const octx = oc.getContext('2d');
+  const colors = deriveColors(color);
+  const dark = darkenHex(color, 25);
+
+  // Main marble body
+  const g = octx.createRadialGradient(sz*0.38, sz*0.32, sz*0.05, sz*0.5, sz*0.5, sz*0.48);
+  g.addColorStop(0, colors.accent);
+  g.addColorStop(0.5, color);
+  g.addColorStop(1, dark);
+  octx.beginPath();
+  octx.arc(sz/2, sz/2, sz*0.45, 0, Math.PI*2);
+  octx.fillStyle = g;
+  octx.fill();
+
+  // Specular highlight
+  octx.beginPath();
+  octx.arc(sz*0.38, sz*0.32, sz*0.12, 0, Math.PI*2);
+  octx.fillStyle = 'rgba(255,255,255,0.6)';
+  octx.fill();
+
+  // Subtle rim light
+  octx.beginPath();
+  octx.arc(sz/2, sz/2, sz*0.44, 0, Math.PI*2);
+  octx.strokeStyle = 'rgba(255,255,255,0.08)';
+  octx.lineWidth = 1;
+  octx.stroke();
+
+  return oc;
+}
+
+function computeMarblePositions(cid) {
+  const c = candidateMap[cid];
+  if (!c) return [];
+  const ts = tubeState[cid];
+  if (!ts) return [];
+
+  const maxV = Math.max(...candidates.map(x => x.vote_count || 0), 1);
+  const mc = Math.min(Math.ceil(((c.vote_count || 0) / maxV) * MAX_MARBLES_PER_TUBE), MAX_MARBLES_PER_TUBE);
+  if (mc === 0) return [];
+
+  const innerW = TUBE_W - 12; // 6px padding each side
+  const cols = Math.floor(innerW / MARBLE_SIZE);
+  const spacing = (innerW - cols * MARBLE_SIZE) / (cols + 1);
+  const positions = [];
+
+  for (let i = 0; i < mc; i++) {
+    const row = Math.floor(i / cols);
+    const col = i % cols;
+    const odd = row % 2 === 1;
+    let x = spacing + col * (MARBLE_SIZE + spacing);
+    if (odd) x += (MARBLE_SIZE + spacing) / 2;
+    if (x + MARBLE_SIZE > innerW) x = innerW - MARBLE_SIZE - 1;
+    const y = row * (MARBLE_SIZE - 1);
+    positions.push({ x: x + 6, y }); // 6px left padding
+  }
+  return positions;
+}
+
+// ============================================================
+// Section 6: Drawing Functions
+// ============================================================
+function drawBackground() {
+  // Base fill
+  ctx.fillStyle = '#0a0a0e';
+  ctx.fillRect(0, 0, W, H);
+
+  // Warm ambient glow from center-bottom
+  const g = ctx.createRadialGradient(W/2, FLOOR_Y, 50, W/2, FLOOR_Y, W*0.6);
+  g.addColorStop(0, 'rgba(180,140,50,0.07)');
+  g.addColorStop(0.4, 'rgba(140,100,30,0.03)');
+  g.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, W, H);
+
+  // Overhead spotlight cones
+  drawSpotlight(W * 0.3, -20, 200, FLOOR_Y + 60, 0.025);
+  drawSpotlight(W * 0.5, -20, 250, FLOOR_Y + 80, 0.035);
+  drawSpotlight(W * 0.7, -20, 200, FLOOR_Y + 60, 0.025);
+}
+
+function drawSpotlight(cx, top, halfWidth, bottom, alpha) {
+  const g = ctx.createLinearGradient(cx, top, cx, bottom);
+  g.addColorStop(0, `rgba(226,185,59,${alpha})`);
+  g.addColorStop(1, 'rgba(226,185,59,0)');
+  ctx.beginPath();
+  ctx.moveTo(cx - halfWidth * 0.3, top);
+  ctx.lineTo(cx - halfWidth, bottom);
+  ctx.lineTo(cx + halfWidth, bottom);
+  ctx.lineTo(cx + halfWidth * 0.3, top);
+  ctx.closePath();
+  ctx.fillStyle = g;
+  ctx.fill();
+}
+
+function drawFloor() {
+  // Floor surface gradient
+  const g = ctx.createLinearGradient(0, FLOOR_Y, 0, H - TICKER_H);
+  g.addColorStop(0, 'rgba(30,25,15,0.6)');
+  g.addColorStop(0.3, 'rgba(20,18,12,0.4)');
+  g.addColorStop(1, 'rgba(10,10,14,0.9)');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, FLOOR_Y, W, H - TICKER_H - FLOOR_Y);
+
+  // Floor line highlight
+  ctx.beginPath();
+  ctx.moveTo(0, FLOOR_Y);
+  ctx.lineTo(W, FLOOR_Y);
+  const lg = ctx.createLinearGradient(0, FLOOR_Y, W, FLOOR_Y);
+  lg.addColorStop(0, 'rgba(226,185,59,0)');
+  lg.addColorStop(0.3, 'rgba(226,185,59,0.12)');
+  lg.addColorStop(0.5, 'rgba(226,185,59,0.2)');
+  lg.addColorStop(0.7, 'rgba(226,185,59,0.12)');
+  lg.addColorStop(1, 'rgba(226,185,59,0)');
+  ctx.strokeStyle = lg;
+  ctx.lineWidth = 2;
+  ctx.stroke();
+}
+
+function drawVignette() {
+  if (vignetteCache) ctx.drawImage(vignetteCache, 0, 0, W, H);
+}
+
+function getTubeX(index, count) {
+  const totalW = count * TUBE_W + (count - 1) * 42;
+  const startX = (W - totalW) / 2;
+  return startX + index * (TUBE_W + 42);
+}
+
+function drawTube(c, index, count, reflected) {
+  const ts = tubeState[c.id];
+  if (!ts) return;
+
+  const x = getTubeX(index, count);
+  const h = Math.max(ts.currentH, TUBE_MIN_H);
+  const y = reflected ? TUBE_BASE_Y + 4 : TUBE_BASE_Y - h;
+  const drawH = reflected ? h * 0.5 : h;
+  const r = 12; // corner radius
+
+  ctx.save();
+
+  if (reflected) {
+    // Flip vertically for reflection
+    ctx.save();
+    ctx.translate(0, TUBE_BASE_Y * 2 + 4);
+    ctx.scale(1, -1);
+    const reflY = TUBE_BASE_Y - h;
+
+    // Gradient alpha mask for reflection
+    ctx.globalAlpha = 0.15;
+    drawTubeBody(x, reflY, TUBE_W, h, r, c);
+    ctx.restore();
+
+    // Fade out reflection with gradient overlay
+    const fg = ctx.createLinearGradient(0, TUBE_BASE_Y + 4, 0, TUBE_BASE_Y + 4 + h * 0.5);
+    fg.addColorStop(0, 'rgba(10,10,14,0)');
+    fg.addColorStop(0.6, 'rgba(10,10,14,0.8)');
+    fg.addColorStop(1, 'rgba(10,10,14,1)');
+    ctx.fillStyle = fg;
+    ctx.fillRect(x - 2, TUBE_BASE_Y + 2, TUBE_W + 4, h * 0.5 + 10);
+  } else {
+    drawTubeBody(x, y, TUBE_W, h, r, c);
+    drawTubeMarbles(c, x, y, h, r);
+    drawTubeGlassOverlay(x, y, TUBE_W, h, r);
+    drawTubeCap(x, y, TUBE_W);
+    drawTubeLabels(c, x, y, h, index, count);
+  }
+
+  ctx.restore();
+}
+
+function drawTubeBody(x, y, w, h, r, c) {
+  // Tube body with glass gradient
+  ctx.beginPath();
+  roundRectBottom(ctx, x, y, w, h, r);
+
+  const bodyG = ctx.createLinearGradient(x, y, x + w, y);
+  bodyG.addColorStop(0, 'rgba(255,255,255,0.02)');
+  bodyG.addColorStop(0.2, 'rgba(255,255,255,0.05)');
+  bodyG.addColorStop(0.45, 'rgba(255,255,255,0.08)');
+  bodyG.addColorStop(0.55, 'rgba(255,255,255,0.07)');
+  bodyG.addColorStop(0.8, 'rgba(255,255,255,0.04)');
+  bodyG.addColorStop(1, 'rgba(255,255,255,0.02)');
+  ctx.fillStyle = bodyG;
+  ctx.fill();
+
+  // Color fill behind marbles
+  const fillH = h * 0.85;
+  ctx.save();
+  ctx.beginPath();
+  roundRectBottom(ctx, x, y, w, h, r);
+  ctx.clip();
+  const colorG = ctx.createLinearGradient(0, y + h, 0, y + h - fillH);
+  colorG.addColorStop(0, hexToRgba(c.color, 0.35));
+  colorG.addColorStop(0.5, hexToRgba(c.color, 0.15));
+  colorG.addColorStop(1, hexToRgba(c.color, 0));
+  ctx.fillStyle = colorG;
+  ctx.fillRect(x, y + h - fillH, w, fillH);
+  ctx.restore();
+
+  // Left glass highlight
+  ctx.beginPath();
+  ctx.moveTo(x + 12, y + 10);
+  ctx.lineTo(x + 12, y + h - 14);
+  const hlG = ctx.createLinearGradient(0, y + 10, 0, y + h - 14);
+  hlG.addColorStop(0, 'rgba(255,255,255,0.14)');
+  hlG.addColorStop(0.5, 'rgba(255,255,255,0.06)');
+  hlG.addColorStop(1, 'rgba(255,255,255,0.02)');
+  ctx.strokeStyle = hlG;
+  ctx.lineWidth = 2.5;
+  ctx.stroke();
+
+  // Right subtle highlight
+  ctx.beginPath();
+  ctx.moveTo(x + w - 16, y + 20);
+  ctx.lineTo(x + w - 16, y + h - 20);
+  const hlG2 = ctx.createLinearGradient(0, y + 20, 0, y + h - 20);
+  hlG2.addColorStop(0, 'rgba(255,255,255,0.06)');
+  hlG2.addColorStop(1, 'rgba(255,255,255,0.01)');
+  ctx.strokeStyle = hlG2;
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+
+  // Tube border
+  ctx.beginPath();
+  roundRectBottom(ctx, x, y, w, h, r);
+  ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+}
+
+function drawTubeMarbles(c, tubeX, tubeY, tubeH, r) {
+  const ts = tubeState[c.id];
+  if (!ts || !ts.marblePositions || ts.marblePositions.length === 0) return;
+
+  ctx.save();
+  ctx.beginPath();
+  roundRectBottom(ctx, tubeX, tubeY, TUBE_W, tubeH, r);
+  ctx.clip();
+
+  const sprite = ts.marbleSprite;
+  const bottomY = tubeY + tubeH - 8;
+
+  ts.marblePositions.forEach(p => {
+    const mx = tubeX + p.x;
+    const my = bottomY - p.y - MARBLE_SIZE;
+    ctx.drawImage(sprite, mx, my, MARBLE_SIZE, MARBLE_SIZE);
+  });
+
+  ctx.restore();
+}
+
+function drawTubeGlassOverlay(x, y, w, h, r) {
+  // Subtle front glass overlay on top of marbles
+  ctx.beginPath();
+  roundRectBottom(ctx, x, y, w, h, r);
+  const og = ctx.createLinearGradient(x, y, x + w, y);
+  og.addColorStop(0, 'rgba(255,255,255,0.01)');
+  og.addColorStop(0.3, 'rgba(255,255,255,0.03)');
+  og.addColorStop(0.7, 'rgba(255,255,255,0.02)');
+  og.addColorStop(1, 'rgba(255,255,255,0.01)');
+  ctx.fillStyle = og;
+  ctx.fill();
+}
+
+function drawTubeCap(x, y, w) {
+  // Metallic cap at tube top
+  const capH = 6;
+  const capW = w + 8;
+  const capX = x - 4;
+  const capY = y - capH;
+
+  ctx.beginPath();
+  roundRect(ctx, capX, capY, capW, capH, 3);
+  const cg = ctx.createLinearGradient(0, capY, 0, capY + capH);
+  cg.addColorStop(0, '#4a4a52');
+  cg.addColorStop(0.5, '#2e2e34');
+  cg.addColorStop(1, '#1a1a20');
+  ctx.fillStyle = cg;
+  ctx.fill();
+
+  // Cap highlight line
+  ctx.beginPath();
+  ctx.moveTo(capX + 4, capY + 1);
+  ctx.lineTo(capX + capW - 4, capY + 1);
+  ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+  ctx.lineWidth = 0.5;
+  ctx.stroke();
+}
+
+function drawTubeLabels(c, x, y, h, index, count) {
+  const centerX = x + TUBE_W / 2;
+
+  // Color indicator bar above name
+  ctx.fillStyle = c.color;
+  ctx.shadowColor = c.color;
+  ctx.shadowBlur = 10;
+  roundRect(ctx, centerX - 30, y - 64, 60, 3, 1.5);
+  ctx.fill();
+  ctx.shadowBlur = 0;
+
+  // Candidate name above tube
+  ctx.font = '800 15px Inter, sans-serif';
+  ctx.fillStyle = '#f0eff4';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'bottom';
+
+  // Split name for wrapping if needed
+  const name = c.name || '';
+  const words = name.split(' ');
+  if (words.length > 2 && ctx.measureText(name).width > TUBE_W + 20) {
+    const mid = Math.ceil(words.length / 2);
+    const line1 = words.slice(0, mid).join(' ');
+    const line2 = words.slice(mid).join(' ');
+    ctx.fillText(line1, centerX, y - 44);
+    ctx.fillText(line2, centerX, y - 28);
+  } else {
+    ctx.fillText(name, centerX, y - 30);
+  }
+
+  // School name
+  ctx.font = '500 10px "JetBrains Mono", monospace';
+  ctx.fillStyle = 'rgba(255,255,255,0.3)';
+  ctx.fillText((c.school || '').toUpperCase(), centerX, y - 14);
+
+  // Vote percentage below tube
+  const pct = totalVotesCount > 0 ? ((c.vote_count || 0) / totalVotesCount * 100).toFixed(0) : '0';
+  ctx.font = '700 20px "JetBrains Mono", monospace';
+  ctx.fillStyle = c.color;
+  ctx.textBaseline = 'top';
+  ctx.fillText(pct + '%', centerX, TUBE_BASE_Y + 12);
+
+  // Vote count below percentage
+  ctx.font = '500 10px "JetBrains Mono", monospace';
+  ctx.fillStyle = 'rgba(255,255,255,0.25)';
+  ctx.fillText((c.vote_count || 0) + ' votes', centerX, TUBE_BASE_Y + 36);
+}
+
+function drawDroppingMarbles() {
+  const now = performance.now();
+  droppingMarbles = droppingMarbles.filter(dm => {
+    const elapsed = now - dm.startTime;
+    const progress = Math.min(elapsed / dm.duration, 1);
+    // Ease out cubic
+    const eased = 1 - Math.pow(1 - progress, 3);
+    const currentY = dm.startY + (dm.targetY - dm.startY) * eased;
+
+    const c = candidateMap[dm.cid];
+    if (!c) return false;
+    const ts = tubeState[dm.cid];
+    if (!ts || !ts.marbleSprite) return false;
+
+    ctx.drawImage(ts.marbleSprite, dm.x, currentY, MARBLE_SIZE, MARBLE_SIZE);
+    return progress < 1;
   });
 }
 
-function renderMarbles(cid,vc,mv){
-  const els=jarElements[cid];if(!els)return;const c=candidateMap[cid];
-  els.marblesContainer.innerHTML='';
-  const mc=mv>0?Math.min(Math.ceil((vc/mv)*24),24):0;if(mc===0)return;
-  const cw=116,ms=24,cols=4,sp=(cw-cols*ms)/(cols+1);
-  for(let i=0;i<mc;i++){
-    const row=Math.floor(i/cols),col=i%cols,odd=row%2===1;
-    const m=document.createElement('div');m.className='marble';
-    let x=sp+col*(ms+sp);if(odd)x+=(ms+sp)/2;if(x+ms>cw)x=cw-ms-2;
-    m.style.left=x+'px';m.style.bottom=(row*(ms-1))+'px';
-    m.style.background=`radial-gradient(circle at 35% 30%,${c.accent},${c.color} 60%,${darkenHex(c.color,25)})`;
-    const hl=document.createElement('div');hl.className='marble-highlight';m.appendChild(hl);
-    els.marblesContainer.appendChild(m);
+// Rounded rect helpers
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.arcTo(x + w, y, x + w, y + r, r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
+  ctx.lineTo(x + r, y + h);
+  ctx.arcTo(x, y + h, x, y + h - r, r);
+  ctx.lineTo(x, y + r);
+  ctx.arcTo(x, y, x + r, y, r);
+  ctx.closePath();
+}
+
+function roundRectBottom(ctx, x, y, w, h, r) {
+  // Only round bottom corners
+  ctx.beginPath();
+  ctx.moveTo(x, y);
+  ctx.lineTo(x + w, y);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
+  ctx.lineTo(x + r, y + h);
+  ctx.arcTo(x, y + h, x, y + h - r, r);
+  ctx.closePath();
+}
+
+// ============================================================
+// Section 7: Particle System
+// ============================================================
+function spawnParticles(count, cx, cy) {
+  for (let i = 0; i < count && particles.length < PARTICLE_MAX; i++) {
+    const angle = Math.random() * Math.PI * 2;
+    const speed = 150 + Math.random() * 650;
+    const life = 1.2 + Math.random() * 1.8;
+    particles.push({
+      x: cx, y: cy,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed - 100, // slight upward bias
+      life, maxLife: life,
+      size: 2 + Math.random() * 4,
+      color: GOLD_COLORS[Math.floor(Math.random() * GOLD_COLORS.length)],
+      streak: Math.random() < 0.3 // 30% are streak particles
+    });
   }
 }
 
-function updateAllJars(){
-  const mv=Math.max(...candidates.map(c=>c.vote_count||0),1);
-  candidates.forEach(c=>{const els=jarElements[c.id];if(!els)return;
-    els.colorFill.style.height=((mv>0?((c.vote_count||0)/mv)*65:0))+'%';
-    const ct=els.counter.querySelector('.counter-text');if(ct)ct.textContent=(c.vote_count||0)+' VOTES';
-    renderMarbles(c.id,c.vote_count||0,mv);
+function updateParticles(dt) {
+  particles = particles.filter(p => {
+    p.x += p.vx * dt;
+    p.y += p.vy * dt;
+    p.vy += 120 * dt; // gravity
+    p.vx *= 0.98;
+    p.vy *= 0.98;
+    p.life -= dt;
+    return p.life > 0;
   });
 }
-function updateTotalDisplay(){totalVotesEl.textContent=totalVotes.toLocaleString();}
 
-function triggerJarAnimation(cid){const a=jarAnims[cid];if(!a)return;if(a.state!=='idle'){a.pendingVotes++;return;}runJarAnimation(cid);}
-function runJarAnimation(cid){
-  const a=jarAnims[cid],els=jarElements[cid],c=candidateMap[cid];if(!a||!els||!c)return;
-  a.state='lidOpen';els.lid.classList.add('open');
-  setTimeout(()=>{a.state='dropping';
-    const dm=document.createElement('div');dm.className='marble';dm.style.cssText=`width:24px;height:24px;position:relative;background:radial-gradient(circle at 35% 30%,${c.accent},${c.color} 60%,${darkenHex(c.color,25)})`;
-    dm.appendChild(Object.assign(document.createElement('div'),{className:'marble-highlight'}));
-    els.dropZone.innerHTML='';els.dropZone.appendChild(dm);els.dropZone.classList.add('dropping');
-    setTimeout(()=>{a.state='settle';els.dropZone.classList.remove('dropping');els.dropZone.innerHTML='';updateAllJars();
-      setTimeout(()=>{a.state='lidClose';els.lid.classList.remove('open');
-        setTimeout(()=>{a.state='idle';if(a.pendingVotes>0){a.pendingVotes--;runJarAnimation(cid);}},600);
-      },200);
-    },600);
-  },600);
-}
+function drawParticles() {
+  if (particles.length === 0) return;
 
-function buildTicker(){
-  tickerTrack.innerHTML='';
-  if(recentVotes.length===0){const msg='Cast your vote at the WIN booth...';for(let i=0;i<6;i++){const s=document.createElement('span');s.className='ticker-empty-msg';s.textContent=msg;tickerTrack.appendChild(s);}}
-  else{for(let c=0;c<3;c++){recentVotes.forEach(v=>{const d=document.createElement('div');d.className='ticker-item';d.innerHTML=`<span class="ticker-voter">${esc(v.firstName)}</span><span class="ticker-arrow">&#9656;</span><span class="ticker-candidate">${esc(v.candidateName)}</span>`;tickerTrack.appendChild(d);});}}
-  tickerTrack.style.animationDuration=Math.max(recentVotes.length*4,20)+'s';
-}
-function addTickerVote(fn,cn,cc,cl){recentVotes.unshift({firstName:fn,candidateName:cn,color:cc,light:cl||'#f0f0f0'});if(recentVotes.length>20)recentVotes=recentVotes.slice(0,20);buildTicker();}
-
-function queueCelebrationThenJar(fn,cn,cs,cc,cid){if(celebrationQueue.length>=5)return;celebrationQueue.push({fn,cn,cs,cc,cid});if(!isCelebrating)playCelebration();}
-function playCelebration(){
-  if(celebrationQueue.length===0){isCelebrating=false;while(pendingJarAnims.length>0)triggerJarAnimation(pendingJarAnims.shift());return;}
-  isCelebrating=true;const{fn,cn,cs,cc,cid}=celebrationQueue.shift();pendingJarAnims.push(cid);
-  celebVoterName.textContent=fn.toUpperCase();celebCandidateName.textContent=cn;celebCandidateName.style.color=cc;celebCandidateSchool.textContent=cs;
-  celebBarTop.style.background=cc;celebBarBottom.style.background=cc;celebAccent.style.background=cc;celebDivider.style.background=cc;
-  celebrationEl.style.setProperty('--celeb-glow',cc);
-  celebrationEl.classList.remove('fade-out');celebContent.style.animation='none';void celebContent.offsetWidth;celebContent.style.animation='';
-  celebrationEl.classList.add('active');
-  setTimeout(()=>{celebrationEl.classList.add('fade-out');celebrationEl.classList.remove('active');
-    setTimeout(()=>{celebrationEl.classList.remove('fade-out');celebrationEl.style.opacity='0';playCelebration();},1000);
-  },7000);
-}
-
-function subscribeToVotes(){
-  realtimeChannel=sb.channel('tv-votes').on('postgres_changes',{event:'INSERT',schema:'public',table:'votes'},handleNewVote)
-    .subscribe(status=>{if(status==='SUBSCRIBED'){connectionDot.classList.remove('disconnected');console.log('Realtime: connected');}
-    else if(status==='CHANNEL_ERROR'||status==='TIMED_OUT'||status==='CLOSED'){connectionDot.classList.add('disconnected');setTimeout(()=>{if(realtimeChannel)sb.removeChannel(realtimeChannel);subscribeToVotes();},5000);}});
-}
-
-async function handleNewVote(payload){
-  const vote=payload.new;if(!vote)return;
-  const cid=vote.candidate_id,fn=vote.first_name||'Fan',c=candidateMap[cid];
-  if(c){c.vote_count=(c.vote_count||0)+1;totalVotes++;
-    const els=jarElements[cid];if(els){const ct=els.counter.querySelector('.counter-text');if(ct)ct.textContent=c.vote_count+' VOTES';}
-    updateTotalDisplay();animateBump(totalVotesEl);
-    addTickerVote(fn,c.name,c.color,c.light);queueCelebrationThenJar(fn,c.name,c.school,c.color,cid);
+  // Background glow
+  const glowAlpha = Math.min(particles.length / 100, 0.3);
+  if (glowAlpha > 0.01) {
+    const gg = ctx.createRadialGradient(W/2, H/2, 20, W/2, H/2, 400);
+    gg.addColorStop(0, `rgba(226,185,59,${glowAlpha})`);
+    gg.addColorStop(0.5, `rgba(226,185,59,${glowAlpha * 0.3})`);
+    gg.addColorStop(1, 'rgba(226,185,59,0)');
+    ctx.fillStyle = gg;
+    ctx.fillRect(W/2 - 400, H/2 - 400, 800, 800);
   }
-  try{const{data,error}=await sb.from('vote_counts').select('*').order('display_order',{ascending:true});
-    if(!error&&data){totalVotes=0;data.forEach(c=>{if(candidateMap[c.id])candidateMap[c.id].vote_count=c.vote_count||0;totalVotes+=c.vote_count||0;});candidates=data;updateAllJars();updateTotalDisplay();}
-  }catch(err){console.warn('Re-fetch failed:',err);}
+
+  particles.forEach(p => {
+    const lifeRatio = p.life / p.maxLife;
+    const alpha = lifeRatio * 0.9;
+    const sz = p.size * lifeRatio;
+
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = p.color;
+
+    if (p.streak) {
+      // Draw as a short line in direction of motion
+      const len = Math.sqrt(p.vx * p.vx + p.vy * p.vy) * 0.015;
+      ctx.beginPath();
+      ctx.moveTo(p.x, p.y);
+      ctx.lineTo(p.x - p.vx * 0.015, p.y - p.vy * 0.015);
+      ctx.strokeStyle = p.color;
+      ctx.lineWidth = sz * 0.6;
+      ctx.lineCap = 'round';
+      ctx.stroke();
+    } else {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, sz, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  });
+  ctx.globalAlpha = 1;
 }
 
-(async function(){await loadVoteCounts();subscribeToVotes();})();
+// ============================================================
+// Section 8: Tube Height Animation
+// ============================================================
+function recalculateTubeTargets() {
+  const maxV = Math.max(...candidates.map(c => c.vote_count || 0), 1);
+  candidates.forEach(c => {
+    const ts = tubeState[c.id];
+    if (!ts) return;
+    const ratio = (c.vote_count || 0) / maxV;
+    ts.targetH = TUBE_MIN_H + ratio * (TUBE_MAX_H - TUBE_MIN_H);
+    ts.marblePositions = computeMarblePositions(c.id);
+  });
+}
+
+function updateTubeHeights(dt) {
+  Object.values(tubeState).forEach(ts => {
+    const diff = ts.targetH - ts.currentH;
+    if (Math.abs(diff) > 0.5) {
+      ts.currentH += diff * 0.06;
+    } else {
+      ts.currentH = ts.targetH;
+    }
+  });
+}
+
+// ============================================================
+// Section 9: Ticker
+// ============================================================
+function buildTicker() {
+  const messages = [];
+
+  // Leader message
+  if (candidates.length > 0 && totalVotesCount > 0) {
+    const sorted = [...candidates].sort((a, b) => (b.vote_count || 0) - (a.vote_count || 0));
+    const leader = sorted[0];
+    const pct = ((leader.vote_count || 0) / totalVotesCount * 100).toFixed(1);
+    if (sorted.length > 1 && (leader.vote_count || 0) > (sorted[1].vote_count || 0) * 1.5) {
+      messages.push(`${leader.name} leads by a huge margin!`);
+    }
+    messages.push(`${leader.name} leads with ${pct}% of the vote`);
+  }
+
+  messages.push('Vote now via QR code or website!');
+  messages.push('Battle for second heats up!');
+
+  // Recent voter messages
+  recentVotes.slice(0, 5).forEach(v => {
+    messages.push(`${v.firstName} voted for ${v.candidateName}`);
+  });
+
+  if (messages.length === 0) {
+    messages.push('Cast your vote now!');
+  }
+
+  tickerTrack.innerHTML = '';
+  for (let rep = 0; rep < 3; rep++) {
+    messages.forEach(msg => {
+      const span = document.createElement('span');
+      span.className = 'ticker-msg';
+      span.textContent = msg.toUpperCase();
+      tickerTrack.appendChild(span);
+
+      const sep = document.createElement('span');
+      sep.className = 'ticker-sep';
+      tickerTrack.appendChild(sep);
+    });
+  }
+  tickerTrack.style.animationDuration = Math.max(messages.length * 5, 25) + 's';
+}
+
+// ============================================================
+// Section 10: Vote Notification
+// ============================================================
+function queueNotification(firstName, lastName, candidateName, candidateColor, cid) {
+  if (notificationQueue.length >= 5) return;
+  const lastInitial = lastName ? lastName.charAt(0).toUpperCase() + '.' : '';
+  notificationQueue.push({ firstName, lastInitial, candidateName, candidateColor, cid });
+  if (!isNotifying) playNextNotification();
+}
+
+function playNextNotification() {
+  if (notificationQueue.length === 0) { isNotifying = false; return; }
+  isNotifying = true;
+  const n = notificationQueue.shift();
+
+  notifCandidate.textContent = n.candidateName;
+  notifCandidate.style.color = '#f5d245';
+  notifFrom.textContent = `From ${n.firstName} ${n.lastInitial}`;
+
+  // Trigger particle burst
+  spawnParticles(120, W / 2, H / 2);
+
+  // Show
+  notifEl.classList.remove('fade-out');
+  notifEl.classList.add('active');
+
+  // Add dropping marble
+  addDroppingMarble(n.cid);
+
+  setTimeout(() => {
+    notifEl.classList.add('fade-out');
+    notifEl.classList.remove('active');
+    setTimeout(() => {
+      notifEl.classList.remove('fade-out');
+      playNextNotification();
+    }, NOTIF_FADE_MS);
+  }, NOTIF_HOLD_MS);
+}
+
+function addDroppingMarble(cid) {
+  const c = candidateMap[cid];
+  if (!c) return;
+  const idx = candidates.findIndex(x => x.id === cid);
+  if (idx < 0) return;
+  const ts = tubeState[cid];
+  if (!ts) return;
+
+  const tubeX = getTubeX(idx, candidates.length);
+  const tubeTop = TUBE_BASE_Y - ts.currentH;
+  const x = tubeX + TUBE_W / 2 - MARBLE_SIZE / 2 + (Math.random() - 0.5) * (TUBE_W * 0.4);
+  const targetY = TUBE_BASE_Y - 20 - Math.random() * (ts.currentH * 0.3);
+
+  droppingMarbles.push({
+    cid,
+    x,
+    startY: tubeTop - 40,
+    targetY,
+    currentY: tubeTop - 40,
+    startTime: performance.now(),
+    duration: 500 + Math.random() * 200
+  });
+}
+
+// ============================================================
+// Section 11: Clock
+// ============================================================
+function updateClock() {
+  hdrTime.textContent = new Date().toLocaleTimeString('en-US', {
+    hour: 'numeric', minute: '2-digit', hour12: true
+  });
+}
+
+// ============================================================
+// Section 12: Supabase Integration
+// ============================================================
+async function loadVoteCounts() {
+  try {
+    const { data, error } = await sb.from('vote_counts').select('*').order('display_order', { ascending: true });
+    if (error) throw error;
+    if (!data || data.length === 0) {
+      loadingOverlay.innerHTML = '<div style="color:rgba(255,255,255,0.3)">No candidates available.</div>';
+      return;
+    }
+    candidates = data;
+    candidateMap = {};
+    totalVotesCount = 0;
+    candidates.forEach(c => {
+      const colors = deriveColors(c.color || '#888888');
+      c.accent = colors.accent;
+      c.light = colors.light;
+      candidateMap[c.id] = c;
+      totalVotesCount += c.vote_count || 0;
+
+      // Initialize tube state
+      tubeState[c.id] = {
+        currentH: TUBE_MIN_H,
+        targetH: TUBE_MIN_H,
+        marblePositions: [],
+        marbleSprite: createMarbleSprite(c.color || '#888888')
+      };
+    });
+
+    recalculateTubeTargets();
+    updateTotalDisplay();
+    buildTicker();
+
+    loadingOverlay.classList.add('hidden');
+  } catch (err) {
+    console.error('Failed to load:', err);
+    loadingOverlay.innerHTML = '<div style="color:#ef4444">Error loading data. Retrying...</div>';
+    setTimeout(loadVoteCounts, 5000);
+  }
+}
+
+function updateTotalDisplay() {
+  totalVotesEl.textContent = totalVotesCount.toLocaleString();
+}
+
+function animateBump(el) {
+  el.classList.add('bump');
+  setTimeout(() => el.classList.remove('bump'), 300);
+}
+
+function subscribeToVotes() {
+  realtimeChannel = sb.channel('tv-votes')
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'votes' }, handleNewVote)
+    .subscribe(status => {
+      if (status === 'SUBSCRIBED') {
+        connectionDot.classList.remove('disconnected');
+        console.log('Realtime: connected');
+      } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
+        connectionDot.classList.add('disconnected');
+        setTimeout(() => {
+          if (realtimeChannel) sb.removeChannel(realtimeChannel);
+          subscribeToVotes();
+        }, 5000);
+      }
+    });
+}
+
+async function handleNewVote(payload) {
+  const vote = payload.new;
+  if (!vote) return;
+  const cid = vote.candidate_id;
+  const fn = vote.first_name || 'Fan';
+  const ln = vote.last_name || '';
+  const c = candidateMap[cid];
+
+  if (c) {
+    c.vote_count = (c.vote_count || 0) + 1;
+    totalVotesCount++;
+    updateTotalDisplay();
+    animateBump(totalVotesEl);
+    recalculateTubeTargets();
+
+    // Add to ticker
+    recentVotes.unshift({ firstName: fn, candidateName: c.name, color: c.color });
+    if (recentVotes.length > 20) recentVotes = recentVotes.slice(0, 20);
+    buildTicker();
+
+    // Queue notification + particles + marble drop
+    queueNotification(fn, ln, c.name, c.color, cid);
+  }
+
+  // Re-fetch authoritative counts
+  try {
+    const { data, error } = await sb.from('vote_counts').select('*').order('display_order', { ascending: true });
+    if (!error && data) {
+      totalVotesCount = 0;
+      data.forEach(d => {
+        if (candidateMap[d.id]) candidateMap[d.id].vote_count = d.vote_count || 0;
+        totalVotesCount += d.vote_count || 0;
+      });
+      candidates = data.map(d => candidateMap[d.id] || d);
+      recalculateTubeTargets();
+      updateTotalDisplay();
+    }
+  } catch (err) { console.warn('Re-fetch failed:', err); }
+}
+
+// ============================================================
+// Section 13: Main Render Loop
+// ============================================================
+let lastTime = 0;
+
+function gameLoop(timestamp) {
+  const dt = lastTime === 0 ? 0.016 : Math.min((timestamp - lastTime) / 1000, 0.1);
+  lastTime = timestamp;
+
+  // Update
+  updateTubeHeights(dt);
+  updateParticles(dt);
+
+  // Clear
+  ctx.clearRect(0, 0, W, H);
+
+  // Draw scene
+  drawBackground();
+  drawFloor();
+
+  // Draw tube reflections
+  if (candidates.length > 0) {
+    candidates.forEach((c, i) => drawTube(c, i, candidates.length, true));
+  }
+
+  // Draw tubes
+  if (candidates.length > 0) {
+    candidates.forEach((c, i) => drawTube(c, i, candidates.length, false));
+  }
+
+  // Dropping marble animations
+  drawDroppingMarbles();
+
+  // Particles on top
+  drawParticles();
+
+  // Vignette last
+  drawVignette();
+
+  requestAnimationFrame(gameLoop);
+}
+
+// ============================================================
+// Section 14: Init
+// ============================================================
+(async function init() {
+  setupCanvas();
+  updateClock();
+  setInterval(updateClock, 1000);
+
+  // Handle resize
+  window.addEventListener('resize', () => {
+    setupCanvas();
+  });
+
+  // Start render loop immediately (shows empty stage)
+  requestAnimationFrame(gameLoop);
+
+  // Load data and subscribe
+  await loadVoteCounts();
+  subscribeToVotes();
+})();
 </script>
 </body>
 </html>
