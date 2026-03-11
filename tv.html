@@ -311,11 +311,10 @@ const HEADER_H = 48;
 const TICKER_H = 64;
 const FLOOR_Y = H - TICKER_H - 100; // where tubes rest
 const TUBE_BASE_Y = FLOOR_Y;
-const TUBE_MAX_H = 480;
-const TUBE_MIN_H = 60;
-const TUBE_W = 100;
+const TUBE_FIXED_H = 520; // ALL tubes are this height - fill level varies
+const TUBE_W = 110;
 const MARBLE_SIZE = 10;
-const MAX_MARBLES_PER_TUBE = 70;
+const MAX_MARBLES_PER_TUBE = 80;
 const PARTICLE_MAX = 250;
 const NOTIF_HOLD_MS = 3000;
 const NOTIF_FADE_MS = 600;
@@ -334,7 +333,7 @@ let isNotifying = false;
 let realtimeChannel = null;
 
 // Per-candidate rendering state
-let tubeState = {}; // { currentH, targetH, marblePositions[], marbleSprite }
+let tubeState = {}; // { currentFill (0-1), targetFill (0-1), marblePositions[], marbleSprite }
 let droppingMarbles = []; // { cid, x, currentY, targetY, startTime, duration }
 
 // Particle system
@@ -483,18 +482,21 @@ function drawBackground() {
   ctx.fillStyle = '#0a0a0e';
   ctx.fillRect(0, 0, W, H);
 
-  // Warm ambient glow from center-bottom
-  const g = ctx.createRadialGradient(W/2, FLOOR_Y, 50, W/2, FLOOR_Y, W*0.6);
-  g.addColorStop(0, 'rgba(180,140,50,0.07)');
-  g.addColorStop(0.4, 'rgba(140,100,30,0.03)');
+  // Warm ambient glow from center-bottom — brighter
+  const g = ctx.createRadialGradient(W/2, FLOOR_Y - 100, 80, W/2, FLOOR_Y, W*0.55);
+  g.addColorStop(0, 'rgba(180,140,50,0.10)');
+  g.addColorStop(0.3, 'rgba(150,110,40,0.06)');
+  g.addColorStop(0.6, 'rgba(100,80,30,0.03)');
   g.addColorStop(1, 'rgba(0,0,0,0)');
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, W, H);
 
-  // Overhead spotlight cones
-  drawSpotlight(W * 0.3, -20, 200, FLOOR_Y + 60, 0.025);
-  drawSpotlight(W * 0.5, -20, 250, FLOOR_Y + 80, 0.035);
-  drawSpotlight(W * 0.7, -20, 200, FLOOR_Y + 60, 0.025);
+  // Overhead spotlight cones — more visible
+  drawSpotlight(W * 0.2, -30, 220, FLOOR_Y + 80, 0.03);
+  drawSpotlight(W * 0.4, -30, 200, FLOOR_Y + 60, 0.025);
+  drawSpotlight(W * 0.5, -30, 280, FLOOR_Y + 100, 0.045);
+  drawSpotlight(W * 0.6, -30, 200, FLOOR_Y + 60, 0.025);
+  drawSpotlight(W * 0.8, -30, 220, FLOOR_Y + 80, 0.03);
 }
 
 function drawSpotlight(cx, top, halfWidth, bottom, alpha) {
@@ -540,9 +542,10 @@ function drawVignette() {
 }
 
 function getTubeX(index, count) {
-  const totalW = count * TUBE_W + (count - 1) * 42;
+  const gap = count <= 6 ? 48 : (count <= 8 ? 36 : 28);
+  const totalW = count * TUBE_W + (count - 1) * gap;
   const startX = (W - totalW) / 2;
-  return startX + index * (TUBE_W + 42);
+  return startX + index * (TUBE_W + gap);
 }
 
 function drawTube(c, index, count, reflected) {
@@ -550,35 +553,30 @@ function drawTube(c, index, count, reflected) {
   if (!ts) return;
 
   const x = getTubeX(index, count);
-  const h = Math.max(ts.currentH, TUBE_MIN_H);
-  const y = reflected ? TUBE_BASE_Y + 4 : TUBE_BASE_Y - h;
-  const drawH = reflected ? h * 0.5 : h;
-  const r = 12; // corner radius
+  const h = TUBE_FIXED_H; // ALL tubes same height
+  const y = TUBE_BASE_Y - h;
+  const r = 14;
 
   ctx.save();
 
   if (reflected) {
-    // Flip vertically for reflection
     ctx.save();
-    ctx.translate(0, TUBE_BASE_Y * 2 + 4);
+    ctx.translate(0, TUBE_BASE_Y * 2 + 6);
     ctx.scale(1, -1);
-    const reflY = TUBE_BASE_Y - h;
-
-    // Gradient alpha mask for reflection
-    ctx.globalAlpha = 0.15;
-    drawTubeBody(x, reflY, TUBE_W, h, r, c);
+    ctx.globalAlpha = 0.12;
+    drawTubeBody(x, y, TUBE_W, h, r, c, ts.currentFill);
     ctx.restore();
 
-    // Fade out reflection with gradient overlay
-    const fg = ctx.createLinearGradient(0, TUBE_BASE_Y + 4, 0, TUBE_BASE_Y + 4 + h * 0.5);
-    fg.addColorStop(0, 'rgba(10,10,14,0)');
-    fg.addColorStop(0.6, 'rgba(10,10,14,0.8)');
+    // Fade reflection
+    const fg = ctx.createLinearGradient(0, TUBE_BASE_Y + 6, 0, TUBE_BASE_Y + h * 0.35);
+    fg.addColorStop(0, 'rgba(10,10,14,0.2)');
+    fg.addColorStop(0.5, 'rgba(10,10,14,0.85)');
     fg.addColorStop(1, 'rgba(10,10,14,1)');
     ctx.fillStyle = fg;
-    ctx.fillRect(x - 2, TUBE_BASE_Y + 2, TUBE_W + 4, h * 0.5 + 10);
+    ctx.fillRect(x - 4, TUBE_BASE_Y + 4, TUBE_W + 8, h * 0.35 + 10);
   } else {
-    drawTubeBody(x, y, TUBE_W, h, r, c);
-    drawTubeMarbles(c, x, y, h, r);
+    drawTubeBody(x, y, TUBE_W, h, r, c, ts.currentFill);
+    drawTubeMarbles(c, x, y, h, r, ts.currentFill);
     drawTubeGlassOverlay(x, y, TUBE_W, h, r);
     drawTubeCap(x, y, TUBE_W);
     drawTubeLabels(c, x, y, h, index, count);
@@ -587,67 +585,95 @@ function drawTube(c, index, count, reflected) {
   ctx.restore();
 }
 
-function drawTubeBody(x, y, w, h, r, c) {
-  // Tube body with glass gradient
+function drawTubeBody(x, y, w, h, r, c, fillRatio) {
+  // Dark tube background
   ctx.beginPath();
   roundRectBottom(ctx, x, y, w, h, r);
+  ctx.fillStyle = 'rgba(18,18,24,0.9)';
+  ctx.fill();
 
+  // Glass body gradient — gives cylindrical 3D look
+  ctx.beginPath();
+  roundRectBottom(ctx, x, y, w, h, r);
   const bodyG = ctx.createLinearGradient(x, y, x + w, y);
-  bodyG.addColorStop(0, 'rgba(255,255,255,0.02)');
-  bodyG.addColorStop(0.2, 'rgba(255,255,255,0.05)');
-  bodyG.addColorStop(0.45, 'rgba(255,255,255,0.08)');
-  bodyG.addColorStop(0.55, 'rgba(255,255,255,0.07)');
-  bodyG.addColorStop(0.8, 'rgba(255,255,255,0.04)');
+  bodyG.addColorStop(0, 'rgba(255,255,255,0.03)');
+  bodyG.addColorStop(0.12, 'rgba(255,255,255,0.08)');
+  bodyG.addColorStop(0.3, 'rgba(255,255,255,0.12)');
+  bodyG.addColorStop(0.5, 'rgba(255,255,255,0.10)');
+  bodyG.addColorStop(0.7, 'rgba(255,255,255,0.07)');
+  bodyG.addColorStop(0.88, 'rgba(255,255,255,0.04)');
   bodyG.addColorStop(1, 'rgba(255,255,255,0.02)');
   ctx.fillStyle = bodyG;
   ctx.fill();
 
-  // Color fill behind marbles
-  const fillH = h * 0.85;
-  ctx.save();
-  ctx.beginPath();
-  roundRectBottom(ctx, x, y, w, h, r);
-  ctx.clip();
-  const colorG = ctx.createLinearGradient(0, y + h, 0, y + h - fillH);
-  colorG.addColorStop(0, hexToRgba(c.color, 0.35));
-  colorG.addColorStop(0.5, hexToRgba(c.color, 0.15));
-  colorG.addColorStop(1, hexToRgba(c.color, 0));
-  ctx.fillStyle = colorG;
-  ctx.fillRect(x, y + h - fillH, w, fillH);
-  ctx.restore();
+  // Color fill from bottom — height based on fill ratio
+  const fillH = Math.max(fillRatio * (h - 20), 0);
+  if (fillH > 0) {
+    ctx.save();
+    ctx.beginPath();
+    roundRectBottom(ctx, x, y, w, h, r);
+    ctx.clip();
+    const colorG = ctx.createLinearGradient(0, y + h, 0, y + h - fillH - 30);
+    colorG.addColorStop(0, hexToRgba(c.color, 0.55));
+    colorG.addColorStop(0.3, hexToRgba(c.color, 0.35));
+    colorG.addColorStop(0.7, hexToRgba(c.color, 0.15));
+    colorG.addColorStop(1, hexToRgba(c.color, 0));
+    ctx.fillStyle = colorG;
+    ctx.fillRect(x, y + h - fillH, w, fillH);
+    ctx.restore();
+  }
 
-  // Left glass highlight
+  // Left glass highlight — bright edge
   ctx.beginPath();
-  ctx.moveTo(x + 12, y + 10);
-  ctx.lineTo(x + 12, y + h - 14);
-  const hlG = ctx.createLinearGradient(0, y + 10, 0, y + h - 14);
-  hlG.addColorStop(0, 'rgba(255,255,255,0.14)');
-  hlG.addColorStop(0.5, 'rgba(255,255,255,0.06)');
-  hlG.addColorStop(1, 'rgba(255,255,255,0.02)');
+  ctx.moveTo(x + 10, y + 12);
+  ctx.lineTo(x + 10, y + h - 16);
+  const hlG = ctx.createLinearGradient(0, y + 12, 0, y + h - 16);
+  hlG.addColorStop(0, 'rgba(255,255,255,0.25)');
+  hlG.addColorStop(0.3, 'rgba(255,255,255,0.15)');
+  hlG.addColorStop(0.7, 'rgba(255,255,255,0.08)');
+  hlG.addColorStop(1, 'rgba(255,255,255,0.03)');
   ctx.strokeStyle = hlG;
-  ctx.lineWidth = 2.5;
+  ctx.lineWidth = 3;
   ctx.stroke();
 
-  // Right subtle highlight
+  // Second left highlight (inner)
   ctx.beginPath();
-  ctx.moveTo(x + w - 16, y + 20);
-  ctx.lineTo(x + w - 16, y + h - 20);
-  const hlG2 = ctx.createLinearGradient(0, y + 20, 0, y + h - 20);
-  hlG2.addColorStop(0, 'rgba(255,255,255,0.06)');
-  hlG2.addColorStop(1, 'rgba(255,255,255,0.01)');
+  ctx.moveTo(x + 16, y + 20);
+  ctx.lineTo(x + 16, y + h - 20);
+  const hlG1b = ctx.createLinearGradient(0, y + 20, 0, y + h - 20);
+  hlG1b.addColorStop(0, 'rgba(255,255,255,0.10)');
+  hlG1b.addColorStop(1, 'rgba(255,255,255,0.02)');
+  ctx.strokeStyle = hlG1b;
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  // Right edge highlight
+  ctx.beginPath();
+  ctx.moveTo(x + w - 12, y + 16);
+  ctx.lineTo(x + w - 12, y + h - 18);
+  const hlG2 = ctx.createLinearGradient(0, y + 16, 0, y + h - 18);
+  hlG2.addColorStop(0, 'rgba(255,255,255,0.10)');
+  hlG2.addColorStop(0.5, 'rgba(255,255,255,0.05)');
+  hlG2.addColorStop(1, 'rgba(255,255,255,0.02)');
   ctx.strokeStyle = hlG2;
   ctx.lineWidth = 1.5;
   ctx.stroke();
 
-  // Tube border
+  // Tube border — slightly brighter
   ctx.beginPath();
   roundRectBottom(ctx, x, y, w, h, r);
-  ctx.strokeStyle = 'rgba(255,255,255,0.1)';
-  ctx.lineWidth = 1;
+  const borderG = ctx.createLinearGradient(x, y, x + w, y);
+  borderG.addColorStop(0, 'rgba(255,255,255,0.06)');
+  borderG.addColorStop(0.2, 'rgba(255,255,255,0.14)');
+  borderG.addColorStop(0.5, 'rgba(255,255,255,0.10)');
+  borderG.addColorStop(0.8, 'rgba(255,255,255,0.08)');
+  borderG.addColorStop(1, 'rgba(255,255,255,0.04)');
+  ctx.strokeStyle = borderG;
+  ctx.lineWidth = 1.5;
   ctx.stroke();
 }
 
-function drawTubeMarbles(c, tubeX, tubeY, tubeH, r) {
+function drawTubeMarbles(c, tubeX, tubeY, tubeH, r, fillRatio) {
   const ts = tubeState[c.id];
   if (!ts || !ts.marblePositions || ts.marblePositions.length === 0) return;
 
@@ -657,7 +683,7 @@ function drawTubeMarbles(c, tubeX, tubeY, tubeH, r) {
   ctx.clip();
 
   const sprite = ts.marbleSprite;
-  const bottomY = tubeY + tubeH - 8;
+  const bottomY = tubeY + tubeH - 10;
 
   ts.marblePositions.forEach(p => {
     const mx = tubeX + p.x;
@@ -669,39 +695,61 @@ function drawTubeMarbles(c, tubeX, tubeY, tubeH, r) {
 }
 
 function drawTubeGlassOverlay(x, y, w, h, r) {
-  // Subtle front glass overlay on top of marbles
+  // Bright front glass sheen on top of marbles
   ctx.beginPath();
   roundRectBottom(ctx, x, y, w, h, r);
   const og = ctx.createLinearGradient(x, y, x + w, y);
   og.addColorStop(0, 'rgba(255,255,255,0.01)');
-  og.addColorStop(0.3, 'rgba(255,255,255,0.03)');
-  og.addColorStop(0.7, 'rgba(255,255,255,0.02)');
+  og.addColorStop(0.25, 'rgba(255,255,255,0.04)');
+  og.addColorStop(0.5, 'rgba(255,255,255,0.03)');
+  og.addColorStop(0.75, 'rgba(255,255,255,0.02)');
   og.addColorStop(1, 'rgba(255,255,255,0.01)');
   ctx.fillStyle = og;
   ctx.fill();
+
+  // Top specular band
+  ctx.save();
+  ctx.beginPath();
+  roundRectBottom(ctx, x, y, w, h, r);
+  ctx.clip();
+  const specG = ctx.createLinearGradient(0, y, 0, y + 60);
+  specG.addColorStop(0, 'rgba(255,255,255,0.08)');
+  specG.addColorStop(1, 'rgba(255,255,255,0)');
+  ctx.fillStyle = specG;
+  ctx.fillRect(x, y, w, 60);
+  ctx.restore();
 }
 
 function drawTubeCap(x, y, w) {
-  // Metallic cap at tube top
-  const capH = 6;
-  const capW = w + 8;
-  const capX = x - 4;
+  // Wider metallic cap at tube top
+  const capH = 8;
+  const capW = w + 12;
+  const capX = x - 6;
   const capY = y - capH;
 
   ctx.beginPath();
-  roundRect(ctx, capX, capY, capW, capH, 3);
+  roundRect(ctx, capX, capY, capW, capH, 4);
   const cg = ctx.createLinearGradient(0, capY, 0, capY + capH);
-  cg.addColorStop(0, '#4a4a52');
-  cg.addColorStop(0.5, '#2e2e34');
-  cg.addColorStop(1, '#1a1a20');
+  cg.addColorStop(0, '#555560');
+  cg.addColorStop(0.3, '#3a3a42');
+  cg.addColorStop(0.7, '#2a2a32');
+  cg.addColorStop(1, '#1c1c24');
   ctx.fillStyle = cg;
   ctx.fill();
 
-  // Cap highlight line
+  // Cap highlight
   ctx.beginPath();
-  ctx.moveTo(capX + 4, capY + 1);
-  ctx.lineTo(capX + capW - 4, capY + 1);
-  ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+  ctx.moveTo(capX + 6, capY + 1.5);
+  ctx.lineTo(capX + capW - 6, capY + 1.5);
+  ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  // Bottom rim of cap
+  ctx.beginPath();
+  ctx.moveTo(capX + 2, capY + capH);
+  ctx.lineTo(capX + capW - 2, capY + capH);
+  ctx.strokeStyle = 'rgba(255,255,255,0.06)';
   ctx.lineWidth = 0.5;
   ctx.stroke();
 }
@@ -709,49 +757,56 @@ function drawTubeCap(x, y, w) {
 function drawTubeLabels(c, x, y, h, index, count) {
   const centerX = x + TUBE_W / 2;
 
-  // Color indicator bar above name
+  // Color indicator bar above name — with glow
+  ctx.save();
   ctx.fillStyle = c.color;
   ctx.shadowColor = c.color;
-  ctx.shadowBlur = 10;
-  roundRect(ctx, centerX - 30, y - 64, 60, 3, 1.5);
+  ctx.shadowBlur = 14;
+  ctx.beginPath();
+  roundRect(ctx, centerX - 32, y - 68, 64, 3, 1.5);
   ctx.fill();
-  ctx.shadowBlur = 0;
+  ctx.restore();
 
-  // Candidate name above tube
-  ctx.font = '800 15px Inter, sans-serif';
+  // Candidate name above tube — bigger, bolder
+  ctx.font = '900 16px Inter, sans-serif';
   ctx.fillStyle = '#f0eff4';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'bottom';
 
-  // Split name for wrapping if needed
   const name = c.name || '';
   const words = name.split(' ');
-  if (words.length > 2 && ctx.measureText(name).width > TUBE_W + 20) {
+  if (words.length >= 2 && ctx.measureText(name).width > TUBE_W + 10) {
     const mid = Math.ceil(words.length / 2);
     const line1 = words.slice(0, mid).join(' ');
     const line2 = words.slice(mid).join(' ');
-    ctx.fillText(line1, centerX, y - 44);
+    ctx.fillText(line1, centerX, y - 46);
     ctx.fillText(line2, centerX, y - 28);
   } else {
-    ctx.fillText(name, centerX, y - 30);
+    ctx.fillText(name, centerX, y - 32);
   }
 
   // School name
-  ctx.font = '500 10px "JetBrains Mono", monospace';
-  ctx.fillStyle = 'rgba(255,255,255,0.3)';
+  ctx.font = '600 10px "JetBrains Mono", monospace';
+  ctx.fillStyle = 'rgba(255,255,255,0.35)';
   ctx.fillText((c.school || '').toUpperCase(), centerX, y - 14);
 
-  // Vote percentage below tube
+  // Vote percentage below tube — bigger, colored
   const pct = totalVotesCount > 0 ? ((c.vote_count || 0) / totalVotesCount * 100).toFixed(0) : '0';
-  ctx.font = '700 20px "JetBrains Mono", monospace';
+  ctx.save();
+  ctx.font = '800 24px "JetBrains Mono", monospace';
   ctx.fillStyle = c.color;
+  ctx.shadowColor = c.color;
+  ctx.shadowBlur = 8;
   ctx.textBaseline = 'top';
-  ctx.fillText(pct + '%', centerX, TUBE_BASE_Y + 12);
+  ctx.fillText(pct + '%', centerX, TUBE_BASE_Y + 14);
+  ctx.restore();
 
   // Vote count below percentage
-  ctx.font = '500 10px "JetBrains Mono", monospace';
-  ctx.fillStyle = 'rgba(255,255,255,0.25)';
-  ctx.fillText((c.vote_count || 0) + ' votes', centerX, TUBE_BASE_Y + 36);
+  ctx.font = '500 11px "JetBrains Mono", monospace';
+  ctx.fillStyle = 'rgba(255,255,255,0.3)';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'top';
+  ctx.fillText((c.vote_count || 0) + ' votes', centerX, TUBE_BASE_Y + 42);
 }
 
 function drawDroppingMarbles() {
@@ -882,18 +937,18 @@ function recalculateTubeTargets() {
     const ts = tubeState[c.id];
     if (!ts) return;
     const ratio = (c.vote_count || 0) / maxV;
-    ts.targetH = TUBE_MIN_H + ratio * (TUBE_MAX_H - TUBE_MIN_H);
+    ts.targetFill = Math.max(ratio, (c.vote_count || 0) > 0 ? 0.08 : 0); // min visible fill if has votes
     ts.marblePositions = computeMarblePositions(c.id);
   });
 }
 
 function updateTubeHeights(dt) {
   Object.values(tubeState).forEach(ts => {
-    const diff = ts.targetH - ts.currentH;
-    if (Math.abs(diff) > 0.5) {
-      ts.currentH += diff * 0.06;
+    const diff = ts.targetFill - ts.currentFill;
+    if (Math.abs(diff) > 0.002) {
+      ts.currentFill += diff * 0.06;
     } else {
-      ts.currentH = ts.targetH;
+      ts.currentFill = ts.targetFill;
     }
   });
 }
@@ -991,9 +1046,10 @@ function addDroppingMarble(cid) {
   if (!ts) return;
 
   const tubeX = getTubeX(idx, candidates.length);
-  const tubeTop = TUBE_BASE_Y - ts.currentH;
+  const tubeTop = TUBE_BASE_Y - TUBE_FIXED_H;
+  const fillH = ts.currentFill * (TUBE_FIXED_H - 20);
   const x = tubeX + TUBE_W / 2 - MARBLE_SIZE / 2 + (Math.random() - 0.5) * (TUBE_W * 0.4);
-  const targetY = TUBE_BASE_Y - 20 - Math.random() * (ts.currentH * 0.3);
+  const targetY = TUBE_BASE_Y - fillH - 10;
 
   droppingMarbles.push({
     cid,
@@ -1038,8 +1094,8 @@ async function loadVoteCounts() {
 
       // Initialize tube state
       tubeState[c.id] = {
-        currentH: TUBE_MIN_H,
-        targetH: TUBE_MIN_H,
+        currentFill: 0,
+        targetFill: 0,
         marblePositions: [],
         marbleSprite: createMarbleSprite(c.color || '#888888')
       };
