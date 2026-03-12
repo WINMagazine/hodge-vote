@@ -534,33 +534,49 @@ function buildBeads(candidate, index, maxVotes) {
 
     const instancedBeads = new THREE.InstancedMesh(geoBead, matBead, beadCount);
     const dummy = new THREE.Object3D();
-    const packRadius = TUBE_INNER - beadRadius - 0.04;
-
-    // Hex-style layer packing — clearly separated individual marbles
-    let currentY = 0.7 + beadRadius;
+    const packRadius = TUBE_INNER - beadRadius - 0.02;
     const diameter = beadRadius * 2;
-    // How many fit across a row in the cylinder
-    const rowCapacity = Math.max(Math.floor((packRadius * 2) / (diameter * 0.9)), 1);
+
+    // Pre-compute layer positions: center + ring pattern
+    // Each layer: 1 center marble + ring of marbles around it
+    const ringCount = Math.floor(packRadius / (diameter * 0.75));
+    const layerPositions = [];
+    // Center marble
+    layerPositions.push([0, 0]);
+    // Ring(s) of marbles
+    for (let ring = 1; ring <= ringCount; ring++) {
+        const ringR = ring * diameter * 0.72;
+        const circumference = 2 * Math.PI * ringR;
+        const count = Math.max(Math.floor(circumference / (diameter * 0.85)), 3);
+        for (let j = 0; j < count; j++) {
+            const a = (j / count) * Math.PI * 2;
+            if (ringR <= packRadius) {
+                layerPositions.push([ringR * Math.cos(a), ringR * Math.sin(a)]);
+            }
+        }
+    }
+
+    const beadsPerLayer = layerPositions.length;
+    let currentY = 0.7 + beadRadius;
     let layerIdx = 0;
-    let inLayer = 0;
 
     for (let b = 0; b < beadCount; b++) {
-        // Place in roughly grid positions with jitter
-        const angle = (inLayer / Math.max(rowCapacity, 1)) * Math.PI * 2 + layerIdx * 0.5;
-        const ringR = inLayer === 0 ? 0 : packRadius * Math.min(inLayer / rowCapacity, 1.0);
-        const x = ringR * Math.cos(angle) + (Math.random() - 0.5) * 0.08;
-        const z = ringR * Math.sin(angle) + (Math.random() - 0.5) * 0.08;
+        const posInLayer = b % beadsPerLayer;
+        if (b > 0 && posInLayer === 0) {
+            layerIdx++;
+            currentY += diameter * 0.82; // Slight overlap for natural pile
+        }
+        // Alternate layers get rotated for natural look
+        const rot = layerIdx % 2 === 1 ? 0.4 : 0;
+        const bx = layerPositions[posInLayer][0];
+        const bz = layerPositions[posInLayer][1];
+        const cos_r = Math.cos(rot), sin_r = Math.sin(rot);
+        const x = bx * cos_r - bz * sin_r + (Math.random() - 0.5) * 0.04;
+        const z = bx * sin_r + bz * cos_r + (Math.random() - 0.5) * 0.04;
 
-        dummy.position.set(x, currentY, z);
+        dummy.position.set(x, currentY + (Math.random() - 0.5) * 0.03, z);
         dummy.updateMatrix();
         instancedBeads.setMatrixAt(b, dummy.matrix);
-
-        inLayer++;
-        if (inLayer >= rowCapacity) {
-            inLayer = 0;
-            layerIdx++;
-            currentY += diameter * 0.85; // Stack upward with visible separation
-        }
     }
 
     instancedBeads.instanceMatrix.needsUpdate = true;
