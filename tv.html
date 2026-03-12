@@ -422,8 +422,6 @@ function buildCylinders() {
     const count = candidates.length;
     const spacing = getSpacing(count);
     const startX = getStartX(count);
-    const maxVotes = Math.max(...candidates.map(c => c.vote_count || 0), 1);
-
     candidates.forEach((c, i) => {
         const group = new THREE.Group();
         group.position.x = startX + i * spacing;
@@ -470,7 +468,7 @@ function buildCylinders() {
         cylinderGroups.push(group);
 
         // --- LIQUID ---
-        const fillPct = (c.vote_count || 0) / maxVotes;
+        const fillPct = totalVotesCount > 0 ? (c.vote_count || 0) / totalVotesCount : 0;
         const liquidHeight = Math.max(fillPct * LIQUID_MAX_HEIGHT, 0.05);
         const hexColor = c.color || '#888888';
         const liquidColor = new THREE.Color(hexColor);
@@ -509,10 +507,9 @@ function buildCylinders() {
 // 10. UPDATE LIQUID LEVELS
 // ============================================================
 function updateLiquidLevels() {
-    const maxVotes = Math.max(...candidates.map(c => c.vote_count || 0), 1);
     candidates.forEach((c, i) => {
         if (!liquidData[i]) return;
-        const fillPct = (c.vote_count || 0) / maxVotes;
+        const fillPct = totalVotesCount > 0 ? (c.vote_count || 0) / totalVotesCount : 0;
         liquidData[i].targetHeight = Math.max(fillPct * LIQUID_MAX_HEIGHT, 0.05);
     });
 }
