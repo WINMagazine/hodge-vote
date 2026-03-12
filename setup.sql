@@ -46,11 +46,15 @@ GROUP BY c.id ORDER BY c.display_order;
 
 GRANT SELECT ON vote_counts TO anon;
 
--- 1e. Seed 6 placeholder candidates
+-- 1e. Seed 10 placeholder candidates
 INSERT INTO candidates (name, school, weight_class, record, color, display_order) VALUES
   ('Penn State Wrestler',   'Penn State',      '157 lbs', '25-0', '#041E42', 1),
   ('Iowa Wrestler',         'Iowa',            '165 lbs', '23-1', '#FFCD00', 2),
   ('Cornell Wrestler',      'Cornell',         '141 lbs', '22-2', '#B31B1B', 3),
   ('Oklahoma State Wrestler','Oklahoma State', '174 lbs', '24-1', '#FF7300', 4),
   ('Missouri Wrestler',     'Missouri',        '184 lbs', '21-3', '#F1B82D', 5),
-  ('Arizona State Wrestler','Arizona State',   '197 lbs', '20-2', '#8C1D40', 6);
+  ('Arizona State Wrestler','Arizona State',   '197 lbs', '20-2', '#8C1D40', 6),
+  ('Michigan Wrestler',     'Michigan',        '133 lbs', '22-1', '#00274C', 7),
+  ('NC State Wrestler',     'NC State',        '149 lbs', '20-3', '#CC0000', 8),
+  ('Ohio State Wrestler',   'Ohio State',      '125 lbs', '19-2', '#BB0000', 9),
+  ('Minnesota Wrestler',    'Minnesota',       '285 lbs', '18-2', '#7A0019', 10);
