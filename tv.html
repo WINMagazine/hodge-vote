@@ -8,23 +8,18 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        /* === BASE === */
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { overflow: hidden; background: #05080f; font-family: 'Inter', -apple-system, sans-serif; color: white; }
-
         #canvas-container { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1; }
 
-        /* === UI OVERLAY === */
         #ui-layer {
             position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 10;
             pointer-events: none; display: flex; flex-direction: column; justify-content: space-between;
         }
 
-        /* === HEADER === */
         .header {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 1.2rem 2.5rem;
-            border-top: 4px solid #cfa85e;
+            padding: 1.2rem 2.5rem; border-top: 4px solid #cfa85e;
             background: linear-gradient(to bottom, rgba(0,0,0,0.92), rgba(0,0,0,0.4) 60%, transparent);
         }
         .hdr-left { display: flex; align-items: center; gap: 14px; }
@@ -33,47 +28,27 @@
             background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3);
             border-radius: 6px; padding: 5px 14px;
         }
-        .live-dot {
-            width: 10px; height: 10px; background: #ef4444; border-radius: 50%;
-            box-shadow: 0 0 8px rgba(239,68,68,0.7); animation: pulse 1.2s ease-in-out infinite;
-        }
+        .live-dot { width: 10px; height: 10px; background: #ef4444; border-radius: 50%; box-shadow: 0 0 8px rgba(239,68,68,0.7); animation: pulse 1.2s ease-in-out infinite; }
         .live-text { font-size: 12px; font-weight: 900; color: #ef4444; letter-spacing: 0.15em; }
         .hdr-meta { font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.45); letter-spacing: 0.04em; }
         .hdr-divider { width: 1px; height: 20px; background: rgba(255,255,255,0.12); }
-
         .hdr-center { position: absolute; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 12px; }
         .logo { font-size: 1.6rem; font-weight: 900; color: #cfa85e; letter-spacing: 3px; }
         .logo-sub { font-size: 9px; font-weight: 600; color: rgba(255,255,255,0.25); letter-spacing: 0.3em; text-transform: uppercase; }
-
         .hdr-right { display: flex; align-items: center; gap: 12px; }
-        .total-box {
-            display: flex; align-items: center; gap: 10px;
-            padding: 6px 18px; background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.08); border-radius: 8px;
-        }
+        .total-box { display: flex; align-items: center; gap: 10px; padding: 6px 18px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; }
         .total-num { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; }
         .total-label { font-size: 8px; font-weight: 600; color: rgba(255,255,255,0.3); letter-spacing: 0.12em; text-transform: uppercase; line-height: 1.2; }
 
-        /* === CANDIDATE LABELS === */
-        #labels-container {
-            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-            z-index: 11; pointer-events: none; overflow: hidden;
-        }
-        .tube-label-top, .tube-label-bottom {
-            position: absolute; text-align: center; width: 180px;
-            transform: translateX(-50%);
-        }
+        #labels-container { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 11; pointer-events: none; overflow: hidden; }
+        .tube-label-top, .tube-label-bottom { position: absolute; text-align: center; width: 180px; transform: translateX(-50%); }
         .tube-label-bar { width: 50px; height: 3px; border-radius: 2px; margin: 0 auto 8px; }
         .tube-label-name { font-size: 14px; font-weight: 900; text-transform: uppercase; line-height: 1.15; margin-bottom: 3px; text-shadow: 0 2px 10px rgba(0,0,0,0.95); }
         .tube-label-school { font-size: 9px; font-weight: 600; color: rgba(255,255,255,0.4); letter-spacing: 0.14em; text-transform: uppercase; text-shadow: 0 1px 6px rgba(0,0,0,0.95); }
         .tube-label-pct { font-size: 28px; font-weight: 800; text-shadow: 0 0 16px currentColor, 0 2px 10px rgba(0,0,0,0.95); }
         .tube-label-votes { font-size: 10px; font-weight: 500; color: rgba(255,255,255,0.3); margin-top: 2px; }
 
-        /* === CELEBRATION TEXT (THE SLAM) === */
-        #celebration {
-            position: absolute; bottom: 18%; width: 100%; text-align: center;
-            opacity: 0; pointer-events: none; perspective: 1000px;
-        }
+        #celebration { position: absolute; bottom: 18%; width: 100%; text-align: center; opacity: 0; pointer-events: none; perspective: 1000px; }
         .celeb-small { font-size: 2rem; font-weight: 800; text-shadow: 0 4px 10px rgba(0,0,0,0.95); }
         .celeb-large {
             font-size: 6.5rem; font-weight: 900; text-transform: uppercase; margin: -5px 0; line-height: 1;
@@ -82,10 +57,8 @@
             filter: drop-shadow(0px 15px 10px rgba(0,0,0,0.9)) drop-shadow(0px 0px 25px rgba(207,168,94,0.6));
         }
         .celeb-voter { font-size: 1.8rem; font-weight: 700; text-shadow: 0 4px 10px rgba(0,0,0,0.95); color: rgba(255,255,255,0.7); }
-
         .slam-in { animation: textSlam 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.2) forwards; }
         .slam-out { animation: textFadeOut 0.5s ease-in forwards; }
-
         @keyframes textSlam {
             0% { transform: translateY(150px) scale(1.5) rotateX(-20deg); opacity: 0; filter: blur(8px); }
             50% { opacity: 1; filter: blur(0px); }
@@ -97,40 +70,20 @@
             100% { transform: translateY(50px) scale(0.9); opacity: 0; }
         }
 
-        /* === TICKERS === */
         .tickers { background: rgba(0,0,0,0.85); border-top: 1px solid rgba(255,255,255,0.08); pointer-events: auto; }
-        .ticker-gold {
-            background: linear-gradient(90deg, #b8941e, #cfa85e, #e2c56a, #cfa85e, #b8941e);
-            color: #0a0a0e; padding: 8px 0; font-size: 11px; font-weight: 700;
-            letter-spacing: 0.25em; text-transform: uppercase; text-align: center;
-        }
+        .ticker-gold { background: linear-gradient(90deg, #b8941e, #cfa85e, #e2c56a, #cfa85e, #b8941e); color: #0a0a0e; padding: 8px 0; font-size: 11px; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase; text-align: center; }
         .ticker-gold .dot { display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: rgba(0,0,0,0.25); margin: 0 16px; vertical-align: middle; }
         .ticker-dark { padding: 10px 0; overflow: hidden; white-space: nowrap; }
         .ticker-track { display: inline-block; animation: scrollTicker 30s linear infinite; }
-        .ticker-msg {
-            display: inline-flex; align-items: center; padding: 0 28px;
-            font-size: 13px; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase;
-        }
+        .ticker-msg { display: inline-flex; align-items: center; padding: 0 28px; font-size: 13px; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; }
         .ticker-sep { display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: rgba(255,255,255,0.2); margin: 0 4px; vertical-align: middle; }
-
         @keyframes scrollTicker { 0% { transform: translateX(0); } 100% { transform: translateX(-33.333%); } }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
-        /* === CONNECTION DOT === */
-        #connectionDot {
-            position: fixed; bottom: 70px; right: 14px; width: 10px; height: 10px; border-radius: 50%;
-            background: #4ade80; box-shadow: 0 0 8px rgba(74,222,128,0.5); z-index: 100;
-            transition: background 0.3s, box-shadow 0.3s;
-        }
+        #connectionDot { position: fixed; bottom: 70px; right: 14px; width: 10px; height: 10px; border-radius: 50%; background: #4ade80; box-shadow: 0 0 8px rgba(74,222,128,0.5); z-index: 100; transition: background 0.3s, box-shadow 0.3s; }
         #connectionDot.disconnected { background: #ef4444; box-shadow: 0 0 8px rgba(239,68,68,0.5); }
 
-        /* === LOADING === */
-        #loadingOverlay {
-            position: fixed; inset: 0; z-index: 200;
-            display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 16px;
-            background: #05080f; color: rgba(255,255,255,0.3); font-size: 16px; font-weight: 600;
-            transition: opacity 0.6s ease;
-        }
+        #loadingOverlay { position: fixed; inset: 0; z-index: 200; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 16px; background: #05080f; color: rgba(255,255,255,0.3); font-size: 16px; font-weight: 600; transition: opacity 0.6s ease; }
         #loadingOverlay.hidden { opacity: 0; pointer-events: none; }
         .loader-spin { width: 28px; height: 28px; border: 2.5px solid rgba(255,255,255,0.08); border-top-color: #cfa85e; border-radius: 50%; animation: spin 0.7s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
@@ -175,19 +128,10 @@
 
 <div id="labels-container"></div>
 <div id="connectionDot" title="Realtime connection"></div>
-
-<div id="loadingOverlay">
-    <div class="loader-spin"></div>
-    Loading 3D Engine...
-</div>
+<div id="loadingOverlay"><div class="loader-spin"></div>Loading 3D Engine...</div>
 
 <script type="importmap">
-{
-    "imports": {
-        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
-    }
-}
+{ "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js", "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/" } }
 </script>
 
 <script type="module">
@@ -217,13 +161,14 @@ let candidateMap = {};
 let totalVotesCount = 0;
 let recentVotes = [];
 let cylinderGroups = [];
-let beadMeshes = [];
+let liquidData = [];       // { bodyMesh, surfaceMesh, targetHeight, currentHeight, color, rippleTime }
 let realtimeChannel = null;
 
-let droppingMarble = null;
+let droppingDrop = null;
 let animStartTime = 0;
 let isAnimating = false;
 let celebQueue = [];
+let clock = new THREE.Clock();
 
 const totalVotesEl = document.getElementById('totalVotes');
 const tickerTrack = document.getElementById('tickerTrack');
@@ -255,7 +200,6 @@ renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 container.appendChild(renderer.domElement);
 
-// Environment map for reflections
 const pmremGenerator = new THREE.PMREMGenerator(renderer);
 pmremGenerator.compileEquirectangularShader();
 const roomEnv = new RoomEnvironment();
@@ -265,13 +209,10 @@ scene.environmentIntensity = 0.8;
 roomEnv.dispose();
 
 // ============================================================
-// 4. DRAMATIC STUDIO LIGHTING
+// 4. STUDIO LIGHTING
 // ============================================================
-// Warm ambient
-const ambientLight = new THREE.AmbientLight(0xffd8a0, 0.4);
-scene.add(ambientLight);
+scene.add(new THREE.AmbientLight(0xffd8a0, 0.4));
 
-// Key spotlight — warm white from above-front
 const keyLight = new THREE.SpotLight(0xfff4e0, 1200);
 keyLight.position.set(0, 20, 14);
 keyLight.angle = Math.PI / 3;
@@ -283,66 +224,48 @@ scene.add(keyLight);
 scene.add(keyLight.target);
 keyLight.target.position.set(0, 2, 0);
 
-// Fill from left — warm
-const fillLight = new THREE.SpotLight(0xffecd0, 400);
-fillLight.position.set(-14, 10, 10);
-fillLight.angle = Math.PI / 3.5;
-fillLight.penumbra = 0.8;
-scene.add(fillLight);
+const fillL = new THREE.SpotLight(0xffecd0, 400);
+fillL.position.set(-14, 10, 10); fillL.angle = Math.PI / 3.5; fillL.penumbra = 0.8;
+scene.add(fillL);
 
-// Fill from right — warm
-const fillLight2 = new THREE.SpotLight(0xffecd0, 300);
-fillLight2.position.set(14, 10, 10);
-fillLight2.angle = Math.PI / 3.5;
-fillLight2.penumbra = 0.8;
-scene.add(fillLight2);
+const fillR = new THREE.SpotLight(0xffecd0, 300);
+fillR.position.set(14, 10, 10); fillR.angle = Math.PI / 3.5; fillR.penumbra = 0.8;
+scene.add(fillR);
 
-// Gold back rim light — dramatic
-const backLight = new THREE.PointLight(0xcfa85e, 800, 60);
-backLight.position.set(0, 8, -12);
-scene.add(backLight);
+scene.add(Object.assign(new THREE.PointLight(0xcfa85e, 800, 60), { position: new THREE.Vector3(0, 8, -12) }));
 
-// Floor gold accent pools
 for (const x of [-10, -5, 0, 5, 10]) {
     const fl = new THREE.PointLight(0xcfa85e, 150, 18);
     fl.position.set(x, 0.5, 4);
     scene.add(fl);
 }
-
-// Subtle blue kicker from below for cinematic contrast
-const kickerLight = new THREE.PointLight(0x4488cc, 60, 30);
-kickerLight.position.set(0, -1, 8);
-scene.add(kickerLight);
+scene.add(Object.assign(new THREE.PointLight(0x4488cc, 60, 30), { position: new THREE.Vector3(0, -1, 8) }));
 
 // ============================================================
-// 5. REFLECTIVE STAGE FLOOR
+// 5. REFLECTIVE FLOOR
 // ============================================================
-const floorGeo = new THREE.PlaneGeometry(80, 40);
-const floorMat = new THREE.MeshStandardMaterial({
-    color: 0x0c0e18,
-    metalness: 0.85,
-    roughness: 0.15,
-    envMapIntensity: 1.5,
-});
-const floor = new THREE.Mesh(floorGeo, floorMat);
+const floor = new THREE.Mesh(
+    new THREE.PlaneGeometry(80, 40),
+    new THREE.MeshStandardMaterial({ color: 0x0c0e18, metalness: 0.85, roughness: 0.15, envMapIntensity: 1.5 })
+);
 floor.rotation.x = -Math.PI / 2;
 floor.position.y = -0.05;
 floor.receiveShadow = true;
 scene.add(floor);
 
 // ============================================================
-// 6. TUBE DIMENSIONS & MATERIALS
+// 6. CONSTANTS & MATERIALS
 // ============================================================
-const TUBE_RADIUS = 1.1;        // Wider tubes
-const TUBE_HEIGHT = 7.0;        // Shorter, stockier
+const TUBE_RADIUS = 1.1;
+const TUBE_HEIGHT = 7.0;
 const TUBE_INNER = TUBE_RADIUS - 0.05;
 const BASE_RADIUS = 1.35;
+const LIQUID_MAX_HEIGHT = TUBE_HEIGHT - 0.3; // Leave a gap at top
+const BASE_Y = 0.6; // Where liquid starts (top of base)
 
-// Fresnel glass — nearly invisible, bright edges only
-const glassShaderMaterial = new THREE.ShaderMaterial({
-    transparent: true,
-    depthWrite: false,
-    side: THREE.DoubleSide,
+// Fresnel glass
+const glassShaderMat = new THREE.ShaderMaterial({
+    transparent: true, depthWrite: false, side: THREE.DoubleSide,
     uniforms: {
         uEdgeColor: { value: new THREE.Color(0xeef4ff) },
         uFresnelPower: { value: 2.5 },
@@ -350,53 +273,128 @@ const glassShaderMaterial = new THREE.ShaderMaterial({
         uOpacityMax: { value: 0.25 },
     },
     vertexShader: `
-        varying vec3 vNormal;
-        varying vec3 vViewDir;
-        varying float vY;
+        varying vec3 vNormal; varying vec3 vViewDir;
         void main() {
             vNormal = normalize(normalMatrix * normal);
-            vec4 worldPos = modelMatrix * vec4(position, 1.0);
-            vViewDir = normalize(cameraPosition - worldPos.xyz);
-            vY = position.y;
+            vec4 wp = modelMatrix * vec4(position, 1.0);
+            vViewDir = normalize(cameraPosition - wp.xyz);
             gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
         }
     `,
     fragmentShader: `
-        uniform vec3 uEdgeColor;
-        uniform float uFresnelPower;
-        uniform float uOpacityMin;
-        uniform float uOpacityMax;
-        varying vec3 vNormal;
-        varying vec3 vViewDir;
-        varying float vY;
+        uniform vec3 uEdgeColor; uniform float uFresnelPower; uniform float uOpacityMin; uniform float uOpacityMax;
+        varying vec3 vNormal; varying vec3 vViewDir;
         void main() {
-            float fresnel = 1.0 - abs(dot(normalize(vNormal), normalize(vViewDir)));
-            fresnel = pow(fresnel, uFresnelPower);
-            float alpha = mix(uOpacityMin, uOpacityMax, fresnel);
-            // Subtle vertical gradient — slightly brighter at top/bottom edges
-            float edgeFade = smoothstep(0.0, 0.15, abs(vY / 3.5));
-            alpha *= (0.7 + 0.3 * (1.0 - edgeFade));
-            gl_FragColor = vec4(uEdgeColor, alpha);
+            float f = pow(1.0 - abs(dot(normalize(vNormal), normalize(vViewDir))), uFresnelPower);
+            gl_FragColor = vec4(uEdgeColor, mix(uOpacityMin, uOpacityMax, f));
         }
     `,
 });
 
-const metalBaseMaterial = new THREE.MeshStandardMaterial({
-    color: 0x8a8a9a,
-    metalness: 0.92,
-    roughness: 0.15,
-    envMapIntensity: 2.0,
-});
-
-const goldRimMaterial = new THREE.MeshStandardMaterial({
-    color: 0xcfa85e,
-    metalness: 0.95,
-    roughness: 0.1,
-    envMapIntensity: 2.0,
-});
+const metalBaseMat = new THREE.MeshStandardMaterial({ color: 0x8a8a9a, metalness: 0.92, roughness: 0.15, envMapIntensity: 2.0 });
+const goldRimMat = new THREE.MeshStandardMaterial({ color: 0xcfa85e, metalness: 0.95, roughness: 0.1, envMapIntensity: 2.0 });
 
 // ============================================================
-// 7. BUILD CYLINDERS
+// 7. LIQUID SURFACE SHADER
+// ============================================================
+function createLiquidSurfaceMaterial(color) {
+    return new THREE.ShaderMaterial({
+        transparent: true,
+        side: THREE.DoubleSide,
+        uniforms: {
+            uTime: { value: 0.0 },
+            uColor: { value: color.clone() },
+            uRippleTime: { value: -10.0 },  // negative = no active ripple
+            uRippleOrigin: { value: new THREE.Vector2(0, 0) },
+        },
+        vertexShader: `
+            uniform float uTime;
+            uniform float uRippleTime;
+            uniform vec2 uRippleOrigin;
+            varying vec2 vUv;
+            varying vec3 vNormal;
+            varying vec3 vViewDir;
+
+            void main() {
+                vUv = uv;
+                vec3 pos = position;
+
+                // Ambient gentle waves
+                float wave1 = sin(pos.x * 3.0 + uTime * 1.5) * 0.03;
+                float wave2 = sin(pos.y * 4.0 + uTime * 2.0) * 0.025;
+                float wave3 = sin((pos.x + pos.y) * 2.5 + uTime * 1.0) * 0.02;
+                pos.z += wave1 + wave2 + wave3;
+
+                // Impact ripple
+                float rippleAge = uTime - uRippleTime;
+                if (rippleAge > 0.0 && rippleAge < 3.0) {
+                    float dist = distance(pos.xy, uRippleOrigin);
+                    float rippleRadius = rippleAge * 1.8;
+                    float ringWidth = 0.4;
+                    float ring = smoothstep(rippleRadius - ringWidth, rippleRadius, dist) *
+                                 smoothstep(rippleRadius + ringWidth, rippleRadius, dist);
+                    float decay = exp(-rippleAge * 1.5);
+                    float amplitude = 0.12 * decay;
+                    pos.z += sin(dist * 12.0 - rippleAge * 8.0) * ring * amplitude;
+                }
+
+                vec4 worldPos = modelMatrix * vec4(pos, 1.0);
+                vViewDir = normalize(cameraPosition - worldPos.xyz);
+                vNormal = normalize(normalMatrix * vec3(0.0, 0.0, 1.0));
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+            }
+        `,
+        fragmentShader: `
+            uniform vec3 uColor;
+            uniform float uTime;
+            uniform float uRippleTime;
+            varying vec2 vUv;
+            varying vec3 vNormal;
+            varying vec3 vViewDir;
+
+            void main() {
+                float fresnel = pow(1.0 - abs(dot(normalize(vNormal), normalize(vViewDir))), 2.0);
+                vec3 highlight = vec3(1.0);
+                vec3 col = mix(uColor, highlight, fresnel * 0.5);
+
+                // Bright specular highlight
+                col += fresnel * 0.3;
+
+                // Ripple brightening
+                float rippleAge = uTime - uRippleTime;
+                if (rippleAge > 0.0 && rippleAge < 1.5) {
+                    col += vec3(0.2) * exp(-rippleAge * 3.0);
+                }
+
+                float alpha = 0.85 + fresnel * 0.15;
+                gl_FragColor = vec4(col, alpha);
+            }
+        `,
+    });
+}
+
+// ============================================================
+// 8. LIQUID BODY MATERIAL
+// ============================================================
+function createLiquidBodyMaterial(color) {
+    const c = color.clone();
+    const hsl = {};
+    c.getHSL(hsl);
+    if (hsl.l < 0.3) c.setHSL(hsl.h, Math.min(hsl.s * 1.2, 1.0), 0.3);
+    return new THREE.MeshPhysicalMaterial({
+        color: c,
+        metalness: 0.05,
+        roughness: 0.15,
+        envMapIntensity: 1.0,
+        transparent: true,
+        opacity: 0.8,
+        emissive: c,
+        emissiveIntensity: 0.15,
+    });
+}
+
+// ============================================================
+// 9. BUILD CYLINDERS & LIQUID
 // ============================================================
 function getSpacing(count) {
     if (count <= 4) return 4.5;
@@ -404,16 +402,17 @@ function getSpacing(count) {
     if (count <= 8) return 3.0;
     return 2.6;
 }
-
-function getStartX(count) {
-    return -((count - 1) * getSpacing(count)) / 2;
-}
+function getStartX(count) { return -((count - 1) * getSpacing(count)) / 2; }
 
 function buildCylinders() {
+    // Clear old
     cylinderGroups.forEach(g => scene.remove(g));
     cylinderGroups = [];
-    beadMeshes.forEach(m => { if (m) { m.geometry.dispose(); m.material.dispose(); } });
-    beadMeshes = [];
+    liquidData.forEach(ld => {
+        if (ld.bodyMesh) { ld.bodyMesh.geometry.dispose(); ld.bodyMesh.material.dispose(); }
+        if (ld.surfaceMesh) { ld.surfaceMesh.geometry.dispose(); ld.surfaceMesh.material.dispose(); }
+    });
+    liquidData = [];
     labelsContainer.innerHTML = '';
 
     const count = candidates.length;
@@ -425,235 +424,108 @@ function buildCylinders() {
         const group = new THREE.Group();
         group.position.x = startX + i * spacing;
 
-        // Glass cylinder (open ends)
-        const geoGlass = new THREE.CylinderGeometry(TUBE_RADIUS, TUBE_RADIUS, TUBE_HEIGHT, 48, 1, true);
-        const meshGlass = new THREE.Mesh(geoGlass, glassShaderMaterial.clone());
-        meshGlass.position.y = TUBE_HEIGHT / 2 + 0.6;
+        // Glass tube
+        const meshGlass = new THREE.Mesh(
+            new THREE.CylinderGeometry(TUBE_RADIUS, TUBE_RADIUS, TUBE_HEIGHT, 48, 1, true),
+            glassShaderMat.clone()
+        );
+        meshGlass.position.y = TUBE_HEIGHT / 2 + BASE_Y;
         group.add(meshGlass);
 
-        // Edge highlight rings — bright white/gold
+        // Edge rings
         const ringMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.6 });
-
-        // Top ring
         const topRing = new THREE.Mesh(new THREE.TorusGeometry(TUBE_RADIUS + 0.02, 0.025, 8, 64), ringMat);
-        topRing.rotation.x = Math.PI / 2;
-        topRing.position.y = TUBE_HEIGHT + 0.6;
+        topRing.rotation.x = Math.PI / 2; topRing.position.y = TUBE_HEIGHT + BASE_Y;
         group.add(topRing);
-
-        // Bottom ring
         const botRing = new THREE.Mesh(new THREE.TorusGeometry(TUBE_RADIUS + 0.02, 0.025, 8, 64), ringMat.clone());
-        botRing.rotation.x = Math.PI / 2;
-        botRing.position.y = 0.6;
-        botRing.material.opacity = 0.4;
+        botRing.rotation.x = Math.PI / 2; botRing.position.y = BASE_Y; botRing.material.opacity = 0.4;
         group.add(botRing);
 
-        // Gold top cap
-        const topCap = new THREE.Mesh(new THREE.TorusGeometry(TUBE_RADIUS + 0.04, 0.05, 8, 48), goldRimMaterial);
-        topCap.rotation.x = Math.PI / 2;
-        topCap.position.y = TUBE_HEIGHT + 0.6;
+        // Gold cap
+        const topCap = new THREE.Mesh(new THREE.TorusGeometry(TUBE_RADIUS + 0.04, 0.05, 8, 48), goldRimMat);
+        topCap.rotation.x = Math.PI / 2; topCap.position.y = TUBE_HEIGHT + BASE_Y;
         group.add(topCap);
 
-        // Metal base pedestal
-        const baseGeo = new THREE.CylinderGeometry(BASE_RADIUS, BASE_RADIUS + 0.15, 0.6, 48);
-        const baseMesh = new THREE.Mesh(baseGeo, metalBaseMaterial);
-        baseMesh.position.y = 0.3;
-        baseMesh.castShadow = true;
-        baseMesh.receiveShadow = true;
+        // Base
+        const baseMesh = new THREE.Mesh(new THREE.CylinderGeometry(BASE_RADIUS, BASE_RADIUS + 0.15, 0.6, 48), metalBaseMat);
+        baseMesh.position.y = 0.3; baseMesh.castShadow = true; baseMesh.receiveShadow = true;
         group.add(baseMesh);
-
-        // Gold base rim
-        const baseRim = new THREE.Mesh(new THREE.TorusGeometry(BASE_RADIUS + 0.05, 0.04, 8, 48), goldRimMaterial);
-        baseRim.rotation.x = Math.PI / 2;
-        baseRim.position.y = 0.6;
+        const baseRim = new THREE.Mesh(new THREE.TorusGeometry(BASE_RADIUS + 0.05, 0.04, 8, 48), goldRimMat);
+        baseRim.rotation.x = Math.PI / 2; baseRim.position.y = BASE_Y;
         group.add(baseRim);
 
-        // Subtle vertical specular lines
+        // Vertical specular lines
         const lineMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.08 });
         for (let a = 0; a < Math.PI * 2; a += Math.PI / 3) {
-            const line = new THREE.Mesh(
-                new THREE.CylinderGeometry(0.006, 0.006, TUBE_HEIGHT - 0.2, 4),
-                lineMat
-            );
-            line.position.set(
-                Math.cos(a) * (TUBE_RADIUS + 0.01),
-                TUBE_HEIGHT / 2 + 0.6,
-                Math.sin(a) * (TUBE_RADIUS + 0.01)
-            );
+            const line = new THREE.Mesh(new THREE.CylinderGeometry(0.006, 0.006, TUBE_HEIGHT - 0.2, 4), lineMat);
+            line.position.set(Math.cos(a) * (TUBE_RADIUS + 0.01), TUBE_HEIGHT / 2 + BASE_Y, Math.sin(a) * (TUBE_RADIUS + 0.01));
             group.add(line);
         }
 
         scene.add(group);
         cylinderGroups.push(group);
 
-        // Beads
-        const beadMesh = buildBeads(c, i, maxVotes);
-        if (beadMesh) {
-            group.add(beadMesh);
-            beadMeshes.push(beadMesh);
-        } else {
-            beadMeshes.push(null);
-        }
+        // --- LIQUID ---
+        const fillPct = (c.vote_count || 0) / maxVotes;
+        const liquidHeight = Math.max(fillPct * LIQUID_MAX_HEIGHT, 0.05);
+        const hexColor = c.color || '#888888';
+        const liquidColor = new THREE.Color(hexColor);
+
+        // Liquid body (cylinder)
+        const bodyGeo = new THREE.CylinderGeometry(TUBE_INNER - 0.02, TUBE_INNER - 0.02, liquidHeight, 32);
+        const bodyMat = createLiquidBodyMaterial(liquidColor);
+        const bodyMesh = new THREE.Mesh(bodyGeo, bodyMat);
+        bodyMesh.position.y = BASE_Y + liquidHeight / 2;
+        group.add(bodyMesh);
+
+        // Liquid surface (disc with wave shader)
+        const surfGeo = new THREE.CircleGeometry(TUBE_INNER - 0.03, 48);
+        const surfMat = createLiquidSurfaceMaterial(liquidColor);
+        const surfMesh = new THREE.Mesh(surfGeo, surfMat);
+        surfMesh.rotation.x = -Math.PI / 2;
+        surfMesh.position.y = BASE_Y + liquidHeight;
+        group.add(surfMesh);
+
+        liquidData.push({
+            bodyMesh,
+            surfaceMesh: surfMesh,
+            bodyMaterial: bodyMat,
+            surfaceMaterial: surfMat,
+            targetHeight: liquidHeight,
+            currentHeight: liquidHeight,
+            color: liquidColor,
+            rippleTime: -10,
+        });
     });
 
     updateLabels();
 }
 
 // ============================================================
-// 8. BEAD SYSTEM — fewer, MUCH larger, visible individual marbles
+// 10. UPDATE LIQUID LEVELS
 // ============================================================
-function buildBeads(candidate, index, maxVotes) {
-    const voteCount = candidate.vote_count || 0;
-    if (voteCount === 0) return null;
-
-    const fillPct = voteCount / maxVotes;
-    const maxBeads = 120;  // Enough to fill tube width with visible marbles
-    const beadCount = Math.max(Math.floor(maxBeads * fillPct), 6);
-
-    const hexColor = candidate.color || '#888888';
-    const baseColor = new THREE.Color(hexColor);
-
-    // Brighten dark colors so they're visible against dark background
-    const hsl = {};
-    baseColor.getHSL(hsl);
-    if (hsl.l < 0.35) {
-        baseColor.setHSL(hsl.h, Math.min(hsl.s * 1.3, 1.0), 0.35);
-    }
-
-    const beadRadius = 0.24;  // Big marbles that fit 3-4 across tube width
-    const geoBead = new THREE.SphereGeometry(beadRadius, 20, 16);
-    const matBead = new THREE.MeshPhysicalMaterial({
-        color: baseColor,
-        metalness: 0.1,
-        roughness: 0.08,
-        envMapIntensity: 2.0,
-        clearcoat: 1.0,
-        clearcoatRoughness: 0.05,
-        emissive: baseColor,
-        emissiveIntensity: 0.2,
-    });
-
-    const instancedBeads = new THREE.InstancedMesh(geoBead, matBead, beadCount);
-    const dummy = new THREE.Object3D();
-    const packRadius = TUBE_INNER - beadRadius - 0.02;
-    const diameter = beadRadius * 2;
-
-    // Pre-compute layer positions: center + ring pattern
-    // Each layer: 1 center marble + ring of marbles around it
-    const ringCount = Math.floor(packRadius / (diameter * 0.75));
-    const layerPositions = [];
-    // Center marble
-    layerPositions.push([0, 0]);
-    // Ring(s) of marbles
-    for (let ring = 1; ring <= ringCount; ring++) {
-        const ringR = ring * diameter * 0.72;
-        const circumference = 2 * Math.PI * ringR;
-        const count = Math.max(Math.floor(circumference / (diameter * 0.85)), 3);
-        for (let j = 0; j < count; j++) {
-            const a = (j / count) * Math.PI * 2;
-            if (ringR <= packRadius) {
-                layerPositions.push([ringR * Math.cos(a), ringR * Math.sin(a)]);
-            }
-        }
-    }
-
-    const beadsPerLayer = layerPositions.length;
-    let currentY = 0.7 + beadRadius;
-    let layerIdx = 0;
-
-    for (let b = 0; b < beadCount; b++) {
-        const posInLayer = b % beadsPerLayer;
-        if (b > 0 && posInLayer === 0) {
-            layerIdx++;
-            currentY += diameter * 0.82; // Slight overlap for natural pile
-        }
-        // Alternate layers get rotated for natural look
-        const rot = layerIdx % 2 === 1 ? 0.4 : 0;
-        const bx = layerPositions[posInLayer][0];
-        const bz = layerPositions[posInLayer][1];
-        const cos_r = Math.cos(rot), sin_r = Math.sin(rot);
-        const x = bx * cos_r - bz * sin_r + (Math.random() - 0.5) * 0.04;
-        const z = bx * sin_r + bz * cos_r + (Math.random() - 0.5) * 0.04;
-
-        dummy.position.set(x, currentY + (Math.random() - 0.5) * 0.03, z);
-        dummy.updateMatrix();
-        instancedBeads.setMatrixAt(b, dummy.matrix);
-    }
-
-    instancedBeads.instanceMatrix.needsUpdate = true;
-    instancedBeads.castShadow = true;
-    return instancedBeads;
-}
-
-function rebuildAllBeads() {
+function updateLiquidLevels() {
     const maxVotes = Math.max(...candidates.map(c => c.vote_count || 0), 1);
     candidates.forEach((c, i) => {
-        const group = cylinderGroups[i];
-        if (!group) return;
-        const oldBeads = beadMeshes[i];
-        if (oldBeads) {
-            group.remove(oldBeads);
-            oldBeads.geometry.dispose();
-            oldBeads.material.dispose();
-        }
-        const newBeads = buildBeads(c, i, maxVotes);
-        if (newBeads) group.add(newBeads);
-        beadMeshes[i] = newBeads;
+        if (!liquidData[i]) return;
+        const fillPct = (c.vote_count || 0) / maxVotes;
+        liquidData[i].targetHeight = Math.max(fillPct * LIQUID_MAX_HEIGHT, 0.05);
     });
 }
 
-// ============================================================
-// 9. LABELS
-// ============================================================
-function updateLabels() {
-    labelsContainer.innerHTML = '';
-    const count = candidates.length;
-    const spacing = getSpacing(count);
-    const startX = getStartX(count);
-
-    candidates.forEach((c, i) => {
-        const worldX = startX + i * spacing;
-        const pct = totalVotesCount > 0 ? ((c.vote_count || 0) / totalVotesCount * 100).toFixed(0) : '0';
-        const hexColor = c.color || '#888888';
-
-        // Top label (name + school)
-        const vecTop = new THREE.Vector3(worldX, TUBE_HEIGHT + 1.8, 0);
-        vecTop.project(camera);
-        const topX = (vecTop.x * 0.5 + 0.5) * window.innerWidth;
-        const topY = (-vecTop.y * 0.5 + 0.5) * window.innerHeight;
-
-        const topLabel = document.createElement('div');
-        topLabel.className = 'tube-label-top';
-        topLabel.style.left = topX + 'px';
-        topLabel.style.bottom = (window.innerHeight - topY + 5) + 'px';
-        topLabel.innerHTML = `
-            <div class="tube-label-bar" style="background:${hexColor}; box-shadow: 0 0 12px ${hexColor};"></div>
-            <div class="tube-label-name">${esc(c.name)}</div>
-            <div class="tube-label-school">${esc(c.school || '')}</div>
-        `;
-        labelsContainer.appendChild(topLabel);
-
-        // Bottom label (pct + votes)
-        const vecBot = new THREE.Vector3(worldX, -0.8, 0);
-        vecBot.project(camera);
-        const botX = (vecBot.x * 0.5 + 0.5) * window.innerWidth;
-        const botY = (-vecBot.y * 0.5 + 0.5) * window.innerHeight;
-
-        const botLabel = document.createElement('div');
-        botLabel.className = 'tube-label-bottom';
-        botLabel.style.left = botX + 'px';
-        botLabel.style.top = (botY + 10) + 'px';
-        botLabel.innerHTML = `
-            <div class="tube-label-pct" style="color:${hexColor}">${pct}%</div>
-            <div class="tube-label-votes">${c.vote_count || 0} votes</div>
-        `;
-        labelsContainer.appendChild(botLabel);
-    });
+function triggerRipple(candidateIndex) {
+    const ld = liquidData[candidateIndex];
+    if (!ld) return;
+    ld.rippleTime = clock.getElapsedTime();
+    ld.surfaceMaterial.uniforms.uRippleTime.value = ld.rippleTime;
+    ld.surfaceMaterial.uniforms.uRippleOrigin.value.set(
+        (Math.random() - 0.5) * 0.3,
+        (Math.random() - 0.5) * 0.3
+    );
 }
 
-function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
-
 // ============================================================
-// 10. MARBLE DROP ANIMATION
+// 11. DROP ANIMATION (liquid droplet)
 // ============================================================
 function triggerDrop(targetIndex, wrestlerName, voterName, candidateColor) {
     if (isAnimating) {
@@ -669,18 +541,23 @@ function triggerDrop(targetIndex, wrestlerName, voterName, candidateColor) {
     setTimeout(() => { celebEl.classList.add('slam-in'); }, 300);
 
     const hexColor = candidateColor || '#cfa85e';
-    const geoSphere = new THREE.SphereGeometry(0.25, 16, 16);
-    const matSphere = new THREE.MeshStandardMaterial({
-        color: new THREE.Color(hexColor),
-        metalness: 0.4,
-        roughness: 0.1,
+    const dropColor = new THREE.Color(hexColor);
+    // Elongated droplet shape
+    const geoSphere = new THREE.SphereGeometry(0.15, 12, 12);
+    geoSphere.scale(1, 1.4, 1);
+    const matDrop = new THREE.MeshPhysicalMaterial({
+        color: dropColor,
+        metalness: 0.05,
+        roughness: 0.05,
         envMapIntensity: 2.0,
-        emissive: new THREE.Color(hexColor),
+        transparent: true,
+        opacity: 0.9,
+        emissive: dropColor,
         emissiveIntensity: 0.4,
     });
-    droppingMarble = new THREE.Mesh(geoSphere, matSphere);
-    droppingMarble.userData.targetIndex = targetIndex;
-    scene.add(droppingMarble);
+    droppingDrop = new THREE.Mesh(geoSphere, matDrop);
+    droppingDrop.userData.targetIndex = targetIndex;
+    scene.add(droppingDrop);
     animStartTime = Date.now();
 }
 
@@ -692,7 +569,7 @@ function processNextCeleb() {
 }
 
 // ============================================================
-// 11. TICKER
+// 12. TICKER
 // ============================================================
 function buildTicker() {
     const messages = [];
@@ -700,9 +577,8 @@ function buildTicker() {
         const sorted = [...candidates].sort((a, b) => (b.vote_count || 0) - (a.vote_count || 0));
         const leader = sorted[0];
         const pct = ((leader.vote_count || 0) / totalVotesCount * 100).toFixed(1);
-        if (sorted.length > 1 && (leader.vote_count || 0) > (sorted[1].vote_count || 0) * 1.5) {
+        if (sorted.length > 1 && (leader.vote_count || 0) > (sorted[1].vote_count || 0) * 1.5)
             messages.push(`${leader.name} leads by a huge margin!`);
-        }
         messages.push(`${leader.name} leads with ${pct}% of the vote`);
     }
     messages.push('Vote now via QR code or website!');
@@ -713,27 +589,23 @@ function buildTicker() {
     tickerTrack.innerHTML = '';
     for (let rep = 0; rep < 3; rep++) {
         messages.forEach(msg => {
-            const span = document.createElement('span');
-            span.className = 'ticker-msg';
-            span.textContent = msg.toUpperCase();
+            const span = document.createElement('span'); span.className = 'ticker-msg'; span.textContent = msg.toUpperCase();
             tickerTrack.appendChild(span);
-            const sep = document.createElement('span');
-            sep.className = 'ticker-sep';
-            tickerTrack.appendChild(sep);
+            const sep = document.createElement('span'); sep.className = 'ticker-sep'; tickerTrack.appendChild(sep);
         });
     }
     tickerTrack.style.animationDuration = Math.max(messages.length * 5, 25) + 's';
 }
 
 // ============================================================
-// 12. CLOCK
+// 13. CLOCK
 // ============================================================
-function updateClock() {
+function updateClockDisplay() {
     hdrTime.textContent = new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
 }
 
 // ============================================================
-// 13. SUPABASE INTEGRATION
+// 14. SUPABASE
 // ============================================================
 let sb;
 
@@ -754,7 +626,7 @@ async function loadVoteCounts() {
             totalVotesCount += c.vote_count || 0;
         });
         buildCylinders();
-        updateTotalDisplay();
+        totalVotesEl.textContent = totalVotesCount.toLocaleString();
         buildTicker();
         loadingOverlay.classList.add('hidden');
     } catch (err) {
@@ -764,22 +636,14 @@ async function loadVoteCounts() {
     }
 }
 
-function updateTotalDisplay() {
-    totalVotesEl.textContent = totalVotesCount.toLocaleString();
-}
-
 function subscribeToVotes() {
-    realtimeChannel = sb.channel('tv-votes-3d')
+    realtimeChannel = sb.channel('tv-votes-liquid')
         .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'votes' }, handleNewVote)
         .subscribe(status => {
-            if (status === 'SUBSCRIBED') {
-                connectionDot.classList.remove('disconnected');
-            } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
+            if (status === 'SUBSCRIBED') connectionDot.classList.remove('disconnected');
+            else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
                 connectionDot.classList.add('disconnected');
-                setTimeout(() => {
-                    if (realtimeChannel) sb.removeChannel(realtimeChannel);
-                    subscribeToVotes();
-                }, 5000);
+                setTimeout(() => { if (realtimeChannel) sb.removeChannel(realtimeChannel); subscribeToVotes(); }, 5000);
             }
         });
 }
@@ -799,7 +663,7 @@ async function handleNewVote(payload) {
         const cand = candidates.find(c => c.id === cid);
         if (cand) cand.vote_count = info.vote_count;
         totalVotesCount++;
-        updateTotalDisplay();
+        totalVotesEl.textContent = totalVotesCount.toLocaleString();
 
         recentVotes.unshift({ firstName: fn, candidateName: info.name });
         if (recentVotes.length > 20) recentVotes = recentVotes.slice(0, 20);
@@ -817,33 +681,105 @@ async function handleNewVote(payload) {
                 totalVotesCount += d.vote_count || 0;
             });
             candidates = data;
-            rebuildAllBeads();
+            updateLiquidLevels();
             updateLabels();
-            updateTotalDisplay();
+            totalVotesEl.textContent = totalVotesCount.toLocaleString();
         }
     } catch (err) { console.warn('Re-fetch failed:', err); }
 }
 
 // ============================================================
-// 14. RENDER LOOP
+// 15. LABELS
+// ============================================================
+function updateLabels() {
+    labelsContainer.innerHTML = '';
+    const count = candidates.length;
+    const spacing = getSpacing(count);
+    const startX = getStartX(count);
+
+    candidates.forEach((c, i) => {
+        const worldX = startX + i * spacing;
+        const pct = totalVotesCount > 0 ? ((c.vote_count || 0) / totalVotesCount * 100).toFixed(0) : '0';
+        const hexColor = c.color || '#888888';
+
+        const vecTop = new THREE.Vector3(worldX, TUBE_HEIGHT + 1.8, 0);
+        vecTop.project(camera);
+        const topX = (vecTop.x * 0.5 + 0.5) * window.innerWidth;
+        const topY = (-vecTop.y * 0.5 + 0.5) * window.innerHeight;
+        const topLabel = document.createElement('div');
+        topLabel.className = 'tube-label-top';
+        topLabel.style.left = topX + 'px';
+        topLabel.style.bottom = (window.innerHeight - topY + 5) + 'px';
+        topLabel.innerHTML = `<div class="tube-label-bar" style="background:${hexColor}; box-shadow: 0 0 12px ${hexColor};"></div><div class="tube-label-name">${esc(c.name)}</div><div class="tube-label-school">${esc(c.school || '')}</div>`;
+        labelsContainer.appendChild(topLabel);
+
+        const vecBot = new THREE.Vector3(worldX, -0.8, 0);
+        vecBot.project(camera);
+        const botX = (vecBot.x * 0.5 + 0.5) * window.innerWidth;
+        const botY = (-vecBot.y * 0.5 + 0.5) * window.innerHeight;
+        const botLabel = document.createElement('div');
+        botLabel.className = 'tube-label-bottom';
+        botLabel.style.left = botX + 'px';
+        botLabel.style.top = (botY + 10) + 'px';
+        botLabel.innerHTML = `<div class="tube-label-pct" style="color:${hexColor}">${pct}%</div><div class="tube-label-votes">${c.vote_count || 0} votes</div>`;
+        labelsContainer.appendChild(botLabel);
+    });
+}
+
+function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+// ============================================================
+// 16. RENDER LOOP
 // ============================================================
 function animate() {
     requestAnimationFrame(animate);
+    const elapsed = clock.getElapsedTime();
+    const dt = clock.getDelta();
 
-    if (droppingMarble) {
-        const elapsed = (Date.now() - animStartTime) / 1000;
-        const duration = 1.2;
+    // Update liquid surfaces (ambient waves)
+    liquidData.forEach(ld => {
+        if (ld.surfaceMaterial) ld.surfaceMaterial.uniforms.uTime.value = elapsed;
 
-        if (elapsed < duration) {
-            const t = elapsed / duration;
+        // Smoothly lerp liquid height to target
+        const diff = ld.targetHeight - ld.currentHeight;
+        if (Math.abs(diff) > 0.001) {
+            ld.currentHeight += diff * Math.min(dt * 3.0, 1.0); // Smooth rise
+
+            const group = cylinderGroups[liquidData.indexOf(ld)];
+            if (!group) return;
+
+            // Update body cylinder height
+            group.remove(ld.bodyMesh);
+            ld.bodyMesh.geometry.dispose();
+            const newGeo = new THREE.CylinderGeometry(TUBE_INNER - 0.02, TUBE_INNER - 0.02, Math.max(ld.currentHeight, 0.01), 32);
+            ld.bodyMesh.geometry = newGeo;
+            ld.bodyMesh.position.y = BASE_Y + ld.currentHeight / 2;
+            group.add(ld.bodyMesh);
+
+            // Update surface position
+            ld.surfaceMesh.position.y = BASE_Y + ld.currentHeight;
+        }
+    });
+
+    // Drop animation
+    if (droppingDrop) {
+        const dropElapsed = (Date.now() - animStartTime) / 1000;
+        const duration = 1.0;
+
+        if (dropElapsed < duration) {
+            const t = dropElapsed / duration;
             const count = candidates.length;
             const spacing = getSpacing(count);
             const startX = getStartX(count);
-            const targetX = startX + (droppingMarble.userData.targetIndex * spacing);
+            const targetX = startX + (droppingDrop.userData.targetIndex * spacing);
+            const targetIdx = droppingDrop.userData.targetIndex;
+            const liquidH = liquidData[targetIdx] ? liquidData[targetIdx].currentHeight : 1;
+            const targetY = BASE_Y + liquidH;
 
-            const p0 = new THREE.Vector3(0, -2, 10);
+            // Bezier arc: start above camera → arc high → drop into liquid surface
+            const p0 = new THREE.Vector3(0, 0, 10);
             const p1 = new THREE.Vector3(targetX * 0.5, 14, 5);
-            const p2 = new THREE.Vector3(targetX, TUBE_HEIGHT - 0.5, 0);
+            const p2 = new THREE.Vector3(targetX, targetY, 0);
 
             const u = 1 - t;
             const pos = new THREE.Vector3()
@@ -851,35 +787,41 @@ function animate() {
                 .addScaledVector(p1, 2 * u * t)
                 .addScaledVector(p2, t * t);
 
-            droppingMarble.position.copy(pos);
-            droppingMarble.scale.setScalar(1.0 - t * 0.3);
+            droppingDrop.position.copy(pos);
+            // Flatten into droplet shape as it falls
+            const stretch = 1 + t * 0.5;
+            droppingDrop.scale.set(1 / stretch, stretch, 1 / stretch);
+            droppingDrop.scale.multiplyScalar(1 - t * 0.4);
         } else {
-            const impactPos = droppingMarble.position.clone();
-            scene.remove(droppingMarble);
-            droppingMarble.geometry.dispose();
-            droppingMarble.material.dispose();
-            droppingMarble = null;
+            // Impact — trigger ripple
+            const targetIdx = droppingDrop.userData.targetIndex;
+            scene.remove(droppingDrop);
+            droppingDrop.geometry.dispose();
+            droppingDrop.material.dispose();
+            droppingDrop = null;
 
-            const flash = new THREE.PointLight(0xffd700, 1200, 15);
-            flash.position.copy(impactPos);
-            scene.add(flash);
+            // Ripple on the liquid surface
+            triggerRipple(targetIdx);
 
-            let flashFade = setInterval(() => {
-                flash.intensity -= 60;
-                if (flash.intensity <= 0) {
-                    scene.remove(flash);
-                    flash.dispose();
-                    clearInterval(flashFade);
-                }
-            }, 25);
+            // Splash flash
+            const ld = liquidData[targetIdx];
+            if (ld) {
+                const flashY = BASE_Y + ld.currentHeight;
+                const group = cylinderGroups[targetIdx];
+                const flash = new THREE.PointLight(0xffffff, 600, 8);
+                flash.position.set(0, flashY + 0.5, 0);
+                group.add(flash);
+                let fadeInt = setInterval(() => {
+                    flash.intensity -= 30;
+                    if (flash.intensity <= 0) { group.remove(flash); flash.dispose(); clearInterval(fadeInt); }
+                }, 25);
+            }
 
+            // Hide celebration
             setTimeout(() => {
                 celebEl.classList.remove('slam-in');
                 celebEl.classList.add('slam-out');
-                setTimeout(() => {
-                    celebEl.classList.remove('slam-out');
-                    processNextCeleb();
-                }, 600);
+                setTimeout(() => { celebEl.classList.remove('slam-out'); processNextCeleb(); }, 600);
             }, 3500);
         }
     }
@@ -888,7 +830,7 @@ function animate() {
 }
 
 // ============================================================
-// 15. WINDOW RESIZE
+// 17. RESIZE
 // ============================================================
 window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
@@ -898,11 +840,11 @@ window.addEventListener('resize', () => {
 });
 
 // ============================================================
-// 16. INIT
+// 18. INIT
 // ============================================================
 (async function init() {
-    updateClock();
-    setInterval(updateClock, 1000);
+    updateClockDisplay();
+    setInterval(updateClockDisplay, 1000);
     animate();
     sb = await waitForSupabase();
     await loadVoteCounts();
