@@ -232,14 +232,18 @@ const fillR = new THREE.SpotLight(0xffecd0, 300);
 fillR.position.set(14, 10, 10); fillR.angle = Math.PI / 3.5; fillR.penumbra = 0.8;
 scene.add(fillR);
 
-scene.add(Object.assign(new THREE.PointLight(0xcfa85e, 800, 60), { position: new THREE.Vector3(0, 8, -12) }));
+const backLight = new THREE.PointLight(0xcfa85e, 800, 60);
+backLight.position.set(0, 8, -12);
+scene.add(backLight);
 
 for (const x of [-10, -5, 0, 5, 10]) {
     const fl = new THREE.PointLight(0xcfa85e, 150, 18);
     fl.position.set(x, 0.5, 4);
     scene.add(fl);
 }
-scene.add(Object.assign(new THREE.PointLight(0x4488cc, 60, 30), { position: new THREE.Vector3(0, -1, 8) }));
+const kickerLight = new THREE.PointLight(0x4488cc, 60, 30);
+kickerLight.position.set(0, -1, 8);
+scene.add(kickerLight);
 
 // ============================================================
 // 5. REFLECTIVE FLOOR
