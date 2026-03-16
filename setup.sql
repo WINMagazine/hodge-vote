@@ -46,15 +46,14 @@ GROUP BY c.id ORDER BY c.display_order;
 
 GRANT SELECT ON vote_counts TO anon;
 
--- 1e. Seed 10 placeholder candidates
+-- 1e. Seed Hodge Trophy candidates
 INSERT INTO candidates (name, school, weight_class, record, color, display_order) VALUES
-  ('Penn State Wrestler',   'Penn State',      '157 lbs', '25-0', '#041E42', 1),
-  ('Iowa Wrestler',         'Iowa',            '165 lbs', '23-1', '#FFCD00', 2),
-  ('Cornell Wrestler',      'Cornell',         '141 lbs', '22-2', '#B31B1B', 3),
-  ('Oklahoma State Wrestler','Oklahoma State', '174 lbs', '24-1', '#FF7300', 4),
-  ('Missouri Wrestler',     'Missouri',        '184 lbs', '21-3', '#F1B82D', 5),
-  ('Arizona State Wrestler','Arizona State',   '197 lbs', '20-2', '#8C1D40', 6),
-  ('Michigan Wrestler',     'Michigan',        '133 lbs', '22-1', '#00274C', 7),
-  ('NC State Wrestler',     'NC State',        '149 lbs', '20-3', '#CC0000', 8),
-  ('Ohio State Wrestler',   'Ohio State',      '125 lbs', '19-2', '#BB0000', 9),
-  ('Minnesota Wrestler',    'Minnesota',       '285 lbs', '18-2', '#7A0019', 10);
+  ('Mitchell Mesenbrink', 'Penn State', 'Jr.', '22-0 | 8 Pins, 8 TF, 5 MD, 1 F/Def | 100%', '#041E42', 1),
+  ('Josh Barr',           'Penn State', 'So.', '19-0 | 5 Pins, 10 TF, 4 MD, 0 F/Def | 100%', '#041E42', 2),
+  ('Jax Forrest',         'OK State',   'Fr.', '13-0 | 2 Pins, 9 TF, 1 MD, 0 F/Def | 92.3%', '#FF7300', 3),
+  ('Jesse Mendez',        'Ohio State',  'Sr.', '22-0 | 6 Pins, 10 TF, 3 MD, 0 F/Def | 86.4%', '#BB0000', 4),
+  ('Isaac Trumble',       'NC State',    'Sr.', '16-0 | 4 Pins, 3 TF, 5 MD, 1 F/Def | 81.3%', '#CC0000', 5),
+  ('Shayne Van Ness',     'Penn State',  'Jr.', '21-0 | 5 Pins, 8 TF, 4 MD, 0 F/Def | 81.0%', '#041E42', 6),
+  ('Levi Haines',         'Penn State',  'Sr.', '21-0 | 5 Pins, 10 TF, 2 MD, 0 F/Def | 81.0%', '#041E42', 7),
+  ('Yonger Bastida',      'Iowa State',  'Sr.', '25-0 | 2 Pins, 15 TF, 1 MD, 0 F/Def | 72.0%', '#C8102E', 8),
+  ('Luke Lilledahl',      'Penn State',  'So.', '20-0 | 1 Pin, 8 TF, 3 MD, 1 F/Def | 65.0%', '#041E42', 9);
