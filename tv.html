@@ -213,33 +213,19 @@ roomEnv.dispose();
 // ============================================================
 scene.add(new THREE.AmbientLight(0xffd8a0, 0.4));
 
-const keyLight = new THREE.SpotLight(0xfff4e0, 1200);
-keyLight.position.set(0, 20, 14);
-keyLight.angle = Math.PI / 3;
-keyLight.penumbra = 0.6;
-keyLight.decay = 1.2;
-keyLight.castShadow = true;
-keyLight.shadow.mapSize.set(2048, 2048);
-scene.add(keyLight);
-scene.add(keyLight.target);
-keyLight.target.position.set(0, 2, 0);
+// Soft even lighting — no spotlights that create floor beams
+scene.add(new THREE.DirectionalLight(0xfff4e0, 1.5));
+const dirLight = new THREE.DirectionalLight(0xfff4e0, 1.0);
+dirLight.position.set(0, 15, 10);
+scene.add(dirLight);
 
-const fillL = new THREE.SpotLight(0xffecd0, 400);
-fillL.position.set(-14, 10, 10); fillL.angle = Math.PI / 3.5; fillL.penumbra = 0.8;
-scene.add(fillL);
+const dirLight2 = new THREE.DirectionalLight(0xffecd0, 0.6);
+dirLight2.position.set(-10, 10, 5);
+scene.add(dirLight2);
 
-const fillR = new THREE.SpotLight(0xffecd0, 300);
-fillR.position.set(14, 10, 10); fillR.angle = Math.PI / 3.5; fillR.penumbra = 0.8;
-scene.add(fillR);
-
-const backLight = new THREE.PointLight(0xcfa85e, 800, 60);
-backLight.position.set(0, 8, -12);
-scene.add(backLight);
-
-// floor lights removed for visibility
-const kickerLight = new THREE.PointLight(0x4488cc, 60, 30);
-kickerLight.position.set(0, -1, 8);
-scene.add(kickerLight);
+const dirLight3 = new THREE.DirectionalLight(0xffecd0, 0.4);
+dirLight3.position.set(10, 10, 5);
+scene.add(dirLight3);
 
 // ============================================================
 // 5. REFLECTIVE FLOOR
