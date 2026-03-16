@@ -236,11 +236,7 @@ const backLight = new THREE.PointLight(0xcfa85e, 800, 60);
 backLight.position.set(0, 8, -12);
 scene.add(backLight);
 
-for (const x of [-10, -5, 0, 5, 10]) {
-    const fl = new THREE.PointLight(0xcfa85e, 150, 18);
-    fl.position.set(x, 0.5, 4);
-    scene.add(fl);
-}
+// floor lights removed for visibility
 const kickerLight = new THREE.PointLight(0x4488cc, 60, 30);
 kickerLight.position.set(0, -1, 8);
 scene.add(kickerLight);
