@@ -187,8 +187,8 @@ const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xffffff);
 scene.fog = new THREE.FogExp2(0xffffff, 0.008);
 
-const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
-camera.position.set(0, 5, 28);
+const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+camera.position.set(0, 5, 32);
 camera.lookAt(0, 3.2, 0);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -373,11 +373,11 @@ function createLiquidBodyMaterial(color) {
 // 9. BUILD CYLINDERS & LIQUID
 // ============================================================
 function getSpacing(count) {
-    if (count <= 4) return 4.5;
-    if (count <= 6) return 3.6;
-    if (count <= 8) return 3.0;
-    if (count <= 10) return 2.5;
-    return 2.2;
+    if (count <= 4) return 5.5;
+    if (count <= 6) return 4.8;
+    if (count <= 8) return 4.2;
+    if (count <= 10) return 3.8;
+    return 3.4;
 }
 function getStartX(count) { return -((count - 1) * getSpacing(count)) / 2; }
 
