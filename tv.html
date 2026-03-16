@@ -103,8 +103,7 @@
             <span class="hdr-meta">CHAMPIONSHIP VOTE</span>
         </div>
         <div class="hdr-center">
-            <span class="logo">WIN</span>
-            <span class="logo-sub">Magazine</span>
+            <img src="win-logo.png" alt="WIN Magazine" style="height: 40px;">
         </div>
         <div class="hdr-right">
             <div class="total-box">
@@ -228,17 +227,7 @@ const dirLight3 = new THREE.DirectionalLight(0xffecd0, 0.4);
 dirLight3.position.set(10, 10, 5);
 scene.add(dirLight3);
 
-// ============================================================
-// 5. REFLECTIVE FLOOR
-// ============================================================
-const floor = new THREE.Mesh(
-    new THREE.PlaneGeometry(80, 40),
-    new THREE.MeshStandardMaterial({ color: 0xf5f5f5, metalness: 0.1, roughness: 0.9, envMapIntensity: 0.2 })
-);
-floor.rotation.x = -Math.PI / 2;
-floor.position.y = -0.05;
-floor.receiveShadow = true;
-scene.add(floor);
+// Floor removed — pure white background
 
 // ============================================================
 // 6. CONSTANTS & MATERIALS
