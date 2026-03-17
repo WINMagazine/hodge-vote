@@ -713,8 +713,8 @@ function esc(s) { const d = document.createElement('div'); d.textContent = s; re
 // ============================================================
 function animate() {
     requestAnimationFrame(animate);
-    const elapsed = clock.getElapsedTime();
     const dt = clock.getDelta();
+    const elapsed = clock.elapsedTime;
 
     // Update liquid surfaces (ambient waves)
     liquidData.forEach(ld => {
