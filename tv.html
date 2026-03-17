@@ -623,6 +623,7 @@ async function loadVoteCounts() {
             return;
         }
         candidates = data;
+        candidates.sort((a, b) => (parseInt(WEIGHT_CLASS[a.name]) || 999) - (parseInt(WEIGHT_CLASS[b.name]) || 999));
         candidateMap = {};
         totalVotesCount = 0;
         candidates.forEach((c, i) => {
