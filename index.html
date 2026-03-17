@@ -86,6 +86,20 @@
             transform: scale(1.01);
         }
 
+        .card-headshot {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 0.75rem;
+            flex-shrink: 0;
+            border: 2px solid #e2e8f0;
+        }
+
+        .card.selected .card-headshot {
+            border-color: var(--win-gold);
+        }
+
         .card-color {
             width: 6px;
             height: 40px;
@@ -298,6 +312,18 @@ const SUPABASE_URL = 'https://aranzjtwsxaqtczswoiz.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFyYW56anR3c3hhcXRjenN3b2l6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE5NDYwMzYsImV4cCI6MjA4NzUyMjAzNn0.8ZKA0ZvZE6VJHQXTZRECDJTjtm5RUQNsSpw9dGO37Do';
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+const HEADSHOT_MAP = {
+  'Mitchell Mesenbrink': 'headshots/mesenbrink.jpg',
+  'Josh Barr': 'headshots/barr.jpg',
+  'Jax Forrest': 'headshots/forrest.jpg',
+  'Jesse Mendez': 'headshots/mendez.jpg',
+  'Isaac Trumble': 'headshots/trumble.jpg',
+  'Shayne Van Ness': 'headshots/vanness.jpg',
+  'Levi Haines': 'headshots/haines.jpg',
+  'Yonger Bastida': 'headshots/bastida.jpg',
+  'Luke Lilledahl': 'headshots/lilledahl.jpg',
+};
+
 let candidates = [];
 let selectedCandidateId = null;
 let resetInterval;
@@ -338,8 +364,9 @@ function renderCandidates() {
     const weightDisplay = c.weight_class ? ` | ${c.weight_class}` : '';
     const recordDisplay = c.record ? ` | ${c.record}` : '';
 
+    const headshot = HEADSHOT_MAP[c.name] || '';
     div.innerHTML = `
-      <div class="card-color" style="background:${c.color || '#888'}"></div>
+      ${headshot ? `<img class="card-headshot" src="${headshot}" alt="${esc(c.name)}">` : `<div class="card-color" style="background:${c.color || '#888'}"></div>`}
       <div class="card-info">
         <div class="card-name">${esc(c.name)}</div>
         <div class="card-school">${esc(c.school || '')}${esc(weightDisplay)}</div>
