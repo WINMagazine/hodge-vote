@@ -48,26 +48,28 @@
         .tube-label-pct { font-size: 42px; font-weight: 800; text-shadow: none; }
         .tube-label-votes { font-size: 15px; font-weight: 500; color: rgba(0,0,0,0.4); margin-top: 3px; }
 
-        #celebration { position: absolute; bottom: 18%; width: 100%; text-align: center; opacity: 0; pointer-events: none; perspective: 1000px; }
-        .celeb-small { font-size: 2rem; font-weight: 800; color: #1a1a1a; text-shadow: none; }
+        #celebration { position: absolute; bottom: 18%; width: 100%; text-align: center; opacity: 0; pointer-events: none; perspective: 1200px; }
+        .celeb-small { font-size: 2.5rem; font-weight: 800; color: #1a1a1a; letter-spacing: 0.15em; margin-bottom: 8px; }
         .celeb-large {
-            font-size: 6.5rem; font-weight: 900; text-transform: uppercase; margin: -5px 0; line-height: 1;
+            font-size: 5.5rem; font-weight: 900; text-transform: uppercase; margin: -5px 0; line-height: 1;
             background: linear-gradient(to bottom, #fff7d6, #cfa85e 40%, #8a6a27 80%, #fff7d6 100%);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0px 15px 10px rgba(0,0,0,0.9)) drop-shadow(0px 0px 25px rgba(207,168,94,0.6));
+            filter: drop-shadow(0px 8px 6px rgba(0,0,0,0.3)) drop-shadow(0px 0px 20px rgba(207,168,94,0.4));
         }
-        .celeb-voter { font-size: 1.8rem; font-weight: 700; color: rgba(0,0,0,0.6); text-shadow: none; }
-        .slam-in { animation: textSlam 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.2) forwards; }
-        .slam-out { animation: textFadeOut 0.5s ease-in forwards; }
+        .celeb-voter { font-size: 2rem; font-weight: 700; color: rgba(0,0,0,0.5); margin-top: 10px; letter-spacing: 0.08em; }
+        .slam-in { animation: textSlam 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.15) forwards; }
+        .slam-out { animation: textFadeOut 0.8s ease-in forwards; }
         @keyframes textSlam {
-            0% { transform: translateY(150px) scale(1.5) rotateX(-20deg); opacity: 0; filter: blur(8px); }
-            50% { opacity: 1; filter: blur(0px); }
-            80% { transform: translateY(-10px) scale(0.98) rotateX(5deg); }
+            0% { transform: translateY(200px) scale(2.0) rotateX(-30deg); opacity: 0; filter: blur(12px); }
+            35% { opacity: 1; filter: blur(2px); }
+            60% { transform: translateY(-15px) scale(0.95) rotateX(8deg); filter: blur(0px); }
+            80% { transform: translateY(5px) scale(1.02) rotateX(-2deg); }
             100% { transform: translateY(0) scale(1) rotateX(0deg); opacity: 1; filter: blur(0px); }
         }
         @keyframes textFadeOut {
             0% { transform: translateY(0) scale(1); opacity: 1; }
-            100% { transform: translateY(50px) scale(0.9); opacity: 0; }
+            40% { transform: translateY(-20px) scale(1.05); opacity: 0.8; }
+            100% { transform: translateY(80px) scale(0.7) rotateX(20deg); opacity: 0; }
         }
 
         .tickers { background: rgba(255,255,255,0.95); border-top: 1px solid rgba(0,0,0,0.1); pointer-events: auto; }
@@ -627,9 +629,8 @@ async function handleNewVote(payload) {
     if (!vote) return;
     const cid = vote.candidate_id;
     const fn = (vote.first_name || 'Fan').toUpperCase();
-    const ln = vote.last_name || '';
-    const lastInitial = ln ? ln.charAt(0).toUpperCase() + '.' : '';
-    const voterDisplay = `${fn} ${lastInitial}`;
+    const ln = (vote.last_name || '').toUpperCase();
+    const voterDisplay = `${fn} ${ln}`.trim();
 
     const info = candidateMap[cid];
     if (info) {
@@ -717,7 +718,7 @@ function animate() {
         // Smoothly lerp liquid height to target
         const diff = ld.targetHeight - ld.currentHeight;
         if (Math.abs(diff) > 0.001) {
-            ld.currentHeight += diff * Math.min(dt * 3.0, 1.0); // Smooth rise
+            ld.currentHeight += diff * Math.min(dt * 6.0, 1.0); // Smooth rise
 
             const group = cylinderGroups[liquidData.indexOf(ld)];
             if (!group) return;
@@ -791,12 +792,12 @@ function animate() {
                 }, 25);
             }
 
-            // Hide celebration
+            // Hide celebration after 15 seconds
             setTimeout(() => {
                 celebEl.classList.remove('slam-in');
                 celebEl.classList.add('slam-out');
-                setTimeout(() => { celebEl.classList.remove('slam-out'); processNextCeleb(); }, 600);
-            }, 3500);
+                setTimeout(() => { celebEl.classList.remove('slam-out'); processNextCeleb(); }, 800);
+            }, 15000);
         }
     }
 
