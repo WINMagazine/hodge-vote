@@ -606,6 +606,18 @@ async function loadVoteCounts() {
         });
         buildCylinders();
         totalVotesEl.textContent = totalVotesCount.toLocaleString();
+
+        // Load last 25 votes for the ticker
+        try {
+            const { data: voteData } = await sb.from('votes').select('first_name, candidate_id').order('created_at', { ascending: false }).limit(25);
+            if (voteData) {
+                voteData.forEach(v => {
+                    const info = candidateMap[v.candidate_id];
+                    if (info) recentVotes.push({ firstName: v.first_name.toUpperCase(), candidateName: info.name });
+                });
+            }
+        } catch (e) { console.warn('Failed to load recent votes:', e); }
+
         buildTicker();
         loadingOverlay.classList.add('hidden');
     } catch (err) {
