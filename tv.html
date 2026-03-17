@@ -727,13 +727,18 @@ function animate() {
             const group = cylinderGroups[liquidData.indexOf(ld)];
             if (!group) return;
 
-            // Update body cylinder height
-            group.remove(ld.bodyMesh);
+            // Update body cylinder height — replace mesh entirely
+            const idx = liquidData.indexOf(ld);
+            const group2 = cylinderGroups[idx];
+            group2.remove(ld.bodyMesh);
             ld.bodyMesh.geometry.dispose();
+            ld.bodyMesh.material.dispose();
             const newGeo = new THREE.CylinderGeometry(TUBE_INNER - 0.02, TUBE_INNER - 0.02, Math.max(ld.currentHeight, 0.01), 32);
-            ld.bodyMesh.geometry = newGeo;
+            const newMat = createLiquidBodyMaterial(ld.color);
+            ld.bodyMesh = new THREE.Mesh(newGeo, newMat);
+            ld.bodyMaterial = newMat;
             ld.bodyMesh.position.y = BASE_Y + ld.currentHeight / 2;
-            group.add(ld.bodyMesh);
+            group2.add(ld.bodyMesh);
 
             // Update surface position
             ld.surfaceMesh.position.y = BASE_Y + ld.currentHeight;
