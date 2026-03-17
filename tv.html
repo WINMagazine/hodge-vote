@@ -640,6 +640,10 @@ async function handleNewVote(payload) {
         totalVotesCount++;
         totalVotesEl.textContent = totalVotesCount.toLocaleString();
 
+        // Immediately update ALL liquid levels with new percentages
+        updateLiquidLevels();
+        updateLabels();
+
         recentVotes.unshift({ firstName: fn, candidateName: info.name });
         if (recentVotes.length > 20) recentVotes = recentVotes.slice(0, 20);
         buildTicker();
