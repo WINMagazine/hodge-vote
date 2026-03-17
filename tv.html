@@ -448,10 +448,11 @@ function buildCylinders() {
         const hexColor = c.color || '#888888';
         const liquidColor = new THREE.Color(hexColor);
 
-        // Liquid body (cylinder)
-        const bodyGeo = new THREE.CylinderGeometry(TUBE_INNER - 0.02, TUBE_INNER - 0.02, liquidHeight, 32);
+        // Liquid body (unit-height cylinder, scaled by scale.y)
+        const bodyGeo = new THREE.CylinderGeometry(TUBE_INNER - 0.02, TUBE_INNER - 0.02, 1.0, 32);
         const bodyMat = createLiquidBodyMaterial(liquidColor);
         const bodyMesh = new THREE.Mesh(bodyGeo, bodyMat);
+        bodyMesh.scale.y = liquidHeight;
         bodyMesh.position.y = BASE_Y + liquidHeight / 2;
         group.add(bodyMesh);
 
@@ -724,21 +725,9 @@ function animate() {
         if (Math.abs(diff) > 0.001) {
             ld.currentHeight += diff * Math.min(dt * 6.0, 1.0); // Smooth rise
 
-            const group = cylinderGroups[liquidData.indexOf(ld)];
-            if (!group) return;
-
-            // Update body cylinder height — replace mesh entirely
-            const idx = liquidData.indexOf(ld);
-            const group2 = cylinderGroups[idx];
-            group2.remove(ld.bodyMesh);
-            ld.bodyMesh.geometry.dispose();
-            ld.bodyMesh.material.dispose();
-            const newGeo = new THREE.CylinderGeometry(TUBE_INNER - 0.02, TUBE_INNER - 0.02, Math.max(ld.currentHeight, 0.01), 32);
-            const newMat = createLiquidBodyMaterial(ld.color);
-            ld.bodyMesh = new THREE.Mesh(newGeo, newMat);
-            ld.bodyMaterial = newMat;
+            // Update body scale and position (no geometry recreation needed)
+            ld.bodyMesh.scale.y = Math.max(ld.currentHeight, 0.01);
             ld.bodyMesh.position.y = BASE_Y + ld.currentHeight / 2;
-            group2.add(ld.bodyMesh);
 
             // Update surface position
             ld.surfaceMesh.position.y = BASE_Y + ld.currentHeight;
