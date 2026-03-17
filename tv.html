@@ -41,11 +41,11 @@
         .total-label { font-size: 8px; font-weight: 600; color: rgba(0,0,0,0.4); letter-spacing: 0.12em; text-transform: uppercase; line-height: 1.2; }
 
         #labels-container { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 11; pointer-events: none; overflow: hidden; }
-        .tube-label-top, .tube-label-bottom { position: absolute; text-align: center; width: 150px; transform: translateX(-50%); }
-        .tube-label-headshot { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; margin: 0 auto 6px; display: block; border: 3px solid #cfa85e; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
-        .tube-label-bar { width: 50px; height: 3px; border-radius: 3px; margin: 0 auto 6px; }
-        .tube-label-name { font-size: 12px; font-weight: 900; text-transform: uppercase; line-height: 1.15; margin-bottom: 2px; color: #1a1a1a; text-shadow: none; white-space: nowrap; }
-        .tube-label-school { font-size: 9px; font-weight: 600; color: rgba(0,0,0,0.45); letter-spacing: 0.08em; text-transform: uppercase; text-shadow: none; }
+        .tube-label-top, .tube-label-bottom { position: absolute; text-align: center; width: 280px; transform: translateX(-50%); }
+        .tube-label-headshot { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; margin: 0 auto 8px; display: block; border: 3px solid #cfa85e; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+        .tube-label-bar { width: 75px; height: 4px; border-radius: 3px; margin: 0 auto 12px; }
+        .tube-label-name { font-size: 18px; font-weight: 900; text-transform: uppercase; line-height: 1.15; margin-bottom: 4px; color: #1a1a1a; text-shadow: none; white-space: nowrap; }
+        .tube-label-school { font-size: 13px; font-weight: 600; color: rgba(0,0,0,0.45); letter-spacing: 0.14em; text-transform: uppercase; text-shadow: none; }
         .tube-label-pct { font-size: 42px; font-weight: 800; text-shadow: none; }
         .tube-label-votes { font-size: 15px; font-weight: 500; color: rgba(0,0,0,0.4); margin-top: 3px; }
 
@@ -218,7 +218,7 @@ scene.background = new THREE.Color(0xffffff);
 scene.fog = new THREE.FogExp2(0xffffff, 0.008);
 
 const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
-camera.position.set(0, 5.5, 42);
+camera.position.set(0, 5.5, 52);
 camera.lookAt(0, 4, 0);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -405,9 +405,9 @@ function createLiquidBodyMaterial(color) {
 function getSpacing(count) {
     if (count <= 4) return 9.0;
     if (count <= 6) return 7.5;
-    if (count <= 8) return 6.5;
-    if (count <= 10) return 5.6;
-    return 5.0;
+    if (count <= 8) return 7.0;
+    if (count <= 10) return 6.5;
+    return 5.5;
 }
 function getStartX(count) { return -((count - 1) * getSpacing(count)) / 2; }
 
