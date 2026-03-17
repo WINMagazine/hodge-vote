@@ -105,7 +105,7 @@
             <div class="hdr-divider"></div>
             <span class="hdr-meta" id="hdrTime"></span>
             <div class="hdr-divider"></div>
-            <span class="hdr-meta">CHAMPIONSHIP VOTE</span>
+            <span class="hdr-meta">DAN HODGE TROPHY VOTE</span>
         </div>
         <div class="hdr-center">
             <img src="win-logo.png" alt="WIN Magazine" style="height: 120px;">
@@ -561,9 +561,8 @@ function buildTicker() {
             messages.push(`${leader.name} leads by a huge margin!`);
         messages.push(`${leader.name} leads with ${pct}% of the vote`);
     }
-    messages.push('Vote now via QR code or website!');
-    messages.push('Battle for second heats up!');
-    recentVotes.slice(0, 5).forEach(v => messages.push(`${v.firstName} voted for ${v.candidateName}`));
+    messages.push('Vote now via QR code or laptop at our booth!');
+    recentVotes.slice(0, 25).forEach(v => messages.push(`${v.firstName} voted for ${v.candidateName}`));
     if (messages.length === 0) messages.push('Cast your vote now!');
 
     tickerTrack.innerHTML = '';
@@ -581,7 +580,7 @@ function buildTicker() {
 // 13. CLOCK
 // ============================================================
 function updateClockDisplay() {
-    hdrTime.textContent = new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+    hdrTime.textContent = new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'America/New_York' });
 }
 
 // ============================================================
