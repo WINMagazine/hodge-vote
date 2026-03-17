@@ -93,8 +93,9 @@
 </head>
 <body>
 
-<!-- Ultra-subtle QR code - nearly invisible to eyes, camera may pick up -->
-<img src="vote-qr.svg" alt="" style="position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); width:500px; height:500px; opacity:0.035; z-index:0; pointer-events:none; filter:blur(0.3px);">
+<!-- Large QR codes on left and right blank areas -->
+<img src="vote-qr.svg" alt="" style="position:fixed; top:50%; left:5%; transform:translateY(-50%); width:280px; height:280px; opacity:0.04; z-index:0; pointer-events:none;">
+<img src="vote-qr.svg" alt="" style="position:fixed; top:50%; right:5%; transform:translateY(-50%); width:280px; height:280px; opacity:0.04; z-index:0; pointer-events:none;">
 
 <!-- Small visible QR code in bottom-right corner -->
 <div style="position:fixed; bottom:52px; right:16px; z-index:20; background:white; padding:6px; border-radius:6px; box-shadow:0 1px 4px rgba(0,0,0,0.1);">
