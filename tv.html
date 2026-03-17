@@ -609,11 +609,11 @@ async function loadVoteCounts() {
 
         // Load last 25 votes for the ticker
         try {
-            const { data: voteData } = await sb.from('votes').select('first_name, candidate_id').order('created_at', { ascending: false }).limit(25);
+            const { data: voteData } = await sb.from('votes').select('first_name, last_name, candidate_id').order('created_at', { ascending: false }).limit(25);
             if (voteData) {
                 voteData.forEach(v => {
                     const info = candidateMap[v.candidate_id];
-                    if (info) recentVotes.push({ firstName: v.first_name.toUpperCase(), candidateName: info.name });
+                    if (info) recentVotes.push({ firstName: `${v.first_name} ${v.last_name || ''}`.trim().toUpperCase(), candidateName: info.name });
                 });
             }
         } catch (e) { console.warn('Failed to load recent votes:', e); }
@@ -659,7 +659,7 @@ async function handleNewVote(payload) {
         updateLiquidLevels();
         updateLabels();
 
-        recentVotes.unshift({ firstName: fn, candidateName: info.name });
+        recentVotes.unshift({ firstName: voterDisplay, candidateName: info.name });
         if (recentVotes.length > 20) recentVotes = recentVotes.slice(0, 20);
         buildTicker();
 
