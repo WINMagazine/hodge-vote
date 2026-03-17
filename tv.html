@@ -93,6 +93,15 @@
 </head>
 <body>
 
+<!-- Ultra-subtle QR code - nearly invisible to eyes, camera may pick up -->
+<img src="vote-qr.svg" alt="" style="position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); width:500px; height:500px; opacity:0.035; z-index:0; pointer-events:none; filter:blur(0.3px);">
+
+<!-- Small visible QR code in bottom-right corner -->
+<div style="position:fixed; bottom:52px; right:16px; z-index:20; background:white; padding:6px; border-radius:6px; box-shadow:0 1px 4px rgba(0,0,0,0.1);">
+    <img src="vote-qr.svg" alt="Scan to vote" style="width:64px; height:64px; display:block;">
+    <div style="font-size:7px; text-align:center; font-weight:700; color:#1a1a1a; letter-spacing:0.05em; margin-top:2px; font-family:'Inter',sans-serif;">SCAN TO VOTE</div>
+</div>
+
 <div id="canvas-container"></div>
 
 <div id="ui-layer">
