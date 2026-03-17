@@ -372,7 +372,7 @@ function renderCandidates() {
     const recordDisplay = c.record ? ` | ${c.record}` : '';
 
     const headshot = HEADSHOT_MAP[c.name] || '';
-    const posMap = {'Jax Forrest':'0 20%','Isaac Trumble':'0 15%','Luke Lilledahl':'0 25%'};
+    const posMap = {'Jax Forrest':'0 30%','Isaac Trumble':'0 15%','Luke Lilledahl':'0 25%'};
     const objPos = posMap[c.name] ? `object-position:${posMap[c.name]}` : '';
     div.innerHTML = `
       ${headshot ? `<img class="card-headshot" src="${headshot}" alt="${esc(c.name)}" style="${objPos}">` : `<div class="card-color" style="background:${c.color || '#888'}"></div>`}
