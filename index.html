@@ -67,15 +67,20 @@
             gap: 0.5rem;
             margin-bottom: 1rem;
         }
+        @media (min-width: 600px) {
+            .grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
 
         .card {
             background: var(--card-bg);
             border-radius: 8px;
             display: flex;
-            padding: 0.6rem 0.75rem;
+            padding: 0.5rem 0.65rem;
             cursor: pointer;
             transition: transform 0.1s, box-shadow 0.2s, border 0.2s;
-            border: 3px solid transparent;
+            border: 2px solid transparent;
             color: var(--text-dark);
             align-items: center;
         }
